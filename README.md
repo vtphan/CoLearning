@@ -1,2 +1,2 @@
 # CoLearning
-2nd generation active learning platform
+3rd generation active learning platform
