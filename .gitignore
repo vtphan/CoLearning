@@ -1,0 +1,10 @@
+password.txt
+src/.service
+src/__pycache__
+src/_default
+src/_documentation
+src/_dashboard
+src/_scaffold
+src/_minimal
+src/colearning/__pycache__
+src/colearning/databases
