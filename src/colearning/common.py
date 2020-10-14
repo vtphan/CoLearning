@@ -83,7 +83,7 @@ auth.use_username = True
 auth.registration_requires_confirmation = settings.VERIFY_EMAIL
 auth.registration_requires_approval = settings.REQUIRES_APPROVAL
 auth.allowed_actions = ["all"]
-auth.login_expiration_time = 3600
+auth.login_expiration_time = 7200
 auth.password_complexity = {"entropy": 50}
 auth.block_previous_password_num = 3
 auth.define_tables()

@@ -25,7 +25,7 @@ UPLOAD_PATH = os.path.join(APP_FOLDER, "uploads")
 VERIFY_EMAIL = False
 
 # account requires to be approved ?
-REQUIRES_APPROVAL = False
+REQUIRES_APPROVAL = True
 
 # email settings
 SMTP_SSL = False
