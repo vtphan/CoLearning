@@ -8,3 +8,4 @@ src/_scaffold
 src/_minimal
 src/colearning/__pycache__
 src/colearning/databases
+.vscode/settings.json
