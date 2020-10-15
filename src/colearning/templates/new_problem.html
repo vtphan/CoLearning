@@ -1,5 +1,13 @@
 [[extend 'layout.html']]
+<script src="codemirror-5.58.1/lib/codemirror.js"></script>
+<link rel="stylesheet" href="codemirror-5.58.1/lib/codemirror.css">
+<script src="codemirror-5.58.1/mode/python/python.js"></script>
 
 <div>
     [[=form]]
 </div>
+<script>
+    var editor = document.getElementById("none_content");
+    var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "python", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75});
+
+</script>
