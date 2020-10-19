@@ -1,0 +1,39 @@
+[[extend 'layout.html']]
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<div>
+  <div id="problem-tabs">
+    <ul>
+      [[for p in problems:]]
+        <li><a href="[[=current_url]]#problem[[=p.id]]">[[=p.problem_name]]</a></li>
+      [[pass]]
+    </ul>
+    [[for p in problems:]]
+    <div id="problem[[=p.id]]">
+      <b>Deadline:</b>[[=p.deadline]]<br>
+      <b>Remaining Attempts:</b>[[=p.attempts]]<br>
+      <b>Points:</b>[[=p.max_points]]<br>
+      <hr style="height:30px">
+      <textarea id="editor[[=p.id]]">[[=p.problem_description]]</textarea>
+      
+    </div>
+    [[pass]]
+  </div>
+</div>
+[[block page_scripts]]
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script src="codemirror-5.58.1/lib/codemirror.js"></script>
+<link rel="stylesheet" href="codemirror-5.58.1/lib/codemirror.css">
+<script src="codemirror-5.58.1/mode/python/python.js"></script>
+
+<script>
+$( function() {
+  $( "#problem-tabs" ).tabs();
+} );
+[[for p in problems:]]
+    var editor[[=p.id]] = document.getElementById("editor[[=p.id]]");
+    var myCodeMirror[[=p.id]] = CodeMirror.fromTextArea(editor[[=p.id]], {lineNumbers: true, mode: "python", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75});
+[[pass]]
+</script>
+[[end]]
