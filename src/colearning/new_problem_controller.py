@@ -15,8 +15,8 @@ def new_problem():
         [
             Field('problem_name', required=True, default='assignment_'+datetime.datetime.now().strftime("%Y%m%d%M%S")),
             Field('deadline', "datetime", default=default_deadline.strftime('%Y-%m-%d %H:%M')),
-            Field('number_of_attempts', type='integer'),
-            Field('maximum_score', type='integer'),
+            Field('number_of_attempts', type='integer', default=1),
+            Field('maximum_score', type='integer', default=10),
             Field('content', 'text'),
             Field('answer'),
             Field('topics'),
