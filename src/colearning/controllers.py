@@ -32,6 +32,7 @@ from .common import db, session, T, cache, auth, logger, authenticated, unauthen
 from .activation_controller import *
 from .new_problem_controller import *
 from .workspace_controller import *
+from .active_problem_controller import *
 
 @unauthenticated("index", "index.html")
 def index():

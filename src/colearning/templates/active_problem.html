@@ -1,0 +1,27 @@
+[[extend 'layout_student.html']]
+[[block page_head]]
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+[[end]]
+<table class="table">
+    <tbody>
+        <tr>
+            <th>Problem Name</th>
+            <th>Deadline</th>
+            <th>Number of attempts left</th>
+            <th></th>
+        </tr>
+    </tbody>
+    <tbody>
+    [[import urllib.parse]]
+    [[for p in problems:]]
+        <tr>
+            <td>[[=p.problem_name]]</td>
+            <td>[[=p.deadline]]</td>
+            <td>[[=p.attempts]]</td>
+            [[param = urllib.parse.urlencode({'student_id': globals().get('user',{}).get('id'), 'problem_id': p.id})]]
+            <td><a class="button is-primary" href="[[=URL('workspace?'+param)]]">Go to workspace</a></td>
+        </tr>
+    [[pass]]
+     
+    </tbody>
+</table>
