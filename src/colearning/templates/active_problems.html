@@ -18,8 +18,7 @@
             <td>[[=p.problem_name]]</td>
             <td>[[=p.deadline]]</td>
             <td>[[=p.attempts]]</td>
-            [[param = urllib.parse.urlencode({'student_id': globals().get('user',{}).get('id'), 'problem_id': p.id})]]
-            <td><a class="button is-primary" href="[[=URL('workspace?'+param)]]">Go to workspace</a></td>
+            <td><a class="button is-primary" href="[[=URL('workspace', vars={'student_id': globals().get('user',{}).get('id'), 'problem_id': p.id})]]">Go to workspace</a></td>
         </tr>
     [[pass]]
      
