@@ -1,22 +1,34 @@
-[[extend 'layout.html']]
+[[extend 'layout_student.html']]
+[[block page_head]]
+<link rel="stylesheet" href="codemirror-5.58.1/lib/codemirror.css">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+[[end]]
+<!-- [[if valid==False:]]
+  <div>
+    <h3>Invalid Request</h3>
+  </div>
+[[else:]] -->
 <div>
   <div id="problem-tabs">
     <ul>
-      [[for p in problems:]]
-        <li><a href="[[=current_url]]#problem[[=p.id]]">[[=p.problem_name]]</a></li>
-      [[pass]]
-    </ul>
-    [[for p in problems:]]
-    <div id="problem[[=p.id]]">
-      <b>Deadline:</b>[[=p.deadline]]<br>
-      <b>Remaining Attempts:</b>[[=p.attempts]]<br>
-      <b>Points:</b>[[=p.max_points]]<br>
-      <hr style="height:30px">
-      <textarea id="editor[[=p.id]]">[[=p.problem_description]]</textarea>
       
+      <li><a href="[[=current_url]]#problem">[[=problem.problem_name]]</a></li>
+      
+    </ul>
+    
+    <div id="problem">
+      <b>Deadline:</b>[[=problem.deadline]]<br>
+      <b>Remaining Attempts:</b>[[=workspace.attempt_left]]<br>
+      <b>Points:</b>[[=problem.max_points]]<br>
+      <hr style="height:30px">
+      <textarea id="editor">[[=workspace.content]]</textarea>
+      [[if workspace.attempt_left>0:]]
+        <button class="ui-button ui-widget ui-corner-all" id="submit-button">Submit Answer</button>
+        <button class="ui-button ui-widget ui-corner-all" id="help-button">Ask for help</button>
+        <!-- <a class="button is-primary" href="#" id="submit-button">Submit Answer</a> -->
+      [[pass]]
     </div>
-    [[pass]]
+    
   </div>
 </div>
 [[block page_scripts]]
@@ -24,16 +36,66 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <script src="codemirror-5.58.1/lib/codemirror.js"></script>
-<link rel="stylesheet" href="codemirror-5.58.1/lib/codemirror.css">
+
 <script src="codemirror-5.58.1/mode/python/python.js"></script>
 
 <script>
-$( function() {
-  $( "#problem-tabs" ).tabs();
-} );
-[[for p in problems:]]
-    var editor[[=p.id]] = document.getElementById("editor[[=p.id]]");
-    var myCodeMirror[[=p.id]] = CodeMirror.fromTextArea(editor[[=p.id]], {lineNumbers: true, mode: "python", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75});
-[[pass]]
+  $( function() {
+    $( "#problem-tabs" ).tabs();
+  } );
+
+  var editor = document.getElementById("editor");
+  var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "python", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75});
+
+  function sendContent(){
+    try{
+      $.ajax({
+        method: "POST",
+        url: "[[=URL('save_workspace')]]",
+        data: {student_id: [[=workspace.student_id]], problem_id: [[=workspace.problem_id]], content: myCodeMirror.getValue()},
+      });
+    }
+    catch(err){
+      console.log(err);
+    }
+    setTimeout(sendContent, [[=time_interval]]);
+  }
+  $(document).ready(function(){
+    sendContent();
+    [[if workspace.attempt_left>0:]]
+    $("#submit-button").on("click", function(e){
+      $.ajax({
+        method: 'POST',
+        url: "[[=URL('submission_handler')]]",
+        data: {student_id: [[=workspace.student_id]], problem_id: [[=workspace.problem_id]], content: myCodeMirror.getValue(), 
+          attempt_left: [[=workspace.attempt_left-1]], category: 1},
+      })
+      .done(function(msg){
+        alert(msg);
+        location.reload();
+      })
+      .fail(function(){
+        alert("Could not submit the answer! Please try again.");
+      });
+    });
+    $("#help-button").on("click", function(e){
+      $.ajax({
+        method: 'POST',
+        url: "[[=URL('submission_handler')]]",
+        data: {student_id: [[=workspace.student_id]], problem_id: [[=workspace.problem_id]], content: myCodeMirror.getValue(), 
+          attempt_left: [[=workspace.attempt_left-1]], category: 2},
+      })
+      .done(function(msg){
+        alert(msg);
+        // location.reload();
+      })
+      .fail(function(){
+        alert("Could not submit the answer! Please try again.");
+      });
+    });
+    [[pass]]
+  });
+
 </script>
 [[end]]
+<!-- [[pass]] -->
