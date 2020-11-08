@@ -1,19 +1,22 @@
 [[extend 'layout_student.html']]
 [[block page_head]]
 <link rel="stylesheet" href="codemirror-5.58.1/lib/codemirror.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css"> -->
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 [[end]]
-<!-- [[if valid==False:]]
-  <div>
-    <h3>Invalid Request</h3>
-  </div>
-[[else:]] -->
+
+
 <div>
+  <p id="countdown" style="text-align: right;font-size: 25px; margin-top: 0px;"></p>
   <div id="problem-tabs">
     <ul>
       
       <li><a href="[[=current_url]]#problem">[[=problem.problem_name]]</a></li>
-      
+      [[i = len(submissions)]]
+      [[for s in submissions:]]
+      <li><a href="[[=current_url]]#submission[[=str(s['id'])]]">Submission [[=i]]</a></li>
+      [[i-=1]]
+      [[pass]]
     </ul>
     
     <div id="problem">
@@ -28,6 +31,27 @@
         <!-- <a class="button is-primary" href="#" id="submit-button">Submit Answer</a> -->
       [[pass]]
     </div>
+    [[for s in submissions:]]
+      <div id="submission[[=str(s['id'])]]">
+        <b>Submitted at:</b>[[=s['submitted_at'] ]]<br>
+        [[if s['submission_category']==1:]]
+        <b>Verdict:</b>[[=s['verdict'] ]]<br>
+        <b>Score:</b>[[=s['score'] ]]<br>
+        [[pass]]
+        <hr style="height:30px">
+        
+        <table>
+            <tr>
+                <td>Submitted Content</td>
+                <td>Feedback</td>
+            </tr>
+            <tr>
+                <td><textarea id="editor-submission-[[=s['id'] ]]">[[=s['submission'] ]]</textarea></td>
+                <td><textarea id="editor-feedback-[[=s['id'] ]]">[[=s['feedback'] if s['feedback'] is not None else "" ]]</textarea></td>
+            </tr>
+        </table>
+      </div>
+    [[pass]]
     
   </div>
 </div>
@@ -38,29 +62,36 @@
 <script src="codemirror-5.58.1/lib/codemirror.js"></script>
 
 <script src="codemirror-5.58.1/mode/python/python.js"></script>
+<script src="codemirror-5.58.1/mode/clike/clike.js"></script>
 
 <script>
-  $( function() {
-    $( "#problem-tabs" ).tabs();
-  } );
-
-  var editor = document.getElementById("editor");
-  var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "python", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75});
-
-  function sendContent(){
-    try{
-      $.ajax({
-        method: "POST",
-        url: "[[=URL('save_workspace')]]",
-        data: {student_id: [[=workspace.student_id]], problem_id: [[=workspace.problem_id]], content: myCodeMirror.getValue()},
-      });
-    }
-    catch(err){
-      console.log(err);
-    }
-    setTimeout(sendContent, [[=time_interval]]);
-  }
+  
+  
   $(document).ready(function(){
+    $( function() {
+      $( "#problem-tabs" ).tabs();
+    } );
+
+    var editor = document.getElementById("editor");
+    var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "[[="python" if problem.language=="Python" else "clike"]]", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75});
+    
+    [[for s in submissions:]]
+      CodeMirror.fromTextArea(document.getElementById("editor-submission-[[=s['id'] ]]"), {lineNumbers: true, mode: "[[="python" if problem.language=="Python" else "clike"]]", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
+      CodeMirror.fromTextArea(document.getElementById("editor-feedback-[[=s['id'] ]]"), {lineNumbers: true, mode: "[[="python" if problem.language=="Python" else "clike"]]", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
+    [[pass]]
+    function sendContent(){
+      try{
+        $.ajax({
+          method: "POST",
+          url: "[[=URL('save_workspace')]]",
+          data: {student_id: [[=workspace.student_id]], problem_id: [[=workspace.problem_id]], content: myCodeMirror.getValue()},
+        });
+      }
+      catch(err){
+        console.log(err);
+      }
+      setTimeout(sendContent, [[=time_interval]]);
+    }
     sendContent();
     [[if workspace.attempt_left>0:]]
     $("#submit-button").on("click", function(e){
@@ -94,8 +125,35 @@
       });
     });
     [[pass]]
-  });
+    // Set the date we're counting down to
+    var countDownDate = new Date([[=problem.deadline.year]], [[=problem.deadline.month-1]], [[=problem.deadline.day]], [[=problem.deadline.hour]], [[=problem.deadline.minute]], [[=problem.deadline.second]], 0).getTime();
 
+    // Update the count down every 1 second
+    var x = setInterval(function() {
+
+      // Get today's date and time
+      var now = new Date().getTime();
+
+      // Find the distance between now and the count down date
+      var distance = countDownDate - now;
+
+      // Time calculations for days, hours, minutes and seconds
+      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      // Display the result in the element with id="demo"
+      document.getElementById("countdown").innerHTML = "Time Left: " + days + "d " + hours + "h "
+      + minutes + "m " + seconds + "s ";
+
+      // If the count down is finished, write some text
+      if (distance < 0) {
+        clearInterval(x);
+        document.getElementById("countdown").innerHTML = "Submission Time Expired!";
+      }
+    }, 1000);
+  });
+  
 </script>
 [[end]]
-<!-- [[pass]] -->

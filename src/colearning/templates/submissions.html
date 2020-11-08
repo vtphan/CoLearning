@@ -1,0 +1,30 @@
+[[extend 'layout_instructor.html']]
+[[block page_head]]
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+[[end]]
+<table class="table">
+    <tbody>
+        <tr>
+            <th>#</th>
+            <th>Problem Name</th>
+            <th>Student Name</th>
+            <th>Submission Type</th>
+            <th>Submission Time</th>
+            
+        </tr>
+    </tbody>
+    <tbody>
+    
+    [[for i, s in enumerate(sub, 1):]]
+        <tr>
+            <td>[[=i]]</td>
+            <td><a class="button" href="[[=URL('view_submission', vars={'submission_id': s['id']})]]" target='_blank'>[[=s['problem_name'] ]]</a></td>
+            <td>[[=s['first_name']+' '+s['last_name'] ]]</td>
+            <td>[[if s['submission_category']==1:]]Submission[[else:]]Help Seeking[[pass]]</td>
+            <td>[[=s['submitted_at'] ]]</td>
+            
+        </tr>
+    [[pass]]
+     
+    </tbody>
+</table>

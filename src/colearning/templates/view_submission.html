@@ -1,0 +1,135 @@
+[[extend 'layout_instructor.html']]
+[[block page_head]]
+<link rel="stylesheet" href="codemirror-5.58.1/lib/codemirror.css">
+<!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+[[end]]
+
+<div>
+  <div id="problem-tabs">
+    
+    
+    <div id="problem">
+      <b>Problem:</b>[[=problem_name]]<br>
+      <b>Student Name:</b>[[=first_name+' '+last_name]]<br>
+      <b>Submitted At:</b>[[=submitted_at]]<br>
+      <hr style="height:30px">
+      <table>
+          <tr>
+              <td>Submitted Content</td>
+              <td>Your Feedback</td>
+          </tr>
+          <tr>
+              <td><textarea id="editor1">[[=content]]</textarea></td>
+              <td><textarea id="editor2"># Write the feedback here</textarea></td>
+          </tr>
+      </table>
+      
+      [[if submission_category==1:]]
+      <button class="button is-success" id="mark-correct">
+        <span class="icon is-small">
+          <i class="fas fa-check"></i>
+        </span>
+        <span>Correct</span>
+      </button>
+      <button class="button is-danger" id="mark-incorrect">
+        <span>Incorrect</span>
+        <span class="icon is-small">
+          <i class="fas fa-times"></i>
+        </span>
+      </button>
+      [[else:]]
+      <button class="button is-primary" id="submit-feedback">
+        <span class="icon is-small">
+          <i class="fas fa-comment"></i>
+        </span>
+        <span>Submit Feedback</span>
+      </button>
+      [[pass]]
+    </div>
+    
+  </div>
+</div>
+
+[[block page_script]]
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="codemirror-5.58.1/lib/codemirror.js"></script>
+<script src="codemirror-5.58.1/mode/python/python.js"></script>
+<script>
+    var editor1 = document.getElementById("editor1");
+    var myCodeMirror1 = CodeMirror.fromTextArea(editor1, {lineNumbers: true, mode: "python", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
+    var editor2 = document.getElementById("editor2");
+    var myCodeMirror2 = CodeMirror.fromTextArea(editor2, {lineNumbers: true, mode: "python", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75});
+    $(document).ready(function(){
+        [[if submission_category==1:]]
+        $('#mark-correct').on('click', function(e){
+            var feedback = myCodeMirror2.getValue().trim();
+            if (feedback.startsWith("# Write the feedback here")==true){
+                feedback = feedback.replace("# Write the feedback here", "");
+            }
+            $.ajax({
+                method: 'POST',
+                url: "[[=URL('submission_grader')]]",
+                data: {submission_id: [[=id]], correct: 1, feedback: feedback}
+            })
+            .done(function(msg){
+                alert("Graded successfully.");
+                $('#mark-correct').hide();
+                $('#mark-incorrect').hide();
+
+            })
+            .fail(function(){
+                alert("Could not grade! Please try again.");
+            });
+        });
+        
+        $('#mark-incorrect').on('click', function(e){
+            var partial_credit = prompt("Please confirm credit for grading.", "0");
+            if (partial_credit==null)
+                partial_credit = 0;
+            else{
+                partial_credit = parseFloat(partial_credit);
+            }
+            var feedback = myCodeMirror2.getValue().trim();
+            if (feedback.startsWith("# Write the feedback here")==true){
+                feedback = feedback.replace("# Write the feedback here", "");
+            }
+            $.ajax({
+                method: 'POST',
+                url: "[[=URL('submission_grader')]]",
+                data: {submission_id: [[=id]], correct: 0, credit: partial_credit, feedback: feedback}
+            })
+            .done(function(msg){
+                alert("Graded successfully.");
+                $('#mark-correct').hide();
+                $('#mark-incorrect').hide();
+
+            })
+            .fail(function(){
+                alert("Could not grade! Please try again.");
+            });
+        });
+        
+        [[else:]]
+        $('#submit-feedback').on('click', function(e){
+            var feedback = myCodeMirror2.getValue().trim();
+            if (feedback.startsWith("# Write the feedback here")==true){
+                feedback = feedback.replace("# Write the feedback here", "");
+            }
+            $.ajax({
+                method: 'POST',
+                url: "[[=URL('submission_grader')]]",
+                data: {submission_id: [[=id]], correct: -1, feedback: feedback}
+            })
+            .done(function(msg){
+                alert("Feedback submitted successfully.");
+
+            })
+            .fail(function(){
+                alert("Could not submit feedback! Please try again.");
+            });
+        });
+        [[pass]]
+    });
+</script>
+[[end]]

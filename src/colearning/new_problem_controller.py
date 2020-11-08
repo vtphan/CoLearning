@@ -3,6 +3,7 @@ from .common import db, groups, auth, flash
 from . import settings
 from py4web.utils.form import Form, FormStyleBulma
 import datetime
+from pydal.validators import IS_IN_SET
 
 @action('new_problem', method=['GET', 'POST'])
 @action.uses(auth.user, 'new_problem.html')
@@ -17,6 +18,7 @@ def new_problem():
             Field('deadline', "datetime", default=default_deadline.strftime('%Y-%m-%d %H:%M')),
             Field('number_of_attempts', type='integer', default=1),
             Field('maximum_score', type='integer', default=10),
+            Field('language', requires=IS_IN_SET(['Python', 'Java', 'C++']), default="Python"),
             Field('content', 'text'),
             Field('answer'),
             Field('topics'),
@@ -41,7 +43,7 @@ def new_problem():
             deadline=datetime.datetime.strptime(problem_form.vars['deadline'].strip(), "%Y-%m-%dT%H:%M")
             pid = db.problem.insert(teacher_id=teacher_id, problem_description=problem_form.vars.content, answer=problem_form.vars.answer.strip(),\
                  problem_name=problem_form.vars.problem_name.strip(), max_points=problem_form.vars.maximum_score, attempts=problem_form.vars.number_of_attempts,\
-                 problem_uploaded_at=datetime.datetime.now(), exact_answer=exact_answer, deadline=deadline)
+                 language=problem_form.vars.language,problem_uploaded_at=datetime.datetime.now(), exact_answer=exact_answer, deadline=deadline)
             topics = problem_form.vars.topics.strip()
             if topics != "":
                 for topic in topics.split(','):

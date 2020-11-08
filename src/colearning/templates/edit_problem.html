@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="codemirror-5.58.1/lib/codemirror.css">
 <script src="codemirror-5.58.1/mode/python/python.js"></script>
 <script src="codemirror-5.58.1/mode/clike/clike.js"></script>
+<script src="codemirror-5.58.1/addon/mode/loadmode.js"></script>
 [[end]]
 
 <div>
@@ -15,19 +16,32 @@
     var editor = document.getElementById("none_content");
     var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "python", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75});
     $(document).ready(function(){
+        if ($("#none_language").val()=="Python"){
+            myCodeMirror.setOption("mode", "text/x-python");
+            CodeMirror.autoLoadMode(myCodeMirror, "python");
+        }
+        else if($("#none_language").val()=="C++"){
+            
+            myCodeMirror.setOption("mode", "text/x-c++src");
+            CodeMirror.autoLoadMode(myCodeMirror, "clike");
+        }
+        else if ($("#none_language").val()=="Java"){
+            myCodeMirror.setOption("mode", "text/x-java");
+            CodeMirror.autoLoadMode(myCodeMirror, "clike");
+        }
         $("#none_language").on("change", function(){
             if ($(this).val()=="Python"){
                 myCodeMirror.setOption("mode", "text/x-python");
-                CodeMirror.autoLoadMode(myCodeMirror, "text/x-python");
+                CodeMirror.autoLoadMode(myCodeMirror, "python");
             }
             else if($(this).val()=="C++"){
                
                 myCodeMirror.setOption("mode", "text/x-c++src");
-                CodeMirror.autoLoadMode(myCodeMirror, "text/x-c++src");
+                CodeMirror.autoLoadMode(myCodeMirror, "clike");
             }
             else if ($(this).val()=="Java"){
                 myCodeMirror.setOption("mode", "text/x-java");
-                CodeMirror.autoLoadMode(myCodeMirror, "text/x-java");
+                CodeMirror.autoLoadMode(myCodeMirror, "clike");
             }
         });
     });

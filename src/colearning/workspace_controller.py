@@ -4,29 +4,33 @@ from . import settings
 from py4web.utils.form import Form, FormStyleBulma
 import datetime
 
-@action('workspace', method='GET')
+@action('workspace/<student_id>/<problem_id>', method='GET')
 @action.uses(auth.user, 'workspace.html')
-def workspace():
+def workspace(student_id, problem_id):
        # if 'student' not in groups.get(auth.get_user()['id']):
        #        redirect(URL('not_authorized'))
-       if ('student_id' in request.query) and ('problem_id' in request.query):
-              student_id = int(request.query.get('student_id'))
-              problem_id = int(request.query.get('problem_id'))
-              problem = db.problem[problem_id]
-              workspace = db((db.student_workspace.problem_id==problem_id) & (db.student_workspace.student_id==student_id)).select()
-              if workspace is None or len(workspace)==0:
-                     db.student_workspace.insert(problem_id=problem_id, student_id=student_id, content=problem.problem_description, attempt_left=problem.attempts)
-                     db.commit()
-                     workspace = db((db.student_workspace.problem_id==problem_id) & (db.student_workspace.student_id==student_id)).select().first()
-              else:
-                     workspace = workspace.first()
-              
-              
-              url = '%s://%s%s' % (request.environ['wsgi.url_scheme'], request.environ['HTTP_HOST'],
-                     request.environ['PATH_INFO'])
-              return dict(valid=True, problem=problem, workspace=workspace, current_url=url, time_interval=1000)
+      
+       # student_id = int(request.query.get('student_id'))
+       # problem_id = int(request.query.get('problem_id'))
+       problem = db.problem[problem_id]
+       workspace = db((db.student_workspace.problem_id==problem_id) & (db.student_workspace.student_id==student_id)).select()
+       if workspace is None or len(workspace)==0:
+              db.student_workspace.insert(problem_id=problem_id, student_id=student_id, content=problem.problem_description, attempt_left=problem.attempts)
+              db.commit()
+              workspace = db((db.student_workspace.problem_id==problem_id) & (db.student_workspace.student_id==student_id)).select().first()
        else:
-              exit(0)
+              workspace = workspace.first()
+       
+       submissions = db.executesql("select s.id as id, s.content as submission, s.submitted_at, s.submission_category, v.verdict, v.score, f.content as feedback\
+               from submission s left join submission_verdict v on s.id=v.submission_id left join feedback f on s.id=f.submission_id where \
+                      s.problem_id="+str(problem_id)+" and s.student_id="+str(student_id), as_dict=True)
+       url = '%s://%s%s' % (request.environ['wsgi.url_scheme'], request.environ['HTTP_HOST'],
+              request.environ['PATH_INFO'])
+       # feedbacks = db.executesql("select s.id, s.content, f.content as feedback from feedback f, submission s where f.submission_id==s.id and s.student_id=%d and s.problem_id=%d" % (student_id, problem_id))
+       # feedbacks = db((db.feedback.submission_id==db.submission.id)&(db.submission.student_id==student_id)&(db.submission.problem_id==problem_id)).select(db.submission.id, db.submission.content, db.feedback.content)
+       # print(datetime.datetime.now(), feedbacks)
+       return dict(valid=True, problem=problem, workspace=workspace, current_url=url, time_interval=1000, submissions=submissions)
+       
     
 @action('save_workspace', method='POST')
 #@action.uses(auth.user, 'workspace.html')

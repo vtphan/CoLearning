@@ -1,4 +1,4 @@
-[[extend 'layout_student.html']]
+[[extend 'layout_instructor.html']]
 [[block page_head]]
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
 [[end]]
@@ -7,18 +7,16 @@
         <tr>
             <th>Problem Name</th>
             <th>Deadline</th>
-            <th>Number of attempts left</th>
-            <th></th>
+            
         </tr>
     </tbody>
     <tbody>
     
     [[for p in problems:]]
         <tr>
-            <td>[[=p.problem_name]]</td>
+            <td><a class="button" href="[[=URL('edit_problem/'+str(p.id))]]">[[=p.problem_name]]</a></td>
             <td>[[=p.deadline]]</td>
-            <td>[[=p.attempts]]</td>
-            <td><a class="button is-primary" href="[[=URL('workspace/'+str(globals().get('user',{}).get('id'))+'/'+str(p.id))]]">Go to workspace</a></td>
+            <td><a class="button" href="[[=URL('student_workspace_list/'+str(p.id))]]">View Student Workspace</a></td>
         </tr>
     [[pass]]
      

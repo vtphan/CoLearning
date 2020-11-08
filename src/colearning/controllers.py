@@ -33,6 +33,14 @@ from .activation_controller import *
 from .new_problem_controller import *
 from .workspace_controller import *
 from .active_problems_controller import *
+from .submissions_controller import *
+from .workspace_viewer_controller import *
+from .problem_list_controller import *
+from .edit_problem_controller import *
+from .student_workspace_list_controller import *
+from .alert_create_controller import *
+from .alert_list_controller import *
+from .view_alert_controller import *
 
 @unauthenticated("index", "index.html")
 def index():

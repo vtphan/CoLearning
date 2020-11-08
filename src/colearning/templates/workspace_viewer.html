@@ -1,0 +1,46 @@
+[[extend 'layout_instructor.html']]
+[[block page_head]]
+<link rel="stylesheet" href="codemirror-5.58.1/lib/codemirror.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+[[end]]
+
+
+<div>
+  <div id="problem-tabs">
+    <ul>
+      
+      <li><a href="[[=current_url]]#problem">[[=problem.problem_name]]</a></li>
+      
+    </ul>
+    
+    <div id="problem">
+    <b>Student:</b> [[=first_name+" "+last_name]]<br>
+      <b>Deadline:</b>[[=problem.deadline]]<br>
+      <b>Remaining Attempts:</b>[[=workspace.attempt_left]]<br>
+      <b>Points:</b>[[=problem.max_points]]<br>
+      <hr style="height:30px">
+      <textarea id="editor">[[=workspace.content]]</textarea>
+    </div>
+    
+  </div>
+</div>
+[[block page_scripts]]
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script src="codemirror-5.58.1/lib/codemirror.js"></script>
+
+<script src="codemirror-5.58.1/mode/python/python.js"></script>
+
+<script>
+  $( function() {
+    $( "#problem-tabs" ).tabs();
+  } );
+
+  var editor = document.getElementById("editor");
+  var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "[[='python' if problem.language=="Python" else 'clike']]", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
+
+
+</script>
+[[end]]
