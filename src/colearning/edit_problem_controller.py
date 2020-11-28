@@ -5,10 +5,13 @@ from py4web.utils.form import Form, FormStyleBulma
 import datetime
 from pydal.validators import IS_IN_SET, IS_NOT_EMPTY
 
+from .utils import create_notification
+
 @action('edit_problem/<problem_id>', method=['GET', 'POST'])
-@action.uses(auth.user, 'edit_problem.html')
+@action.uses(auth.user, 'edit_problem.html', flash)
 def edit_problem(problem_id):
-    if not 'teacher' in groups.get(auth.get_user()['id']):
+    teacher_id = auth.get_user()['id']
+    if not 'teacher' in groups.get(teacher_id):
         redirect(URL('not_authorized'))
     problem = db.problem[problem_id]
     topics = db(db.problem_topic.problem_id==problem_id).select()
@@ -20,8 +23,9 @@ def edit_problem(problem_id):
             Field('deadline', "datetime", default=problem.deadline.strftime("%Y-%m-%dT%H:%M")),
             Field('number_of_attempts', type='integer', default=problem.attempts),
             Field('maximum_score', type='integer', default=problem.max_points),
+            Field('problem_description', 'text', default=problem.problem_description),
             Field('language', requires=IS_IN_SET(['Python', 'Java', 'C++']), default=problem.language),
-            Field('content', 'text', default=problem.problem_description),
+            Field('content', 'text', default=problem.code),
             Field('answer', default=problem.answer),
             Field('topics', default=topics),
         ], 
@@ -44,7 +48,7 @@ def edit_problem(problem_id):
                 exact_answer = 0
             
             deadline=datetime.datetime.strptime(problem_form.vars['deadline'].strip(), "%Y-%m-%dT%H:%M")
-            pid = db(db.problem.id==problem_id).update(problem_description=problem_form.vars.content, answer=problem_form.vars.answer.strip(),\
+            db(db.problem.id==problem_id).update(code=problem_form.vars.content, problem_description=problem_form.vars.problem_description, answer=problem_form.vars.answer.strip(),\
                  problem_name=problem_form.vars.problem_name.strip(), max_points=problem_form.vars.maximum_score, attempts=problem_form.vars.number_of_attempts,\
                  language=problem_form.vars.language,last_updated_at=datetime.datetime.now(), exact_answer=exact_answer, deadline=deadline)
             new_topics = problem_form.vars.topics.strip()
@@ -53,12 +57,17 @@ def edit_problem(problem_id):
                 topics = new_topics
                 if topics != "":
                     for topic in topics.split(','):
-                        topic_id = db.topic.update_or_insert(topic_description=topic)
-                        if topic_id is None:
-                            topic_id = db(db.topic.topic_description==topic).select().first().id
-                        db.problem_topic.insert(problem_id=pid, topic_id=topic_id)
+                        tmp = db(db.topic.topic_description==topic).select()
+                        if len(tmp)==0:
+                            topic_id = db.topic.insert(topic_description=topic)
+                        else:
+                            topic_id = tmp.first()['id']
+                        db.problem_topic.insert(problem_id=problem_id, topic_id=topic_id)
             db.commit()
             flash.set('Problem '+problem_form.vars.problem_name.strip()+' has been updated successfully.')
+            users = [row['id'] for row in db(db.auth_user).select('id') if row['id']!=teacher_id]
+            create_notification('Problem '+problem_form.vars.problem_name+' has been updated. Please reload!', users, deadline)
+            redirect(URL('edit_problem/'+problem_id))
             # return "<script>alert('Problem updated successfully.'); window.location.replace(window.location.href);</script>"
 
     return dict(form=problem_form)

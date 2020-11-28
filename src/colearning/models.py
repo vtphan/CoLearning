@@ -5,6 +5,7 @@ This file defines the database models
 from .common import db, Field, groups, auth
 from pydal.validators import *
 import datetime
+from pydal.validators import IS_IN_SET
 ### Define your table below
 #
 # db.define_table('thing', Field('name'))
@@ -27,7 +28,7 @@ def create_admin_account(email, username, first_name, last_name, password):
 def create_tables():
      db.define_table('topic', Field('topic_description', unique=True))
      db.define_table('problem', Field('teacher_id', type='reference auth_user'), Field('problem_name'), Field('problem_description', type='text'),\
-           Field('answer', type='text'), Field('max_points', type='integer'), Field('language'), Field('attempts', type='integer'), \
+           Field('code', type='text'), Field('answer', type='text'), Field('max_points', type='integer'), Field('language'), Field('attempts', type='integer'), \
                 Field('problem_uploaded_at', type='datetime'), Field('exact_answer', type='integer'), Field('deadline', type='datetime'),\
                       Field('last_updated_at', type='datetime', default=datetime.datetime.now()), redefine=True) 
      db.define_table('problem_topic', Field('problem_id', type='reference problem'), Field('topic_id', type='reference topic'))
@@ -44,6 +45,11 @@ def create_tables():
            type='reference problem'), Field('created_at', type='datetime'), redefine=True)
      db.define_table('alert_read', Field('alert_id', type='reference alert_message'), Field('student_id', type='reference auth_user'),\
            Field('read_at', type='datetime'))
+
+     db.define_table('notification', Field('message', type='text'), Field('recipients', type='list:reference auth_user'), Field('generated_at', type='datetime'),\
+          Field('expire_at', type='datetime'), redefine=True)
+     db.define_table('global_value', Field('variable'), Field('value'), redefine=True)
+     db.define_table('notification_queue', Field('notification_id', type='reference notification'), Field('user_id', type='reference auth_user'))
      db.commit()
 
 create_tables()

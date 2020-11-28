@@ -4,6 +4,8 @@ from . import settings
 from py4web.utils.form import Form, FormStyleBulma
 import datetime
 
+from .utils import create_notification
+
 @action('submissions', method='GET')
 @action.uses(auth.user, 'submissions.html')
 def submissions():
@@ -44,9 +46,13 @@ def submission_grader():
     now = datetime.datetime.now()
     if correct == 1:
         db.submission_verdict.insert(submission_id=submission_id, verdict="correct", score=problem.max_points, evaluated_at=now)
+        create_notification("Your answer is correct for problem: "+problem.problem_name, recipients=[submission.student_id], \
+            expire_at=datetime.datetime.now()+datetime.timedelta(months=3))
     elif correct == 0:
         credit = float(request.POST['credit'])
         db.submission_verdict.insert(submission_id=submission_id, verdict="incorrect", score=credit, evaluated_at=now)
+        create_notification("Your answer is incorrect for problem: "+problem.problem_name, recipients=[submission.student_id], \
+            expire_at=datetime.datetime.now()+datetime.timedelta(months=3))
 
     if feedback is not None and feedback != "":
         db.feedback.insert(submission_id=submission_id, content=feedback, given_at=now)

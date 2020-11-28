@@ -15,8 +15,9 @@
       <nav class="black">
         <!-- Logo -->
         <a href="[[=URL('index')]]">
-          <b>py4web <script>document.write(window.location.href.split('/')[3]);</script></b>
+          <b><script>document.write(window.location.href.split('/')[3]);</script>:</b>
         </a>
+        <b>[[block page_title]] [[end]]</b>
         <!-- Do not touch this -->
         <label for="hamburger">☰</label>
         <input type="checkbox" id="hamburger">
@@ -33,7 +34,7 @@
             <a class="navbar-link" href="[[=URL('submissions')]]">Submissions</a>
           </li>
           <li>
-            <a class="navbar-link" href="[[=URL('create_alert')]]">New Alert Message</a>
+            <a class="navbar-link" href="[[=URL('global_values')]]">Global Values</a>
           </li>
           <li>
             <a class="navbar-link" href="[[=URL('activate_user')]]">Activate User</a>
@@ -85,5 +86,22 @@
   <script src="js/vue.min.js"></script>
   <script src="js/axios.min.js"></script>
   <script src="js/sugar.min.js"></script>
+  [[if globals().get('user'):]]
+  <script>
+    function show_notifications(){
+      axios.get("[[=URL('get_notification/'+str(globals().get('user',{}).get('id')))]]")
+      .then(function(response){
+          // console.log(response)
+          for (notif of response.data)
+              Q.flash({'message': notif.notification.message, 'class': 'info'});
+      })
+      .catch(function (error) {
+          // handle error
+          console.log(error);
+      });
+    }
+    setInterval(show_notifications, 30000)
+  </script>
+  [[pass]]
   [[block page_scripts]]<!-- individual pages can add scripts here -->[[end]]
 </html>

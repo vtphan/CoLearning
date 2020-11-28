@@ -41,6 +41,10 @@ from .student_workspace_list_controller import *
 from .alert_create_controller import *
 from .alert_list_controller import *
 from .view_alert_controller import *
+from .notification_controller import *
+from .global_value_controller import *
+
+from .test_controller import *
 
 @unauthenticated("index", "index.html")
 def index():

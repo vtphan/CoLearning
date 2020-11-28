@@ -18,9 +18,11 @@ def view_workspace(problem_id, student_id):
     student = db.auth_user[student_id]
     workspace = db((db.student_workspace.problem_id==problem_id) & (db.student_workspace.student_id==student_id)).select()
     workspace = workspace.first()
-    
+    submissions = db.executesql("select s.id as id, s.content as submission, s.submitted_at, s.submission_category, v.verdict, v.score, f.content as feedback\
+               from submission s left join submission_verdict v on s.id=v.submission_id left join feedback f on s.id=f.submission_id where \
+                      s.problem_id="+problem_id+" and s.student_id="+student_id, as_dict=True)
     
     url = '%s://%s%s' % (request.environ['wsgi.url_scheme'], request.environ['HTTP_HOST'],
             request.environ['PATH_INFO'])
    
-    return dict(problem=problem, workspace=workspace, current_url=url, first_name=student.first_name, last_name=student.last_name)
+    return dict(problem=problem, workspace=workspace, current_url=url, first_name=student.first_name, last_name=student.last_name, submissions=submissions)

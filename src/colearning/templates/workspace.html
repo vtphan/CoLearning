@@ -5,8 +5,10 @@
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 [[end]]
 
+[[block page_title]]Workspace[[end]]
 
 <div>
+  <h6>[[=student_name]]'s Workspace for Problem: [[=problem.problem_name]]</h6>
   <p id="countdown" style="text-align: right;font-size: 25px; margin-top: 0px;"></p>
   <div id="problem-tabs">
     <ul>
@@ -23,6 +25,7 @@
       <b>Deadline:</b>[[=problem.deadline]]<br>
       <b>Remaining Attempts:</b>[[=workspace.attempt_left]]<br>
       <b>Points:</b>[[=problem.max_points]]<br>
+      <b>Statement:</b>[[=problem.problem_description]]<br>
       <hr style="height:30px">
       <textarea id="editor">[[=workspace.content]]</textarea>
       [[if workspace.attempt_left>0:]]
