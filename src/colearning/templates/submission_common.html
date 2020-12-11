@@ -1,0 +1,61 @@
+<div>
+    <div id="problem-tabs">
+      
+      
+      <div id="problem">
+        <b>Problem:</b> [[=problem_name]]<br>
+        <b>Student Name:</b> [[=first_name+' '+last_name]]<br>
+        <b>Submitted At:</b> [[=submitted_at.strftime("%b %-d, %Y %I:%M %p")]]<br>
+        <hr style="height:30px">
+        <table>
+            <tr>
+                <td>Submitted Content</td>
+                <td>Your Feedback</td>
+            </tr>
+            <tr>
+                <td><textarea id="editor1">[[=content]]</textarea></td>
+                <td><textarea id="editor2">[[if role==1:]]# Write the feedback here[[pass]]</textarea></td>
+            </tr>
+        </table>
+        [[if role==1:]]
+          <div id="instructor-buttons" v-show="show">
+              [[if submission_category==1:]]
+              <button class="button is-success" v-on:click="mark_correct" >
+                  <span class="icon is-small">
+                  <i class="fas fa-check"></i>
+                  </span>
+                  <span>Correct</span>
+              </button>
+              <button class="button is-danger" v-on:click="mark_incorrect" >
+                  <span>Incorrect</span>
+                  <span class="icon is-small">
+                  <i class="fas fa-times"></i>
+                  </span>
+              </button>
+              [[else:]]
+              <button class="button is-primary" v-on:click="submit_feedback">
+                  <span class="icon is-small">
+                  <i class="fas fa-comment"></i>
+                  </span>
+                  <span>Submit Feedback</span>
+              </button>
+              [[pass]]
+          </div>
+        [[elif role==2:]]
+              <label role="button" for="x06">Ask for help / clarification</label>
+              <div role="dialog">
+                  <input type="checkbox" id="x06"/>
+                  <div>
+                     <label class="close" for="x06"></label>
+                     <center class="white padded">
+                       [[=help_form]]
+                     </center>
+                  </div>
+                </div>
+        [[pass]]
+      </div>
+      
+    </div>
+  </div>
+  
+  

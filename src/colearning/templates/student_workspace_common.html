@@ -1,0 +1,49 @@
+
+
+[[block page_title]]Workspace[[end]]
+<div>
+    [[=H2(student_name, "' Workspace for Problem: ", problem.problem_name)]]
+    
+    <p id="countdown" style="text-align: right;font-size: 25px; margin-top: 0px;"></p>
+    <div class="tabs is-toggle is-fullwidth">
+        <ul>
+          <li class="is-active"><a>[[=problem.problem_name]]</a></li>
+          [[i = len(submissions)]]
+          [[if role==1:]]
+            [[for s in submissions:]]
+              <li><a href="[[=URL('view_submission/'+str(s['id']))]]" target="_blank">Submission [[=i]]</a></li>
+              [[i-=1]]
+            [[pass]]
+          [[else:]]
+            [[for s in submissions:]]
+              <li><a href="[[=URL('submission/'+str(s['id']))]]" target="_blank">Submission [[=i]]</a></li>
+              [[i-=1]]
+            [[pass]]
+          [[pass]]
+        </ul>
+    </div>
+    <div>
+        <b>Deadline:</b> [[=problem.deadline.strftime("%b %-d, %Y %I:%M %p")]]<br>
+        <b>Remaining Attempts:</b> [[=workspace.attempt_left]]<br>
+        <b>Points:</b> [[=problem.max_points]]<br>
+        <b>Statement:</b> [[=problem.problem_description]]<br>
+        <hr style="height:30px">
+        <textarea id="editor"> [[=workspace.content]]</textarea>
+        [[if workspace.attempt_left>0 and role==2:]]
+        <div id="submit-buttons">
+          <button class="ui-button ui-widget ui-corner-all" id="submit-button" v-on:click="submit_code">Submit Answer</button>
+          <!-- <button class="ui-button ui-widget ui-corner-all" id="help-button">Ask for help</button> -->
+          <label role="button" for="x06">Ask for help / clarification</label>
+              <div role="dialog">
+                  <input type="checkbox" id="x06"/>
+                  <div>
+                     <label class="close" for="x06"></label>
+                     <center class="white padded">
+                       [[=help_form]]
+                     </center>
+                  </div>
+                </div>
+        </div>
+        [[pass]]
+    </div>
+</div>

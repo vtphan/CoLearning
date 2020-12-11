@@ -39,9 +39,10 @@ def workspace(student_id, problem_id):
 def save_workspace():
        if not 'student' in groups.get(auth.get_user()['id']):
               redirect(URL('not_authorized'))
-       student_id = request.POST['student_id']
-       problem_id = request.POST['problem_id']
-       content = request.POST['content']
+       
+       student_id = request.json['student_id']
+       problem_id = request.json['problem_id']
+       content = request.json['content']
        db((db.student_workspace.problem_id==problem_id)&(db.student_workspace.student_id==student_id)).update(content=content, updated_at=datetime.datetime.now())
        db.commit()
 
@@ -50,11 +51,11 @@ def save_workspace():
 def submission_handler():
        if not 'student' in groups.get(auth.get_user()['id']):
               redirect(URL('not_authorized'))
-       student_id = int(request.POST['student_id'])
-       problem_id = int(request.POST['problem_id'])
-       content = request.POST['content'].strip()
-       attempt_left = int(request.POST['attempt_left'])
-       submission_category = int(request.POST['category'])
+       student_id = request.json['student_id']
+       problem_id = request.json['problem_id']
+       content = request.json['content'].strip()
+       attempt_left = request.json['attempt_left']
+       submission_category = request.json['category']
        submission_id = db.submission.insert(problem_id=problem_id, student_id=student_id, content=content, submission_category=submission_category,\
                submitted_at=datetime.datetime.now())
       

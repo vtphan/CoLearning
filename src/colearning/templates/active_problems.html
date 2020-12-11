@@ -19,7 +19,7 @@
             <td>[[=p.problem_name]]</td>
             <td>[[=p.deadline]]</td>
             <td>[[=p.attempts]]</td>
-            <td><a class="button is-primary" href="[[=URL('workspace/'+str(globals().get('user',{}).get('id'))+'/'+str(p.id))]]">Go to workspace</a></td>
+            <td><a class="button is-primary" href="[[=URL('student_workspace/'+str(globals().get('user',{}).get('id'))+'/'+str(p.id))]]">Go to workspace</a></td>
         </tr>
     [[pass]]
      

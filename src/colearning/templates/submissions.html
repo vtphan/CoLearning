@@ -19,7 +19,7 @@
     [[for i, s in enumerate(sub, 1):]]
         <tr>
             <td>[[=i]]</td>
-            <td><a class="button" href="[[=URL('view_submission', vars={'submission_id': s['id']})]]" target='_blank'>[[=s['problem_name'] ]]</a></td>
+            <td><a class="button" href="[[=URL('view_submission/'+str(s['id']))]]" target='_blank'>[[=s['problem_name'] ]]</a></td>
             <td>[[=s['first_name']+' '+s['last_name'] ]]</td>
             <td>[[if s['submission_category']==1:]]Submission[[else:]]Help Seeking[[pass]]</td>
             <td>[[=s['submitted_at'] ]]</td>

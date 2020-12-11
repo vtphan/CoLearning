@@ -14,7 +14,7 @@
     
     [[for s in students:]]
         <tr>
-            <td><a class="button" href="[[=URL('view_workspace/'+problem_id+'/'+str(s['student_id']))]]">[[=s['first_name'] ]] [[=s['last_name'] ]]</a></td>
+            <td><a class="button" href="[[=URL('student_workspace_view/'+str(s['student_id'])+'/'+problem_id)]]">[[=s['first_name'] ]] [[=s['last_name'] ]]</a></td>
         </tr>
     [[pass]]
      
