@@ -1,0 +1,50 @@
+[[extend "layout_instructor.html"]]
+[[block page_head]]
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+<link rel="stylesheet" href="codemirror-5.58.1/lib/codemirror.css">
+[[end]]
+<b>Student:</b> [[=student_name]]<br>
+<b>Problem:</b> [[=problem['problem_name'] ]]
+<article class="message">
+    <div class="message-header">Message</div>
+    <div class="message-body">[[=message['message'] ]]</div>
+</article>
+[[if message['reply'] is not None:]]
+<article class="message">
+    <div class="message-header">Reply</div>
+    <div class="message-body">[[=message['reply'] ]]</div>
+</article>
+[[else:]]
+<label role="button" for="x06">Reply</label>
+<!-- <button role="button" class="button is-primary" for="x06">Ask for help / clarification</button> -->
+<div role="dialog">
+    <input type="checkbox" id="x06"/>
+    <div>
+        <label class="close" for="x06"></label>
+        <center class="white padded">
+        [[=reply_form]]
+        </center>
+    </div>
+</div>
+[[pass]]
+<br>
+[[if submission is not None:]]
+<article class="message">
+    <div class="message-header">Submitted Code</div>
+    <div class="message-body"><textarea id="editor1">[[=submission['content'] ]]</textarea></div>
+</article>
+[[pass]]
+<a href="[[=URL('student_workspace_view/'+str(message['student_id'])+'/'+str(message['problem_id']))]]" target="_blank" class="button is-primary"> View Workspace</a>
+
+[[block page_scripts]]
+[[if submission is not None:]]
+<script src="codemirror-5.58.1/lib/codemirror.js"></script>
+<script src="codemirror-5.58.1/mode/python/python.js"></script>
+[[pass]]
+<script>
+   [[if submission is not None:]] 
+        var editor1 = document.getElementById("editor1");
+        var myCodeMirror1 = CodeMirror.fromTextArea(editor1, {lineNumbers: true, mode: "python", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
+    [[pass]]
+</script>
+[[end]]

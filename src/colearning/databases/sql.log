@@ -1,0 +1,434 @@
+timestamp: 2020-10-14T02:50:48.316539
+CREATE TABLE "auth_user"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "username" CHAR(512) UNIQUE,
+    "email" CHAR(512) UNIQUE,
+    "password" CHAR(512),
+    "first_name" CHAR(512),
+    "last_name" CHAR(512),
+    "sso_id" CHAR(512),
+    "action_token" CHAR(512),
+    "last_password_change" TIMESTAMP,
+    "past_passwords_hash" TEXT
+);
+success!
+timestamp: 2020-10-14T02:50:48.318816
+CREATE TABLE "auth_user_tag_groups"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "path" CHAR(512),
+    "record_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  
+);
+success!
+timestamp: 2020-10-15T05:34:31.190861
+CREATE TABLE "topic"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "topic_description" CHAR(512) UNIQUE
+);
+success!
+timestamp: 2020-10-15T05:34:31.204279
+CREATE TABLE "problem"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "teacher_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "problem_name" CHAR(512),
+    "problem_description" TEXT,
+    "answer" TEXT,
+    "max_points" INTEGER,
+    "attempts" INTEGER,
+    "problem_uploaded_at" TIMESTAMP,
+    "exact_answer" INTEGER,
+    "deadline" TIMESTAMP
+);
+success!
+timestamp: 2020-10-15T05:34:31.205727
+CREATE TABLE "problem_topic"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "problem_id" INTEGER REFERENCES "problem" ("id") ON DELETE CASCADE  ,
+    "topic_id" INTEGER REFERENCES "topic" ("id") ON DELETE CASCADE  
+);
+success!
+timestamp: 2020-10-24T01:04:35.087487
+CREATE TABLE "student_workspace"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "problem_id" INTEGER REFERENCES "problem" ("id") ON DELETE CASCADE  ,
+    "student_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "content" TEXT,
+    "attempt_left" INTEGER
+);
+success!
+timestamp: 2020-10-24T03:46:53.040456
+ALTER TABLE "student_workspace" ADD "updated_at" TIMESTAMP;
+success!
+timestamp: 2020-10-25T02:06:34.734873
+CREATE TABLE "submission"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "problem_id" INTEGER REFERENCES "problem" ("id") ON DELETE CASCADE  ,
+    "student_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "content" TEXT,
+    "submitted_at" TIMESTAMP
+);
+success!
+timestamp: 2020-10-25T04:40:14.536468
+ALTER TABLE "submission" ADD "submission_category" INTEGER;
+success!
+timestamp: 2020-10-25T04:40:14.538239
+CREATE TABLE "submission_verdict"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "submission_id" INTEGER REFERENCES "submission" ("id") ON DELETE CASCADE  ,
+    "verdict" CHAR(512),
+    "score" DOUBLE,
+    "evaluated_at" TIMESTAMP
+);
+success!
+timestamp: 2020-10-25T04:40:14.539562
+CREATE TABLE "feedback"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "submission_id" INTEGER REFERENCES "submission" ("id") ON DELETE CASCADE  ,
+    "content" TEXT,
+    "given_at" TIMESTAMP
+);
+success!
+timestamp: 2020-10-30T04:14:22.680417
+ALTER TABLE "problem" ADD "language" CHAR(512);
+success!
+timestamp: 2020-11-01T04:33:20.779067
+ALTER TABLE "problem" ADD "last_updated_at" TIMESTAMP;
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2020-11-02T01:08:36.549059
+CREATE TABLE "alert_message"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "creator_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "message" TEXT,
+    "created_at" TIMESTAMP
+);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2020-11-02T03:35:49.501074
+ALTER TABLE "alert_message" ADD "problem_id" INTEGER REFERENCES "problem" ("id") ON DELETE CASCADE  ;
+success!
+success!
+timestamp: 2020-11-02T03:36:00.596966
+CREATE TABLE "alert_read"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "alert_id" INTEGER REFERENCES "alert_message" ("id") ON DELETE CASCADE  ,
+    "student_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "read_at" TIMESTAMP
+);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2020-11-08T04:51:13.950304
+CREATE TABLE "notification"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "message" TEXT,
+    "recipients" TEXT,
+    "generated_at" TIMESTAMP
+);
+success!
+success!
+timestamp: 2020-11-08T04:51:34.236801
+CREATE TABLE "global_value"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "variable" CHAR(512),
+    "value" CHAR(512)
+);
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2020-11-14T02:41:41.506753
+CREATE TABLE "notification_queue"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "notification_id" INTEGER REFERENCES "notification" ("id") ON DELETE CASCADE  ,
+    "user_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  
+);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2020-11-22T22:04:50.685333
+ALTER TABLE "problem" ADD "code" TEXT;
+success!
+timestamp: 2020-11-22T22:04:50.715738
+ALTER TABLE "notification" ADD "expire_at" TIMESTAMP;
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2020-11-30T01:35:47.752371
+CREATE TABLE "help_seeking_message"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "student_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "problem_id" INTEGER REFERENCES "problem" ("id") ON DELETE CASCADE  ,
+    "submission_id" INTEGER REFERENCES "submission" ("id") ON DELETE CASCADE  ,
+    "message" TEXT,
+    "submitted_at" TIMESTAMP
+);
+success!
+timestamp: 2020-11-30T01:35:47.754309
+CREATE TABLE "help_seeking_message_queue"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "message_id" INTEGER REFERENCES "help_seeking_message" ("id") ON DELETE CASCADE  
+);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2020-12-12T20:05:26.740924
+ALTER TABLE "help_seeking_message" ADD "reply" TEXT;
+timestamp: 2020-12-12T20:05:26.742648
+ALTER TABLE "help_seeking_message" ADD "replied_at" TIMESTAMP;
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!

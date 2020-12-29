@@ -52,7 +52,8 @@ def create_tables():
      db.define_table('notification_queue', Field('notification_id', type='reference notification'), Field('user_id', type='reference auth_user'))
 
      db.define_table('help_seeking_message', Field('student_id', type='reference auth_user'), Field('problem_id', type='reference problem'), \
-          Field('submission_id', type='reference submission'), Field('message', type='text'), Field('submitted_at', type='datetime'))
+          Field('submission_id', type='reference submission'), Field('message', type='text'), Field('submitted_at', type='datetime'), Field('reply', type='text'),\
+                Field('replied_at', type='datetime'), redefine=True)
      db.define_table('help_seeking_message_queue', Field('message_id', type='reference help_seeking_message'))
 
      db.commit()

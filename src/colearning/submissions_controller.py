@@ -18,7 +18,7 @@ def submissions():
 
 @action('submission/<submission_id>', method=['GET', 'POST'])
 @action.uses(auth.user, 'submission.html')
-def view_submission(submission_id):
+def submission(submission_id):
     user_id = auth.get_user()['id']
     submission = db.executesql('SELECT s.id, s.content, s.problem_id, p.problem_name, s.student_id, st.first_name, st.last_name, s.submission_category, s.submitted_at\
          from submission s, problem p, auth_user st where s.problem_id=p.id and s.student_id=st.id and s.id='+submission_id, as_dict=True)
@@ -29,7 +29,8 @@ def view_submission(submission_id):
     help_form = Form([Field('question', type='text')])
     sub['help_form'] = help_form
     
-    
+    message = db((db.help_seeking_message.student_id==sub['student_id'])&(db.help_seeking_message.problem_id==sub['problem_id'])&(db.help_seeking_message.submission_id==sub['id'])).select().first()
+    sub['message'] = message
     if help_form.accepted:
         message_id = db.help_seeking_message.insert(student_id=user_id, submission_id=sub['id'], problem_id=sub['problem_id'], message=help_form.vars.question,\
             submitted_at=datetime.datetime.now())
@@ -50,6 +51,10 @@ def view_submission(submission_id):
         redirect(URL('not_authorized'))
     
     sub = submission[0]
+   
+    message = db((db.help_seeking_message.student_id==sub['student_id'])&(db.help_seeking_message.problem_id==sub['problem_id'])&(db.help_seeking_message.submission_id==sub['id'])).select().first()
+    print(message)
+    sub['message'] = message
     return sub
 
 @action('submission_grader', method='GET')

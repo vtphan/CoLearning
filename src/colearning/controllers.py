@@ -44,6 +44,9 @@ from .view_alert_controller import *
 from .notification_controller import *
 from .global_value_controller import *
 from .student_workspace_controller import *
+from .help_message_view_controller import *
+
+from .problem_loader_controller import *
 
 from .test_controller import *
 
@@ -60,3 +63,8 @@ def index():
     flash.set("Hello world")
     message = T("Hello {first_name}".format(**user) if user else "Hello")
     return dict(message=message)
+
+
+@unauthenticated("not_authorized", "not_authorized.html")
+def not_authorized():
+    return dict()

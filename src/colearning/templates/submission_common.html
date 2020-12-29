@@ -56,6 +56,19 @@
       </div>
       
     </div>
+    [[if message:]]
+    <br>
+      <article class="message">
+          <div class="message-header">Message</div>
+          <div class="message-body">[[=message['message'] ]]</div>
+      </article>
+      [[if message['reply'] is not None:]]
+      <article class="message">
+          <div class="message-header">Reply</div>
+          <div class="message-body">[[=message['reply'] ]]</div>
+      </article>
+      [[pass]]
+    [[pass]]
   </div>
   
   

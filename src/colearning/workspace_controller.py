@@ -31,7 +31,7 @@ def workspace(student_id, problem_id):
        # feedbacks = db.executesql("select s.id, s.content, f.content as feedback from feedback f, submission s where f.submission_id==s.id and s.student_id=%d and s.problem_id=%d" % (student_id, problem_id))
        # feedbacks = db((db.feedback.submission_id==db.submission.id)&(db.submission.student_id==student_id)&(db.submission.problem_id==problem_id)).select(db.submission.id, db.submission.content, db.feedback.content)
        # print(datetime.datetime.now(), feedbacks)
-       return dict(valid=True, problem=problem, workspace=workspace, current_url=url, time_interval=1000, submissions=submissions, student_name=auth.get_user()['first_name'])
+       return dict(vproblem=problem, workspace=workspace, current_url=url, time_interval=30000, submissions=submissions, student_name=auth.get_user()['first_name'])
        
     
 @action('save_workspace', method='POST')
@@ -39,10 +39,9 @@ def workspace(student_id, problem_id):
 def save_workspace():
        if not 'student' in groups.get(auth.get_user()['id']):
               redirect(URL('not_authorized'))
-       
-       student_id = request.json['student_id']
-       problem_id = request.json['problem_id']
-       content = request.json['content']
+       student_id = request.POST['student_id']
+       problem_id = request.POST['problem_id']
+       content = request.POST['content']
        db((db.student_workspace.problem_id==problem_id)&(db.student_workspace.student_id==student_id)).update(content=content, updated_at=datetime.datetime.now())
        db.commit()
 

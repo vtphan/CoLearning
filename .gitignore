@@ -7,5 +7,7 @@ src/_dashboard
 src/_scaffold
 src/_minimal
 src/colearning/__pycache__
-src/colearning/databases
 .vscode/settings.json
+src/colearning/static/codemirror-5.58.1/addon/.DS_Store
+src/colearning/static/.DS_Store
+src/colearning/.DS_Store

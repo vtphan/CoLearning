@@ -2,7 +2,7 @@
 
 [[block page_title]]Workspace[[end]]
 <div>
-    [[=H2(student_name, "' Workspace for Problem: ", problem.problem_name)]]
+    [[=H4(student_name, "' Workspace for Problem: ", problem.problem_name, _class='title is-4')]]
     
     <p id="countdown" style="text-align: right;font-size: 25px; margin-top: 0px;"></p>
     <div class="tabs is-toggle is-fullwidth">
@@ -44,6 +44,25 @@
                   </div>
                 </div>
         </div>
+        [[pass]]
+       
+        [[for i, m in enumerate(messages):]]
+          <div class="accordion">
+            <input type="checkbox" id="x0[[=i]]">
+            <label for="x0[[=i]]">Query [[=i+1]]</label>
+            <div>
+              <article class="message">
+                <div class="message-header">Question</div>
+                <div class="message-body">[[=m['message'] ]]</div>
+              </article>
+              [[if m['reply'] is not None:]]
+              <article class="message">
+                <div class="message-header">Reply</div>
+                <div class="message-body">[[=m['reply'] ]]</div>
+              </article>
+              [[pass]]
+            </div>
+          </div>
         [[pass]]
     </div>
 </div>

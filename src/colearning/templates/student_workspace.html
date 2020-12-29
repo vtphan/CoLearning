@@ -18,22 +18,22 @@
   
 
     var editor = document.getElementById("editor");
-    var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "[[="python" if problem.language=="Python" else "clike"]]", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75});
+    var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "[[="python" if problem.language=="Python" else "clike"]]", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
     
-    function sendContent(){
-      try{
-        axios.post("[[=URL('save_workspace')]]", {
-          student_id: [[=workspace['student_id'] ]],
-          problem_id: [[=workspace['problem_id'] ]],
-          content: myCodeMirror.getValue()
-        });
-      }
-      catch(err){
-        console.log(err);
-      }
-      setTimeout(sendContent, [[=time_interval]]);
-    }
-    sendContent();
+    // function sendContent(){
+    //   try{
+    //     axios.post("[[=URL('save_workspace')]]", {
+    //       student_id: [[=workspace['student_id'] ]],
+    //       problem_id: [[=workspace['problem_id'] ]],
+    //       content: myCodeMirror.getValue()
+    //     });
+    //   }
+    //   catch(err){
+    //     console.log(err);
+    //   }
+    //   setTimeout(sendContent, [[=time_interval]]);
+    // }
+    // sendContent();
     [[if workspace.attempt_left>0:]]
     var submissionButtons = new Vue({
       el: "#submit-buttons",
