@@ -1,6 +1,6 @@
 from py4web import action, request, Field,redirect, URL
 from pydal.validators import IS_IN_SET
-from .common import db, groups, auth
+from .common import db, groups, auth, flash
 from . import settings
 from py4web.utils.form import Form, FormStyleBulma
 
@@ -25,13 +25,15 @@ def activate_user():
             groups.add(user_id, 'student')
         elif role == 'Instructor':
             db(db.auth_user.id==user_id).update(action_token='')
-            # db.teacher.insert(user_id=user_id)
             groups.add(user_id, 'teacher')
         elif role == 'TA':
             db(db.auth_user.id==user_id).update(action_token='')
-            # db.teacher.insert(user_id=user_id)
             groups.add(user_id, 'ta')
         db.commit()
-        redirect(URL('activate_user'))
+        if role == "Delete":
+            flash.set("User removed successfully!")
+        else:
+            flash.set("User activated successfully!")
+        redirect(URL('problem_list'))
     return dict(form=form)
 
