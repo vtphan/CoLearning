@@ -29,7 +29,7 @@ from py4web import action, request, abort, redirect, URL
 from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 
-# from .activation_controller import *
+from .activation_controller import *
 from .new_problem_controller import *
 from .workspace_controller import *
 from .active_problems_controller import *
