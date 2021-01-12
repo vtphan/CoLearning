@@ -40,7 +40,8 @@ def create_tables():
      
      db.define_table('submission_verdict', Field('submission_id', type='reference submission'), Field('verdict'), Field('score', type='double'),\
            Field('evaluated_at', type='datetime'))
-     db.define_table('feedback', Field('submission_id', type='reference submission'), Field('content', type='text'), Field('given_at', type='datetime'))
+     db.define_table('feedback', Field('problem_id', type='reference problem'), Field('submission_id', type='reference submission'), Field('feedback', type='text'),\
+           Field('code_snapshot', type='text'), Field('given_for', type='reference auth_user'), Field('given_by', type='reference auth_user'), Field('given_at', type='datetime'), redefine=True)
      db.define_table('alert_message', Field('creator_id', type='reference auth_user'), Field('message', type='text'), Field('problem_id',\
            type='reference problem'), Field('created_at', type='datetime'), redefine=True)
      db.define_table('alert_read', Field('alert_id', type='reference alert_message'), Field('student_id', type='reference auth_user'),\

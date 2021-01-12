@@ -6,20 +6,17 @@
         <b>Problem:</b> [[=problem_name]]<br>
         <b>Student Name:</b> [[=first_name+' '+last_name]]<br>
         <b>Submitted At:</b> [[=submitted_at.strftime("%b %-d, %Y %I:%M %p")]]<br>
+        [[if len(verdict)>0:]]
+          <b>Verdict:</b> [[=verdict[0]['verdict'] ]]<br>
+          <b>Point: </b> [[=verdict[0]['score'] ]]
+        [[else:]]
+          <b>Verdict: </b>Not Graded
+        [[pass]]
         <hr style="height:30px">
-        <table>
-            <tr>
-                <td>Submitted Content</td>
-                <td>Your Feedback</td>
-            </tr>
-            <tr>
-                <td><textarea id="editor1">[[=content]]</textarea></td>
-                <td><textarea id="editor2">[[if role==1:]]# Write the feedback here[[pass]]</textarea></td>
-            </tr>
-        </table>
+       <textarea id="editor1">[[=content]]</textarea>
         [[if role==1:]]
           <div id="instructor-buttons" v-show="show">
-              [[if submission_category==1:]]
+              
               <button class="button is-success" v-on:click="mark_correct" >
                   <span class="icon is-small">
                   <i class="fas fa-check"></i>
@@ -32,14 +29,14 @@
                   <i class="fas fa-times"></i>
                   </span>
               </button>
-              [[else:]]
+              
               <button class="button is-primary" v-on:click="submit_feedback">
                   <span class="icon is-small">
                   <i class="fas fa-comment"></i>
                   </span>
-                  <span>Submit Feedback</span>
+                  <span>Give Feedback</span>
               </button>
-              [[pass]]
+              
           </div>
         [[elif role==2:]]
               <label role="button" for="x06">Ask for help / clarification</label>
@@ -56,19 +53,32 @@
       </div>
       
     </div>
-    [[if message:]]
-    <br>
-      <article class="message">
-          <div class="message-header">Message</div>
-          <div class="message-body">[[=message['message'] ]]</div>
-      </article>
-      [[if message['reply'] is not None:]]
-      <article class="message">
-          <div class="message-header">Reply</div>
-          <div class="message-body">[[=message['reply'] ]]</div>
-      </article>
-      [[pass]]
-    [[pass]]
+
+    <h5 class="title is-5">Feedbacks</h5>
+       <table>
+         <thead>
+           <tr>
+             <td>#</td>
+             <td>Given At</td>
+             <td></td>
+           </tr>
+         </thead>
+         <tbody>
+           [[for idx, feedback in enumerate(feedbacks):]]
+              <tr>
+                <td>[[=idx+1]]</td>
+                <td>[[=feedback['given_at'].strftime("%b %-d, %Y %I:%M %p")]]</td>
+                [[if role==1:]]
+                  <td><a role="button" target="_blank" href="[[=URL('viewt_feedback/'+str(feedback['id']))]]">View</a></td>
+                [[elif role==2:]]
+                 <td><a role="button" target="_blank" href="[[=URL('view_feedback/'+str(feedback['id']))]]">View</a></td>
+                [[pass]]
+              </tr>
+            [[pass]]
+         </tbody>
+       </table>
+
+    
   </div>
   
   

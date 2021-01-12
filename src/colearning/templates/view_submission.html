@@ -14,8 +14,6 @@
   <script>
       var editor1 = document.getElementById("editor1");
       var myCodeMirror1 = CodeMirror.fromTextArea(editor1, {lineNumbers: true, mode: "python", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
-      var editor2 = document.getElementById("editor2");
-      var myCodeMirror2 = CodeMirror.fromTextArea(editor2, {lineNumbers: true, mode: "python", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75[[if role==2:]], readOnly: "nocursor"[[pass]]});
       
       [[if role==1:]]
       
@@ -23,15 +21,12 @@
               el: '#instructor-buttons',
               data: {show: true},
               methods: {
-                  [[if submission_category==1:]]
+                  
                   mark_correct: async function(event){
-                      var feedback = myCodeMirror2.getValue().trim();
-                      if (feedback.startsWith("# Write the feedback here")==true){
-                          feedback = feedback.replace("# Write the feedback here", "");
-                      }
+                     
                       this.show = await axios.get("[[=URL('submission_grader')]]", {
                           params: {
-                          submission_id: [[=id]], correct: 1, feedback: feedback
+                          submission_id: [[=id]], correct: 1
                       }})
                       .then(function(msg){
                           alert("Graded successfully.");
@@ -50,13 +45,10 @@
                       else{
                           partial_credit = parseFloat(partial_credit);
                       }
-                      var feedback = myCodeMirror2.getValue().trim();
-                      if (feedback.startsWith("# Write the feedback here")==true){
-                          feedback = feedback.replace("# Write the feedback here", "");
-                      }
+                      
                       this.show = await axios.get("[[=URL('submission_grader')]]", {
                           params: {
-                              submission_id: [[=id]], correct: 0, credit: partial_credit, feedback: feedback
+                              submission_id: [[=id]], correct: 0, credit: partial_credit
                       }})
                       .then(function(msg){
                           alert("Graded successfully.");
@@ -67,28 +59,12 @@
                           alert("Could not grade! Please try again.");
                           return true;
                       });
-                  }
-                  [[elif submission_category==2:]]
+                  },
+                  
                   submit_feedback: async function(event){
-                      var feedback = myCodeMirror2.getValue().trim();
-                      if (feedback.startsWith("# Write the feedback here")==true){
-                          feedback = feedback.replace("# Write the feedback here", "");
-                      }
-                      this.show = await axios.get("[[=URL('submission_grader')]]", {
-                          params: {
-                              submission_id: [[=id]], correct: -1, feedback: feedback
-                      }})
-                      .then(function(msg){
-                          alert("Feedback submitted successfully.");
-                          return false;
-  
-                      })
-                      .catch(function(){
-                          alert("Could not submit feedback! Please try again.");
-                          return true;
-                      });
+                      window.open("[[=URL('give_feedback/'+str(id)+'/1')]]", "_blank")
                   }
-                  [[pass]]
+                  
               }
           });
       [[pass]]

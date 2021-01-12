@@ -38,15 +38,13 @@ from .workspace_viewer_controller import *
 from .problem_list_controller import *
 from .edit_problem_controller import *
 from .student_workspace_list_controller import *
-# from .alert_create_controller import *
-# from .alert_list_controller import *
-# from .view_alert_controller import *
 from .notification_controller import *
 from .global_value_controller import *
 from .student_workspace_controller import *
 from .help_message_view_controller import *
 
 from .problem_loader_controller import *
+from .feedback_controller import *
 
 # from .test_controller import *
 

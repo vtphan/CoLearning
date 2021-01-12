@@ -13,7 +13,7 @@ def submissions():
         redirect(URL('not_authorized'))
     active_submissions = db.executesql('SELECT s.id, p.problem_name, st.first_name, st.last_name, s.submission_category, s.submitted_at\
          from submission s, problem p, auth_user st where s.problem_id=p.id and s.student_id=st.id and s.id not in \
-             (select submission_id from submission_verdict) and s.id not in (select submission_id from feedback)', as_dict=True)
+             (select submission_id from submission_verdict)', as_dict=True)
     return dict(sub=active_submissions)
 
 @action('submission/<submission_id>', method=['GET', 'POST'])
@@ -31,6 +31,10 @@ def submission(submission_id):
     
     message = db((db.help_seeking_message.student_id==sub['student_id'])&(db.help_seeking_message.problem_id==sub['problem_id'])&(db.help_seeking_message.submission_id==sub['id'])).select().first()
     sub['message'] = message
+    feedbacks = db.executesql("select id, given_at from feedback where submission_id="+str(sub['id']), as_dict=True)
+    sub['feedbacks'] = feedbacks
+    verdict = db(db.submission_verdict.submission_id==submission_id).select()
+    sub['verdict'] = verdict
     if help_form.accepted:
         message_id = db.help_seeking_message.insert(student_id=user_id, submission_id=sub['id'], problem_id=sub['problem_id'], message=help_form.vars.question,\
             submitted_at=datetime.datetime.now())
@@ -51,10 +55,13 @@ def view_submission(submission_id):
         redirect(URL('not_authorized'))
     
     sub = submission[0]
-   
+    feedbacks = db.executesql("select id, given_at from feedback where submission_id="+str(sub['id']), as_dict=True)
     message = db((db.help_seeking_message.student_id==sub['student_id'])&(db.help_seeking_message.problem_id==sub['problem_id'])&(db.help_seeking_message.submission_id==sub['id'])).select().first()
-    print(message)
+    # print(message)
     sub['message'] = message
+    sub['feedbacks'] = feedbacks
+    verdict = db(db.submission_verdict.submission_id==submission_id).select()
+    sub['verdict'] = verdict
     return sub
 
 @action('submission_grader', method='GET')
@@ -68,7 +75,7 @@ def submission_grader():
     # feedback = request.POST['feedback']
     submission_id = int(request.query.get('submission_id'))
     correct = int(request.query.get('correct'))
-    feedback = request.query.get('feedback')
+    # feedback = request.query.get('feedback')
     # print(submission_id, correct, feedback)
     submission = db.submission[submission_id]
     problem = db.problem[submission.problem_id]
@@ -83,6 +90,6 @@ def submission_grader():
         create_notification("Your answer is incorrect for problem: "+problem.problem_name, recipients=[submission.student_id], \
             expire_at=datetime.datetime.now()+datetime.timedelta(days=90))
 
-    if feedback is not None and feedback != "":
-        db.feedback.insert(submission_id=submission_id, content=feedback, given_at=now)
+    # if feedback is not None and feedback != "":
+    #     db.feedback.insert(submission_id=submission_id, content=feedback, given_at=now)
     db.commit()

@@ -1,0 +1,65 @@
+[[extend 'layout_instructor.html']]
+[[block page_head]]
+<link rel="stylesheet" href="codemirror-5.58.1/lib/codemirror.css">
+<!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+[[end]]
+
+<div>
+  <div id="problem">
+    <table>
+        <tr>
+            <td>Code</td>
+            <td>Feedback</td>
+        </tr>
+        <tr>
+            <td><textarea id="editor1">[[=content]]</textarea></td>
+            <td><textarea id="editor2">Write your feedback here</textarea></td>
+        </tr>
+    </table>
+    
+  </div>
+  <div id="submit-button" v-show="show">
+    <button class="button is-primary" v-on:click="submit_feedback">
+        <span class="icon is-small">
+        <i class="fas fa-comment"></i>
+        </span>
+        <span>Submit Feedback</span>
+    </button>
+  </div>
+</div>
+
+
+[[block page_scripts]]
+  <script src="codemirror-5.58.1/lib/codemirror.js"></script>
+  <script src="codemirror-5.58.1/mode/python/python.js"></script>
+  <script>
+      var editor1 = document.getElementById("editor1");
+      var myCodeMirror1 = CodeMirror.fromTextArea(editor1, {lineNumbers: true, mode: "python", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
+      var editor2 = document.getElementById("editor2");
+      var myCodeMirror2 = CodeMirror.fromTextArea(editor2, {lineNumbers: true, indentWithTabs: true, cursorHeight: 0.75});
+      var submit_button = new Vue({
+              el: '#submit-button',
+              data: {show: true},
+              methods: {
+                  submit_feedback: async function(event){
+                      var feedback = myCodeMirror2.getValue()
+                      var code = myCodeMirror1.getValue();
+                      
+                      axios.get("[[=URL('save_feedback')]]", {
+                          params: {
+                            problem_id: [[=problem_id]], student_id: [[=student_id]], code: code,
+                            feedback: feedback, [[if type==1:]]submission_id: [[=id]][[pass]]
+                      }})
+                      .then(function(msg){
+                          alert("Feedback submitted successfully.");
+  
+                      })
+                      .catch(function(){
+                          alert("Could not submit feedback! Please try again.");
+                      });
+                  }
+              }
+          });
+  </script>
+  [[end]]

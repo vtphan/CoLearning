@@ -45,24 +45,32 @@
                 </div>
         </div>
         [[pass]]
+       [[if role==1:]]
+        <a target="_blank" href="[[=URL('give_feedback/'+str(workspace['id'])+'/2')]]" role="button">Give Feedback</a>
+       [[pass]]
        
-        [[for i, m in enumerate(messages):]]
-          <div class="accordion">
-            <input type="checkbox" id="x0[[=i]]">
-            <label for="x0[[=i]]">Query [[=i+1]]</label>
-            <div>
-              <article class="message">
-                <div class="message-header">Question</div>
-                <div class="message-body">[[=m['message'] ]]</div>
-              </article>
-              [[if m['reply'] is not None:]]
-              <article class="message">
-                <div class="message-header">Reply</div>
-                <div class="message-body">[[=m['reply'] ]]</div>
-              </article>
-              [[pass]]
-            </div>
-          </div>
-        [[pass]]
+       <h5 class="title is-5">Feedbacks</h5>
+       <table>
+         <thead>
+           <tr>
+             <td>#</td>
+             <td>Given At</td>
+             <td></td>
+           </tr>
+         </thead>
+         <tbody>
+           [[for idx, feedback in enumerate(feedbacks):]]
+              <tr>
+                <td>[[=idx+1]]</td>
+                <td>[[=feedback['given_at'].strftime("%b %-d, %Y %I:%M %p")]]</td>
+                [[if role==1:]]
+                  <td><a role="button" target="_blank" href="[[=URL('viewt_feedback/'+str(feedback['id']))]]">View</a></td>
+                [[elif role==2:]]
+                 <td><a role="button" target="_blank" href="[[=URL('view_feedback/'+str(feedback['id']))]]">View</a></td>
+                [[pass]]
+              </tr>
+            [[pass]]
+         </tbody>
+       </table>
     </div>
 </div>

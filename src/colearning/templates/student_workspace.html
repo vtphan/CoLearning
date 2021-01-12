@@ -14,9 +14,6 @@
 <script src="codemirror-5.58.1/mode/clike/clike.js"></script>
 
 <script>
-  
-  
-
     var editor = document.getElementById("editor");
     var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "[[="python" if problem.language=="Python" else "clike"]]", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
     
