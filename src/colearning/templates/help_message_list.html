@@ -9,6 +9,7 @@
             <th>Student Name</th>
             <th>Problem Name</th>
             <th>Message</th>
+            <th>Status</th>
             <th></th>
         </tr>
     </tbody>
@@ -19,7 +20,8 @@
             <td>[[=m['first_name'] ]] [[=m['last_name'] ]]</td>
             <td>[[=m['problem_name'] ]]</td>
             <td>[[if len(m['message'])>10:]][[=m['message'][:8]+".."]][[else:]][[=m['message'] ]][[pass]]</td>
-            <td><a class="button" href="[[=URL('view_help_message/'+str(m['message_id']))]]" target="_blank">View Details</a></td>
+            <td>[[=m['status'] ]]</td>
+            <td><a class="button" href="[[=URL('view_help_message/'+str(m['message_id']))]]" >View Details</a></td>
         </tr>
     [[pass]]
      
@@ -33,6 +35,7 @@
             <th>Student Name</th>
             <th>Problem Name</th>
             <th>Message</th>
+            <th>Status</th>
             <th></th>
         </tr>
     </tbody>
@@ -43,6 +46,7 @@
             <td>[[=m['first_name'] ]] [[=m['last_name'] ]]</td>
             <td>[[=m['problem_name'] ]]</td>
             <td>[[if len(m['message'])>10:]][[=m['message'][:8]+".."]][[else:]][[=m['message'] ]][[pass]]</td>
+            <td>[[=m['status'] ]]</td>
             <td><a class="button" href="[[=URL('view_help_message/'+str(m['message_id']))]]" target="_blank">View Details</a></td>
         </tr>
     [[pass]]

@@ -34,7 +34,7 @@
             <a class="navbar-link" href="[[=URL('submissions')]]">Submissions</a>
           </li>
           <li>
-            <a class="navbar-link" href="[[=URL('help_message_list')]]">Messages</a>
+            <a class="navbar-link" href="[[=URL('help_message_list')]]">Help Requests</a>
           </li>
           <li>
             <a class="navbar-link" href="[[=URL('global_values')]]">Global Parameters</a>
@@ -92,7 +92,7 @@
   [[if globals().get('user'):]]
   <script>
     function show_notifications(){
-      axios.get("[[=URL('get_notification/'+str(globals().get('user',{}).get('id')))]]")
+      axios.get("[[=URL('get_notification')]]")
       .then(function(response){
           // console.log(response)
           for (notif of response.data)

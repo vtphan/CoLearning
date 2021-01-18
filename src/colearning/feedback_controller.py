@@ -27,9 +27,9 @@ def viewt_feedback(feedback_id):
     
     return feedback.as_dict()
 
-@action('give_feedback/<sub_or_wp_id>/<type>', method='GET')
+@action('give_feedback/<sub_or_wp_id>/<type>/<message_id>', method='GET')
 @action.uses(auth.user, 'give_feedback.html')
-def give_feedback(sub_or_wp_id, type):
+def give_feedback(sub_or_wp_id, type, message_id):
     type = int(type)
     sub_or_wp_id = int(sub_or_wp_id)
     if type == 1: # submission feedback
@@ -38,8 +38,11 @@ def give_feedback(sub_or_wp_id, type):
         sub = db.student_workspace[sub_or_wp_id]
     else:
         sub = {}
+    sub['language'] = db.problem[sub['problem_id']].language
     sub['type'] = type
     # print(dir(sub))
+    sub['message_id'] = message_id
+    sub['referer'] = request.get_header('Referer')
     return sub.as_dict()
 
 @action('save_feedback', method='GET')
@@ -53,9 +56,17 @@ def save_feedback():
         submission_id = int(request.query.get('submission_id'))
     except Exception as e:
         submission_id = None
+    
     code = request.query.get('code')
     feedback = request.query.get('feedback')
     student_id = int(request.query.get('student_id'))
-    db.feedback.insert(problem_id=problem_id, submission_id=submission_id, feedback=feedback, code_snapshot=code,\
+    feedback_id = db.feedback.insert(problem_id=problem_id, submission_id=submission_id, feedback=feedback, code_snapshot=code,\
          given_for=student_id, given_by=user_id, given_at=datetime.datetime.now())
+    
+    message_id = int(request.query.get('message_id'))
+    if message_id != 0:
+        db(db.help_queue.id==message_id).update(status="closed")
     db.commit()
+
+    create_notification("You have got new feedback. Visit "+URL('view_feedback/'+str(feedback_id), scheme=True), recipients=[student_id],\
+        expire_at=db.problem[problem_id].deadline, send_editor=True)

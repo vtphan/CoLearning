@@ -51,11 +51,15 @@ def create_tables():
           Field('expire_at', type='datetime'), redefine=True)
      db.define_table('global_value', Field('variable'), Field('value'), redefine=True)
      db.define_table('notification_queue', Field('notification_id', type='reference notification'), Field('user_id', type='reference auth_user'))
-
+     db.define_table('editor_notification_queue', Field('notification_id', type='reference notification'), Field('user_id', type='reference auth_user'))
      db.define_table('help_seeking_message', Field('student_id', type='reference auth_user'), Field('problem_id', type='reference problem'), \
           Field('submission_id', type='reference submission'), Field('message', type='text'), Field('submitted_at', type='datetime'), Field('reply', type='text'),\
                 Field('replied_at', type='datetime'), redefine=True)
      db.define_table('help_seeking_message_queue', Field('message_id', type='reference help_seeking_message'))
+     
+     db.define_table('help_queue', Field('student_id', type='reference auth_user'), Field('problem_id', type='reference problem'),\
+           Field('submission_id', type='reference submission'), Field('message', type='text'),\
+                 Field('status', requires=IS_IN_SET(['not opened', 'opened', 'viewed', 'closed']), default='not opened'), Field('asked_at', type='datetime'))
 
      db.commit()
 

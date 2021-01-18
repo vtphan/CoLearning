@@ -46,7 +46,7 @@
         </div>
         [[pass]]
        [[if role==1:]]
-        <a target="_blank" href="[[=URL('give_feedback/'+str(workspace['id'])+'/2')]]" role="button">Give Feedback</a>
+        <a target="_blank" href="[[=URL('give_feedback/'+str(workspace['id'])+'/2/'+ str(help_message_id) )]]" role="button">Give Feedback</a>
        [[pass]]
        
        <h5 class="title is-5">Feedbacks</h5>
@@ -64,9 +64,9 @@
                 <td>[[=idx+1]]</td>
                 <td>[[=feedback['given_at'].strftime("%b %-d, %Y %I:%M %p")]]</td>
                 [[if role==1:]]
-                  <td><a role="button" target="_blank" href="[[=URL('viewt_feedback/'+str(feedback['id']))]]">View</a></td>
+                  <td><a role="button" href="[[=URL('viewt_feedback/'+str(feedback['id']))]]">View</a></td>
                 [[elif role==2:]]
-                 <td><a role="button" target="_blank" href="[[=URL('view_feedback/'+str(feedback['id']))]]">View</a></td>
+                 <td><a role="button" href="[[=URL('view_feedback/'+str(feedback['id']))]]">View</a></td>
                 [[pass]]
               </tr>
             [[pass]]
