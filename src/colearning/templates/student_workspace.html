@@ -15,7 +15,7 @@
 
 <script>
     var editor = document.getElementById("editor");
-    var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "[[="python" if problem.language=="Python" else "clike"]]", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
+    var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "[[="python" if problem.language=="Python" else "clike"]]", theme: 'monokai', indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
     
     // function sendContent(){
     //   try{
@@ -39,7 +39,7 @@
         submit_code: function(event){
           axios.post("[[=URL('submission_handler')]]",{
             student_id: [[=workspace.student_id]], problem_id: [[=workspace.problem_id]], content: myCodeMirror.getValue(), 
-            attempt_left: [[=workspace.attempt_left-1]], category: 1
+            attempt_left: [[=workspace.attempt_left]], category: 1
           })
           .then(function(response){
             alert('Code submitted successfully.')
