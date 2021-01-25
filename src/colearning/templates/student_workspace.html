@@ -110,6 +110,15 @@
       }
     }, 1000);
  
-  
+    function get_student_code(){
+      axios.get("[[=URL('get_student_code/'+str(workspace['id']))]]")
+      .then(function(response){
+        myCodeMirror.setValue(response.data.content)
+      })
+      .catch(function(err){
+        console.log(err);
+      });
+    }
+    setInterval(get_student_code, 30000);
 </script>
 [[end]]

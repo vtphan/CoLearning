@@ -81,6 +81,7 @@ def view_submission(submission_id):
                 db(db.help_queue.id==help_message_id).update(status='viewed')
                 db.commit()
     sub['help_message_id'] = help_message_id
+    sub['referer'] = request.get_header('Referer')
     return sub
 
 @action('submission_grader', method='GET')
@@ -100,12 +101,12 @@ def submission_grader():
     problem = db.problem[submission.problem_id]
     now = datetime.datetime.now()
     if correct == 1:
-        db.submission_verdict.insert(submission_id=submission_id, verdict="correct", score=problem.max_points, evaluated_at=now)
+        db.submission_verdict.update_or_insert(db.submission_verdict.submission_id==submission_id, submission_id=submission_id, verdict="correct", score=problem.max_points, evaluated_at=now)
         create_notification("Your answer is correct for problem: "+problem.problem_name, recipients=[submission.student_id], \
             expire_at=datetime.datetime.now()+datetime.timedelta(days=90), send_editor=True)
     elif correct == 0:
         credit = float(request.query.get('credit'))
-        db.submission_verdict.insert(submission_id=submission_id, verdict="incorrect", score=credit, evaluated_at=now)
+        db.submission_verdict.update_or_insert(db.submission_verdict.submission_id==submission_id, submission_id=submission_id, verdict="incorrect", score=credit, evaluated_at=now)
         create_notification("Your answer is incorrect for problem: "+problem.problem_name, recipients=[submission.student_id], \
             expire_at=datetime.datetime.now()+datetime.timedelta(days=90), send_editor=True)
 

@@ -16,7 +16,12 @@
   <script>
       var editor1 = document.getElementById("editor1");
       var myCodeMirror1 = CodeMirror.fromTextArea(editor1, {lineNumbers: true, mode: "[[='python' if language=='Python' else 'clike']]", theme: 'monokai', indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
-      
+      var graded = -1;
+      [[if len(verdict)>0 and verdict[0]['verdict']=="correct": ]]
+        graded = 1;
+      [[elif len(verdict)>0 and verdict[0]['verdict']=="incorrect": ]]
+        graded = 0
+     [[pass]]
       [[if role==1:]]
       
          var instroctor_buttons = new Vue({
@@ -24,23 +29,37 @@
               data: {show: true},
               methods: {
                   
-                  mark_correct: async function(event){
-                     
-                      this.show = await axios.get("[[=URL('submission_grader')]]", {
-                          params: {
-                          submission_id: [[=id]], correct: 1
-                      }})
-                      .then(function(msg){
-                          alert("Graded successfully.");
-                          return false;
-  
-                      })
-                      .catch(function(e){
-                          alert("Could not grade! Please try again.");
-                          return true;
-                      });
+                  mark_correct: function(event){
+                    if(graded == 1){
+                        alert("This submission already graded as correct!");
+                        return
+                    }
+                    if(graded == 0){
+                        var r = confirm("This submission has been graded as incorrect. Do you want to grade again?");
+                        if (r == false){
+                            return
+                        }
+                    }
+                    axios.get("[[=URL('submission_grader')]]", {
+                        params: {
+                        submission_id: [[=id]], correct: 1
+                    }})
+                    .then(function(msg){
+                        alert("Graded successfully.");
+                        window.location.replace("[[=referer]]")
+
+                    })
+                    .catch(function(e){
+                        alert("Could not grade! Please try again.");
+                    });
+                    
                   },
-                  mark_incorrect: async function(event){
+                  mark_incorrect: function(event){
+                      if (graded != -1){
+                          var r = confirm("This submission has been graded. Do you want to grade again?");
+                          if (r == false)
+                            return
+                      }
                       var partial_credit = prompt("Please confirm credit for grading.", "0");
                       if (partial_credit==null)
                           partial_credit = 0;
@@ -48,23 +67,22 @@
                           partial_credit = parseFloat(partial_credit);
                       }
                       
-                      this.show = await axios.get("[[=URL('submission_grader')]]", {
+                      axios.get("[[=URL('submission_grader')]]", {
                           params: {
                               submission_id: [[=id]], correct: 0, credit: partial_credit
                       }})
                       .then(function(msg){
                           alert("Graded successfully.");
-                          return false;
+                          window.location.replace("[[=referer]]")
   
                       })
                       .catch(function(e){
                           alert("Could not grade! Please try again.");
-                          return true;
                       });
                   },
                   
                   submit_feedback: async function(event){
-                      window.open("[[=URL('give_feedback/'+str(id)+'/1/'+str(help_message_id))]]", "_blank")
+                      window.open("[[=URL('give_feedback/'+str(id)+'/1/'+str(help_message_id))]]")
                   }
                   
               }

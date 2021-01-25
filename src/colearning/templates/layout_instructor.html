@@ -25,7 +25,15 @@
         [[block page_left_menu]]
         <ul>
           <li>
-            <a class="navbar-link" href="[[=URL('new_problem')]]">Add New Problem</a>
+            Add New Problem
+            <ul>
+              <li>
+                <a class="navbar-link" href="[[=URL('new_inclass_problem')]]">In-class Exercise</a>
+              </li>
+              <li>
+                <a class="navbar-link" href="[[=URL('new_homework_problem')]]">Homework Assignment</a>
+              </li>
+            </ul>
           </li>
           <li>
             <a class="navbar-link" href="[[=URL('problem_list')]]">Problems</a>

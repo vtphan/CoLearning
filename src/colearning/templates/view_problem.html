@@ -1,0 +1,26 @@
+[[extend 'layout_instructor.html']]
+[[block page_head]]
+<script src="codemirror-5.58.1/lib/codemirror.js"></script>
+<link rel="stylesheet" href="codemirror-5.58.1/lib/codemirror.css">
+<script src="codemirror-5.58.1/mode/python/python.js"></script>
+<script src="codemirror-5.58.1/mode/clike/clike.js"></script>
+<link rel="stylesheet" href="codemirror-5.58.1/theme/monokai.css">
+[[end]]
+[[block page_title]]Problem[[end]]
+<div>
+    <div><label>Problem Name: </label>[[=problem_name]]</div>
+    <div><label>Deadline: </label>[[=deadline.strftime("%B %d, %Y %I:%M %p")]]</div>
+    <div><label>Number of attempts allowed: </label>[[=attempts]]</div>
+    <div><label>Maximum Score: </label>[[=max_points]]</div>
+    <div><label>Problem Description: </label>[[=problem_description]]</div>
+    <div><label>Language: </label>[[=language]]</div>
+    <div><label>Code: </label><div><textarea id="code">[[=code]]</textarea></div></div>
+    <div><label>Answer: </label>[[=answer]]</div>
+    <div><label>Topics: </label>[[=topics]]</div>
+</div>
+[[block page_script]]
+<script>
+    var editor = document.getElementById("code");
+    var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "[[="python" if language=="Python" else "clike"]]", theme: "monokai", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75});
+</script>
+[[end]]

@@ -16,7 +16,7 @@
     
     [[for p in problems:]]
         <tr>
-            <td><a class="button" href="[[=URL('edit_problem/'+str(p.id))]]">[[=p.problem_name]]</a></td>
+            <td><a class="button" href="[[=URL('view_problem/'+str(p.id))]]">[[=p.problem_name]]</a></td>
             <td>[[=p.deadline]]</td>
             <td><a class="button" href="[[=URL('student_workspace_list/'+str(p.id))]]">View Student Workspace</a></td>
         </tr>

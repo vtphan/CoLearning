@@ -45,7 +45,7 @@ from .help_message_view_controller import *
 
 from .problem_loader_controller import *
 from .feedback_controller import *
-
+from .view_problem_controller import *
 # from .test_controller import *
 
 
@@ -66,3 +66,7 @@ def index():
 @unauthenticated("not_authorized", "not_authorized.html")
 def not_authorized():
     return dict()
+
+@unauthenticated("check_address")
+def check_address():
+    return "correct"
