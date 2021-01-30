@@ -21,6 +21,6 @@
 [[block page_script]]
 <script>
     var editor = document.getElementById("code");
-    var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "[[="python" if language=="Python" else "clike"]]", theme: "monokai", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75});
+    var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "[[="python" if language=="Python" else "clike"]]", theme: "monokai", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75, readOnly: "no cursor"});
 </script>
 [[end]]

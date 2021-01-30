@@ -1,3 +1,4 @@
+from re import sub
 from py4web import action, request, Field,redirect, URL
 from .common import db, groups, auth, flash
 from . import settings
@@ -11,7 +12,7 @@ from .utils import create_notification
 def submissions():
     if 'teacher' not in groups.get(auth.get_user()['id']):
         redirect(URL('not_authorized'))
-    active_submissions = db.executesql('SELECT s.id, p.problem_name, st.first_name, st.last_name, s.submission_category, s.submitted_at\
+    active_submissions = db.executesql('SELECT s.id, s.problem_id, p.problem_name, st.first_name, st.last_name, s.submission_category, s.submitted_at\
          from submission s, problem p, auth_user st where s.problem_id=p.id and s.student_id=st.id and s.id not in \
              (select submission_id from submission_verdict) order by s.submitted_at desc', as_dict=True)
     return dict(sub=active_submissions)
@@ -45,6 +46,8 @@ def submission(submission_id):
     sub['feedbacks'] = feedbacks
     verdict = db(db.submission_verdict.submission_id==submission_id).select()
     sub['verdict'] = verdict
+    submissions = db((db.submission.student_id==sub.student_id)&(db.submission.problem_id==sub.problem_id)).select(db.submission.id, orderby=~db.submission.submitted_at)
+    sub['submissions'] = submissions
     if help_form.accepted:
         # message_id = db.help_seeking_message.insert(student_id=user_id, submission_id=sub['id'], problem_id=sub['problem_id'], message=help_form.vars.question,\
         #     submitted_at=datetime.datetime.now())
@@ -67,7 +70,7 @@ def view_submission(submission_id):
     
     sub = submission[0]
     feedbacks = db.executesql("select id, given_at from feedback where submission_id is not NULL and  submission_id="+str(submission_id)+" order by given_at desc", as_dict=True)
-
+    submissions = db((db.submission.student_id==sub['student_id'])&(db.submission.problem_id==sub['problem_id'])).select(db.submission.id, orderby=~db.submission.submitted_at)
     sub['feedbacks'] = feedbacks
     verdict = db(db.submission_verdict.submission_id==submission_id).select()
     sub['verdict'] = verdict
@@ -82,6 +85,7 @@ def view_submission(submission_id):
                 db.commit()
     sub['help_message_id'] = help_message_id
     sub['referer'] = request.get_header('Referer')
+    sub['submissions'] = submissions
     return sub
 
 @action('submission_grader', method='GET')
@@ -99,17 +103,40 @@ def submission_grader():
     # print(submission_id, correct, feedback)
     submission = db.submission[submission_id]
     problem = db.problem[submission.problem_id]
+    submissions = db(db.submission.problem_id==problem.id).select(db.submission.id, orderby=db.submission.submitted_at)
+    idx = [s['id'] for s in submissions].index(submission_id)+1
     now = datetime.datetime.now()
     if correct == 1:
         db.submission_verdict.update_or_insert(db.submission_verdict.submission_id==submission_id, submission_id=submission_id, verdict="correct", score=problem.max_points, evaluated_at=now)
-        create_notification("Your answer is correct for problem: "+problem.problem_name, recipients=[submission.student_id], \
+        db((db.student_workspace.problem_id==problem.id)&(db.student_workspace.student_id==submission.student_id)).update(attempt_left=0)
+        create_notification("Your "+ get_number_word(idx)+" submission for problem: "+problem.problem_name+" is correct.", recipients=[submission.student_id], \
             expire_at=datetime.datetime.now()+datetime.timedelta(days=90), send_editor=True)
     elif correct == 0:
         credit = float(request.query.get('credit'))
         db.submission_verdict.update_or_insert(db.submission_verdict.submission_id==submission_id, submission_id=submission_id, verdict="incorrect", score=credit, evaluated_at=now)
-        create_notification("Your answer is incorrect for problem: "+problem.problem_name, recipients=[submission.student_id], \
+        create_notification("Your "+ get_number_word(idx) +" submission for problem: "+problem.problem_name+" is incorrect.", recipients=[submission.student_id], \
             expire_at=datetime.datetime.now()+datetime.timedelta(days=90), send_editor=True)
 
     # if feedback is not None and feedback != "":
     #     db.feedback.insert(submission_id=submission_id, content=feedback, given_at=now)
     db.commit()
+
+
+def get_number_word(n):
+    if n==1:
+        return 'first'
+    if n==2:
+        return 'second'
+    if n==3:
+        return 'third'
+    if n==11:
+        return '11th'
+    if n==12:
+        return '12th'
+    if n%10==1:
+        return str(n)+'st'
+    if n%10==2:
+        return str(n)+'nd'
+    if n%10==3:
+        return str(n)+'rd'
+    return str(n)+'th'

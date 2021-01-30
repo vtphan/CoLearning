@@ -9,7 +9,7 @@ import datetime
 def problem_list():
     if 'teacher' not in groups.get(auth.get_user()['id']):
         redirect(URL('not_authorized'))
-    problems = db(db.problem.deadline>datetime.datetime.now()).select(orderby=~db.problem.problem_uploaded_at)
+    problems = db(db.problem).select(orderby=~db.problem.deadline)
     return dict(problems=problems)
     
 

@@ -7,9 +7,9 @@
     <tbody>
         <tr>
             <th>#</th>
-            <th>Problem Name</th>
-            <th>Student Name</th>
-            <th>Submission Time</th>
+            <th>Problem</th>
+            <th>Student</th>
+            <th>Submitted</th>
             
         </tr>
     </tbody>
@@ -18,12 +18,54 @@
     [[for i, s in enumerate(sub, 1):]]
         <tr>
             <td>[[=i]]</td>
-            <td><a class="button" href="[[=URL('view_submission/'+str(s['id']))]]" target='_blank'>[[=s['problem_name'] ]]</a></td>
-            <td>[[=s['first_name']+' '+s['last_name'] ]]</td>
-            <td>[[=s['submitted_at'] ]]</td>
+            <td><a class="button" href="[[=URL('view_problem/'+str(s['problem_id']))]]">[[=s['problem_name'] ]]</a></td>
+            <td><a class="button" href="[[=URL('view_submission/'+str(s['id']))]]">[[=s['first_name']+' '+s['last_name'] ]]</a></td>
+            <td><p id="submitted_[[=i-1]]"></p></td>
             
         </tr>
     [[pass]]
      
     </tbody>
 </table>
+
+[[block page_scripts]]
+<script>
+    var submitted = new Array()
+    [[for p in sub:]]
+        submitted.push(new Date([[=p['submitted_at'].year]], [[=p['submitted_at'].month-1]], [[=p['submitted_at'].day]], [[=p['submitted_at'].hour]], [[=p['submitted_at'].minute]], [[=p['submitted_at'].second]], 0).getTime())
+    [[pass]]
+    function calc_submitted_at(){
+        var now = new Date().getTime();
+        for(var i=0; i<submitted.length; i++){
+            var distance =  now - submitted[i];
+           
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            // var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            var msg = "";
+            if (days==1)
+                msg += "1 day";
+            else if (days>1)
+                msg += days+" days";
+            else if (hours==1)
+                msg += "1 hour";
+            else if (hours>1)
+                msg += hours+" hours";
+            else if (minutes==1)
+                msg += "1 minute";
+            else if (minutes>1)
+                msg += minutes+" minutes";
+            else if (days+hours+minutes==0){
+                msg += "< 1 minute";
+            }
+            msg += " ago";
+            document.getElementById("submitted_"+i).innerHTML = msg;
+            
+            
+        }
+        setInterval(calc_submitted_at, 60000);
+    }
+    calc_submitted_at();
+</script>
+[[end]]
