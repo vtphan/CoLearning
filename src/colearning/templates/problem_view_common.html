@@ -11,9 +11,3 @@
     <div><label>Answer: </label>[[=answer]]</div>
     <div><label>Topics: </label>[[=topics]]</div>
 </div>
-[[block page_script]]
-<script>
-    var editor = document.getElementById("code");
-    var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "[[="python" if language=="Python" else "clike"]]", theme: "monokai", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
-</script>
-[[end]]

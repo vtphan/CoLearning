@@ -7,3 +7,9 @@
 <link rel="stylesheet" href="codemirror-5.58.1/theme/monokai.css">
 [[end]]
 [[include 'problem_view_common.html']]
+[[block page_script]]
+<script>
+    var editor = document.getElementById("code");
+    var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "[[="python" if language=="Python" else "clike"]]", theme: "monokai", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
+</script>
+[[end]]
