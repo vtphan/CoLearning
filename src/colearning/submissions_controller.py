@@ -23,7 +23,7 @@ def my_submissions():
     user_id = auth.get_user()['id']
     if 'student' not in groups.get(user_id):
         redirect(URL('not_authorized'))
-    submissions = db.executesql('SELECT s.id, p.problem_name, s.submitted_at\
+    submissions = db.executesql('SELECT s.id, s.problem_id, p.problem_name, s.submitted_at\
          from submission s, problem p where s.problem_id=p.id order by s.submitted_at desc', as_dict=True)
     return dict(sub=submissions)
 
@@ -31,7 +31,7 @@ def my_submissions():
 @action.uses(auth.user, 'submission.html')
 def submission(submission_id):
     user_id = auth.get_user()['id']
-    submission = db.executesql('SELECT s.id, s.content, s.problem_id, p.problem_name, s.student_id, st.first_name, st.last_name, s.submission_category, s.submitted_at\
+    submission = db.executesql('SELECT s.id, s.content, s.problem_id, p.problem_name, p.language, s.student_id, st.first_name, st.last_name, s.submission_category, s.submitted_at\
          from submission s, problem p, auth_user st where s.problem_id=p.id and s.student_id=st.id and s.id='+submission_id, as_dict=True)
     if len(submission)==0 or int(user_id)!=submission[0]['student_id']:
         redirect(URL('not_authorized'))
@@ -46,7 +46,7 @@ def submission(submission_id):
     sub['feedbacks'] = feedbacks
     verdict = db(db.submission_verdict.submission_id==submission_id).select()
     sub['verdict'] = verdict
-    submissions = db((db.submission.student_id==sub.student_id)&(db.submission.problem_id==sub.problem_id)).select(db.submission.id, orderby=~db.submission.submitted_at)
+    submissions = db((db.submission.student_id==sub['student_id'])&(db.submission.problem_id==sub['problem_id'])).select(db.submission.id, orderby=~db.submission.submitted_at)
     sub['submissions'] = submissions
     if help_form.accepted:
         # message_id = db.help_seeking_message.insert(student_id=user_id, submission_id=sub['id'], problem_id=sub['problem_id'], message=help_form.vars.question,\

@@ -80,7 +80,7 @@
   [[if globals().get('user'):]]
   <script>
     function show_notifications(){
-      axios.get("[[=URL('get_notification/'+str(globals().get('user',{}).get('id')))]]")
+      axios.get("[[=URL('get_notification')]]")
       .then(function(response){
           // console.log(response)
           for (notif of response.data)

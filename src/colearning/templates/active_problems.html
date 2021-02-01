@@ -8,20 +8,65 @@
         <tr>
             <th>Problem Name</th>
             <th>Deadline</th>
-            <th>Number of attempts left</th>
             <th></th>
         </tr>
     </tbody>
     <tbody>
     
-    [[for p in problems:]]
+    [[for idx, p in enumerate(problems):]]
         <tr>
-            <td>[[=p.problem_name]]</td>
-            <td>[[=p.deadline]]</td>
-            <td>[[=p.attempts]]</td>
+            <td><a class="button" href="[[=URL('view_problem/'+str(p.id))]]">[[=p.problem_name]]</a></td>
+            <td><p id="deadline_[[=idx]]"></p></td>
             <td><a class="button is-primary" href="[[=URL('student_workspace/'+str(globals().get('user',{}).get('id'))+'/'+str(p.id))]]">Go to workspace</a></td>
         </tr>
     [[pass]]
      
     </tbody>
 </table>
+
+[[block page_scripts]]
+<script>
+    var deadlines = new Array()
+    [[for p in problems:]]
+        deadlines.push(new Date([[=p.deadline.year]], [[=p.deadline.month-1]], [[=p.deadline.day]], [[=p.deadline.hour]], [[=p.deadline.minute]], [[=p.deadline.second]], 0).getTime())
+    [[pass]]
+    function calc_deadlines(){
+        var now = new Date().getTime();
+        for(var i=0; i<deadlines.length; i++){
+            var distance = deadlines[i] - now;
+            if (distance<=0){
+                document.getElementById("deadline_"+i).innerHTML = 'Expired';
+            }
+            else{
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                // var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                var msg = "Due in ";
+                if (days==1)
+                    msg += " 1 day";
+                else if (days>1)
+                    msg += " "+days+" days";
+                
+                if (hours==1)
+                    msg += " 1 hour";
+                else if (hours>1)
+                    msg += " "+hours+" hours";
+                if (minutes==1)
+                    msg += " 1 minute";
+                else if (minutes>1)
+                    msg += " "+minutes+" minutes";
+                
+                if (days+hours+minutes==0){
+                    msg += " < 1 minute";
+                }
+                
+                document.getElementById("deadline_"+i).innerHTML = msg;
+            }
+            
+        }
+        setInterval(calc_deadlines, 60000);
+    }
+    calc_deadlines();
+</script>
+[[end]]

@@ -45,7 +45,7 @@
                         submission_id: [[=id]], correct: 1
                     }})
                     .then(function(msg){
-                        alert("Graded successfully.");
+                        alert("Submission graded as correct.");
                         window.location.replace("[[=referer]]")
 
                     })
@@ -72,7 +72,10 @@
                               submission_id: [[=id]], correct: 0, credit: partial_credit
                       }})
                       .then(function(msg){
-                          alert("Graded successfully.");
+                          if (partial_credit>0)
+                            alert("Submission graded as incorrect with partial credit "+partial_credit);
+                          else
+                            alert("Submission graded as incorrect");
                           window.location.replace("[[=referer]]")
   
                       })
