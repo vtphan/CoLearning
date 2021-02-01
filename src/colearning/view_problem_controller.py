@@ -10,6 +10,17 @@ from .utils import create_notification
 @action('view_problem/<problem_id>', method='GET')
 @action.uses(auth.user, 'view_problem.html')
 def view_problem(problem_id):
+    if 'teacher' not in groups.get(auth.get_user()['id']):
+        redirect(URL('not_authorized'))
+    problem = db.problem[problem_id].as_dict()
+    topics = db((db.problem_topic.problem_id==problem_id)&(db.topic.id==db.problem_topic.topic_id)).select(db.topic.topic_description)
+    problem['topics'] = ", ".join([row['topic_description'] for row in topics])
+    
+    return problem
+
+@action('problem/<problem_id>', method='GET')
+@action.uses(auth.user, 'problem.html')
+def view_problem(problem_id):
     problem = db.problem[problem_id].as_dict()
     topics = db((db.problem_topic.problem_id==problem_id)&(db.topic.id==db.problem_topic.topic_id)).select(db.topic.topic_description)
     problem['topics'] = ", ".join([row['topic_description'] for row in topics])

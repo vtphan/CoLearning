@@ -15,7 +15,7 @@
     
     [[for idx, p in enumerate(problems):]]
         <tr>
-            <td><a class="button" href="[[=URL('view_problem/'+str(p.id))]]">[[=p.problem_name]]</a></td>
+            <td><a class="button" href="[[=URL('problem/'+str(p.id))]]">[[=p.problem_name]]</a></td>
             <td><p id="deadline_[[=idx]]"></p></td>
             <td><a class="button is-primary" href="[[=URL('student_workspace/'+str(globals().get('user',{}).get('id'))+'/'+str(p.id))]]">Go to workspace</a></td>
         </tr>
@@ -28,12 +28,13 @@
 <script>
     var deadlines = new Array()
     [[for p in problems:]]
-        deadlines.push(new Date([[=p.deadline.year]], [[=p.deadline.month-1]], [[=p.deadline.day]], [[=p.deadline.hour]], [[=p.deadline.minute]], [[=p.deadline.second]], 0).getTime())
+        deadlines.push(new Date(Date.UTC([[=p.deadline.year]], [[=p.deadline.month-1]], [[=p.deadline.day]], [[=p.deadline.hour]], [[=p.deadline.minute]], [[=p.deadline.second]], 0).getTime()))
     [[pass]]
     function calc_deadlines(){
         var now = new Date().getTime();
         for(var i=0; i<deadlines.length; i++){
             var distance = deadlines[i] - now;
+            console.log()
             if (distance<=0){
                 document.getElementById("deadline_"+i).innerHTML = 'Expired';
             }
