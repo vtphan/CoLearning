@@ -14,8 +14,10 @@ def view_feedback(feedback_id):
     print(feedback.given_for, user_id)
     if feedback.given_for != user_id:
         redirect(URL("not_authorized"))
-    
-    return feedback.as_dict()
+    problem = db.problem[feedback.problem_id]
+    feedback = feedback.as_dict()
+    feedback['language'] = problem.language
+    return feedback
 
 @action('viewt_feedback/<feedback_id>', method='GET')
 @action.uses(auth.user, 'feedbackt_view.html')
@@ -24,8 +26,10 @@ def viewt_feedback(feedback_id):
     if 'teacher' not in groups.get(user_id):
         redirect(URL('not_authorized'))
     feedback = db.feedback[feedback_id]
-    
-    return feedback.as_dict()
+    problem = db.problem[feedback.problem_id]
+    feedback = feedback.as_dict()
+    feedback['language'] = problem.language
+    return feedback
 
 @action('give_feedback/<sub_or_wp_id>/<type>/<message_id>', method='GET')
 @action.uses(auth.user, 'give_feedback.html')
