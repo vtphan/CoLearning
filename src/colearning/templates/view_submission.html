@@ -15,7 +15,7 @@
   <script src="codemirror-5.58.1/mode/clike/clike.js"></script>
   <script>
       var editor1 = document.getElementById("editor1");
-      var myCodeMirror1 = CodeMirror.fromTextArea(editor1, {lineNumbers: true, mode: "[[='python' if language=='Python' else 'clike']]", theme: 'monokai', indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
+      var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "[[="python" if language=="Python" else "text/x-java" if language=="Java" else "text/x-c++src"]]", theme: "monokai", matchBrackets: true, indentUnit: 4, indentWithTabs: true, readOnly: "nocursor"});
       var graded = -1;
       [[if len(verdict)>0 and verdict[0]['verdict']=="correct": ]]
         graded = 1;
