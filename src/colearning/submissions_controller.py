@@ -50,9 +50,9 @@ def submission(submission_id):
     sub['submissions'] = submissions
     if help_form.accepted:
         # message_id = db.help_seeking_message.insert(student_id=user_id, submission_id=sub['id'], problem_id=sub['problem_id'], message=help_form.vars.question,\
-        #     submitted_at=datetime.datetime.now())
+        #     submitted_at=datetime.datetime.utcnow())
         # db.help_seeking_message_queue.insert(message_id=message_id)
-        db.help_queue.insert(student_id=user_id, problem_id=sub['problem_id'], submission_id=sub['id'], message=help_form.vars.question, asked_at=datetime.datetime.now())
+        db.help_queue.insert(student_id=user_id, problem_id=sub['problem_id'], submission_id=sub['id'], message=help_form.vars.question, asked_at=datetime.datetime.utcnow())
         db.commit()
         create_notification("New help seeking message recieved.", recipients=[ user['id'] for user in db(db.auth_user).select('id') if 'teacher' in groups.get(user['id'])],\
             expire_at=db.problem[sub['problem_id']].deadline)
@@ -105,17 +105,17 @@ def submission_grader():
     problem = db.problem[submission.problem_id]
     submissions = db(db.submission.problem_id==problem.id).select(db.submission.id, orderby=db.submission.submitted_at)
     idx = [s['id'] for s in submissions].index(submission_id)+1
-    now = datetime.datetime.now()
+    now = datetime.datetime.utcnow()
     if correct == 1:
         db.submission_verdict.update_or_insert(db.submission_verdict.submission_id==submission_id, submission_id=submission_id, verdict="correct", score=problem.max_points, evaluated_at=now)
         db((db.student_workspace.problem_id==problem.id)&(db.student_workspace.student_id==submission.student_id)).update(attempt_left=0)
         create_notification("Your "+ get_number_word(idx)+" submission for problem: "+problem.problem_name+" is correct.", recipients=[submission.student_id], \
-            expire_at=datetime.datetime.now()+datetime.timedelta(days=90), send_editor=True)
+            expire_at=datetime.datetime.utcnow()+datetime.timedelta(days=90), send_editor=True)
     elif correct == 0:
         credit = float(request.query.get('credit'))
         db.submission_verdict.update_or_insert(db.submission_verdict.submission_id==submission_id, submission_id=submission_id, verdict="incorrect", score=credit, evaluated_at=now)
         create_notification("Your "+ get_number_word(idx) +" submission for problem: "+problem.problem_name+" is incorrect.", recipients=[submission.student_id], \
-            expire_at=datetime.datetime.now()+datetime.timedelta(days=90), send_editor=True)
+            expire_at=datetime.datetime.utcnow()+datetime.timedelta(days=90), send_editor=True)
 
     # if feedback is not None and feedback != "":
     #     db.feedback.insert(submission_id=submission_id, content=feedback, given_at=now)

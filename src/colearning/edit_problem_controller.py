@@ -50,7 +50,7 @@ def edit_problem(problem_id):
             deadline=datetime.datetime.strptime(problem_form.vars['deadline'].strip(), "%Y-%m-%dT%H:%M")
             db(db.problem.id==problem_id).update(code=problem_form.vars.content, problem_description=problem_form.vars.problem_description, answer=problem_form.vars.answer.strip(),\
                  problem_name=problem_form.vars.problem_name.strip(), max_points=problem_form.vars.maximum_score, attempts=problem_form.vars.number_of_attempts,\
-                 language=problem_form.vars.language,last_updated_at=datetime.datetime.now(), exact_answer=exact_answer, deadline=deadline)
+                 language=problem_form.vars.language,last_updated_at=datetime.datetime.utcnow(), exact_answer=exact_answer, deadline=deadline)
             new_topics = problem_form.vars.topics.strip()
             if new_topics != topics:
                 db(db.problem_topic.problem_id==problem_id).delete()

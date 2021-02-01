@@ -18,7 +18,7 @@
     var editor = document.getElementById("editor");
     var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "[[='python' if problem.language=='Python' else 'clike']]", theme: 'monokai', indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
     
-    var countDownDate = new Date([[=problem.deadline.year]], [[=problem.deadline.month-1]], [[=problem.deadline.day]], [[=problem.deadline.hour]], [[=problem.deadline.minute]], [[=problem.deadline.second]], 0).getTime();
+    var countDownDate = new Date(Date.UTC([[=problem.deadline.year]], [[=problem.deadline.month-1]], [[=problem.deadline.day]], [[=problem.deadline.hour]], [[=problem.deadline.minute]], [[=problem.deadline.second]], 0)).getTime();
 
     // Update the count down every 1 second
     var x = setInterval(function() {

@@ -35,7 +35,7 @@ def view_help_message(message_id):
     # have to delete from queue
     # reply_form = Form([Field('reply', type='text')])
     # if reply_form.accepted:
-    #     db.help_seeking_message[message_id] = dict(reply=reply_form.vars.reply, replied_at=datetime.datetime.now())
+    #     db.help_seeking_message[message_id] = dict(reply=reply_form.vars.reply, replied_at=datetime.datetime.utcnow())
     #     db.commit()
     #     create_notification("Recieved reply from instructor/TA.", recipients=[message.student_id],expire_at=problem.deadline)
 

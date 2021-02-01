@@ -30,7 +30,7 @@ def workspace(student_id, problem_id):
               request.environ['PATH_INFO'])
        # feedbacks = db.executesql("select s.id, s.content, f.content as feedback from feedback f, submission s where f.submission_id==s.id and s.student_id=%d and s.problem_id=%d" % (student_id, problem_id))
        # feedbacks = db((db.feedback.submission_id==db.submission.id)&(db.submission.student_id==student_id)&(db.submission.problem_id==problem_id)).select(db.submission.id, db.submission.content, db.feedback.content)
-       # print(datetime.datetime.now(), feedbacks)
+       # print(datetime.datetime.utcnow(), feedbacks)
        return dict(vproblem=problem, workspace=workspace, current_url=url, time_interval=30000, submissions=submissions, student_name=auth.get_user()['first_name'])
        
     
@@ -42,7 +42,7 @@ def save_workspace():
        student_id = request.POST['student_id']
        problem_id = request.POST['problem_id']
        content = request.POST['content']
-       db((db.student_workspace.problem_id==problem_id)&(db.student_workspace.student_id==student_id)).update(content=content, updated_at=datetime.datetime.now())
+       db((db.student_workspace.problem_id==problem_id)&(db.student_workspace.student_id==student_id)).update(content=content, updated_at=datetime.datetime.utcnow())
        db.commit()
 
 @action('submission_handler', method='POST')
@@ -64,7 +64,7 @@ def submission_handler():
        attempt_left = attempt_left - 1
        submission_category = request.json['category']
        submission_id = db.submission.insert(problem_id=problem_id, student_id=student_id, content=content, submission_category=submission_category,\
-               submitted_at=datetime.datetime.now())
+               submitted_at=datetime.datetime.utcnow())
       
        problem = db.problem[problem_id]
        if submission_category==1:
@@ -75,7 +75,7 @@ def submission_handler():
                      else:
                             verdict, score = "incorrect", 0
                             msg = "Your answer for " + problem.problem_name + " is incorrect!"
-                     db.submission_verdict.insert(submission_id=submission_id, verdict=verdict, score=score, evaluated_at=datetime.datetime.now())
+                     db.submission_verdict.insert(submission_id=submission_id, verdict=verdict, score=score, evaluated_at=datetime.datetime.utcnow())
                      db((db.student_workspace.problem_id==problem_id)&(db.student_workspace.student_id==student_id)).update(attempt_left=0)
               else:
                      msg = "Your submission for " + problem.problem_name + " will be looked soon."
@@ -107,7 +107,7 @@ def editor_submission_handler():
        attempt_left = attempt_left - 1
        submission_category = int(request.POST['category'])
        submission_id = db.submission.insert(problem_id=problem_id, student_id=student_id, content=content, submission_category=submission_category,\
-               submitted_at=datetime.datetime.now())
+               submitted_at=datetime.datetime.utcnow())
       
        problem = db.problem[problem_id]
        if submission_category==1:
@@ -118,7 +118,7 @@ def editor_submission_handler():
                      else:
                             verdict, score = "incorrect", 0
                             msg = "Your answer for " + problem.problem_name + " is incorrect!"
-                     db.submission_verdict.insert(submission_id=submission_id, verdict=verdict, score=score, evaluated_at=datetime.datetime.now())
+                     db.submission_verdict.insert(submission_id=submission_id, verdict=verdict, score=score, evaluated_at=datetime.datetime.utcnow())
                      db((db.student_workspace.problem_id==problem_id)&(db.student_workspace.student_id==student_id)).update(attempt_left=0)
               else:
                      msg = "Your submission for " + problem.problem_name + " will be looked soon."

@@ -8,7 +8,7 @@ import json
 @action('get_problem_info', method='GET')
 @action.uses(auth.user)
 def get_problem_info():
-    problem_info = db(db.problem.deadline>datetime.datetime.now()).select(db.problem.id, db.problem.problem_name).as_list()
+    problem_info = db(db.problem.deadline>datetime.datetime.utcnow()).select(db.problem.id, db.problem.problem_name).as_list()
     return json.dumps(problem_info)
 
 @action('load_problem/<problem_id>', method='GET')

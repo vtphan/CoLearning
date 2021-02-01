@@ -32,7 +32,7 @@
 <script>
     var submitted = new Array()
     [[for p in sub:]]
-        submitted.push(new Date([[=p['submitted_at'].year]], [[=p['submitted_at'].month-1]], [[=p['submitted_at'].day]], [[=p['submitted_at'].hour]], [[=p['submitted_at'].minute]], [[=p['submitted_at'].second]], 0).getTime())
+        submitted.push(new Date(Date.UTC([[=p['submitted_at'].year]], [[=p['submitted_at'].month-1]], [[=p['submitted_at'].day]], [[=p['submitted_at'].hour]], [[=p['submitted_at'].minute]], [[=p['submitted_at'].second]], 0)).getTime())
     [[pass]]
     function calc_submitted_at(){
         var now = new Date().getTime();

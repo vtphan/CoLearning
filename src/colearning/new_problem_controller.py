@@ -19,7 +19,7 @@ def new_inclass_problem():
         default_lang = default_lang.first()['value']
     problem_form = Form(
         [
-            Field('problem_name', required=True, default='assignment_'+datetime.datetime.now().strftime("%Y%m%d%M%S")),
+            Field('problem_name', required=True, default='assignment_'+datetime.datetime.utcnow().strftime("%Y%m%d%M%S")),
             Field('deadline', requires=IS_IN_SET(["15 minutes", "30 minutes", "45 minutes", "60 minutes"]), default="30 minutes"),
             Field('number_of_attempts', type='integer', default=1),
             Field('maximum_score', type='integer', default=10),
@@ -49,10 +49,10 @@ def new_inclass_problem():
             # deadline=datetime.datetime.strptime(problem_form.vars['deadline'].strip(), "%Y-%m-%dT%H:%M")
             dl = problem_form.vars['deadline']
             dl = int(dl[:2])
-            deadline = datetime.datetime.now() + datetime.timedelta(minutes=dl)
+            deadline = datetime.datetime.utcnow() + datetime.timedelta(minutes=dl)
             pid = db.problem.insert(teacher_id=teacher_id, problem_description=problem_form.vars.problem_description, code=problem_form.vars.content,\
                 answer=problem_form.vars.answer.strip(), problem_name=problem_form.vars.problem_name.strip(), max_points=problem_form.vars.maximum_score,\
-                attempts=problem_form.vars.number_of_attempts, language=problem_form.vars.language,problem_uploaded_at=datetime.datetime.now(),\
+                attempts=problem_form.vars.number_of_attempts, language=problem_form.vars.language,problem_uploaded_at=datetime.datetime.utcnow(),\
                      exact_answer=exact_answer, deadline=deadline)
             topics = problem_form.vars.topics.strip()
             if topics != "":
@@ -85,7 +85,7 @@ def new_homework_problem():
         default_lang = default_lang.first()['value']
     problem_form = Form(
         [
-            Field('problem_name', required=True, default='assignment_'+datetime.datetime.now().strftime("%Y%m%d%M%S")),
+            Field('problem_name', required=True, default='assignment_'+datetime.datetime.utcnow().strftime("%Y%m%d%M%S")),
             Field('deadline', requires=IS_IN_SET(["1 day", "2 days", "3 days", "4 days", "5 days", "6 days", "7 days"]), default="3 days"),
             Field('number_of_attempts', type='integer', default=1),
             Field('maximum_score', type='integer', default=10),
@@ -115,10 +115,10 @@ def new_homework_problem():
             # deadline=datetime.datetime.strptime(problem_form.vars['deadline'].strip(), "%Y-%m-%dT%H:%M")
             dl = problem_form.vars['deadline']
             dl = int(dl[:1])
-            deadline = datetime.datetime.now() + datetime.timedelta(days=dl)
+            deadline = datetime.datetime.utcnow() + datetime.timedelta(days=dl)
             pid = db.problem.insert(teacher_id=teacher_id, problem_description=problem_form.vars.problem_description, code=problem_form.vars.content,\
                 answer=problem_form.vars.answer.strip(), problem_name=problem_form.vars.problem_name.strip(), max_points=problem_form.vars.maximum_score,\
-                attempts=problem_form.vars.number_of_attempts, language=problem_form.vars.language,problem_uploaded_at=datetime.datetime.now(),\
+                attempts=problem_form.vars.number_of_attempts, language=problem_form.vars.language,problem_uploaded_at=datetime.datetime.utcnow(),\
                      exact_answer=exact_answer, deadline=deadline)
             topics = problem_form.vars.topics.strip()
             if topics != "":

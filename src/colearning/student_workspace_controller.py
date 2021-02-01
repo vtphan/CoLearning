@@ -19,7 +19,7 @@ def workspace(student_id, problem_id):
         student_name = auth.get_user()['first_name']
         help_form = Form([Field('question', type='text')])
         if help_form.accepted:
-                db.help_queue.insert(student_id=user_id, problem_id=problem.id, message=help_form.vars.question, asked_at=datetime.datetime.now())
+                db.help_queue.insert(student_id=user_id, problem_id=problem.id, message=help_form.vars.question, asked_at=datetime.datetime.utcnow())
                 db.commit()
                 create_notification("New help seeking message recieved.", recipients=[ user['id'] for user in db(db.auth_user).select('id') if 'teacher' in groups.get(user['id'])],\
                         expire_at=problem.deadline)
