@@ -14,10 +14,10 @@
       <!-- Navigation bar -->
       <nav class="black">
         <!-- Logo -->
-        <a href="[[=URL('index')]]">
+        <!-- <a href="[[=URL('index')]]">
           <b><script>document.write(window.location.href.split('/')[3]);</script>:</b>
         </a>
-        <b>[[block page_title]][[end]]</b>
+        <b>[[block page_title]][[end]]</b> -->
         <!-- Do not touch this -->
         <label for="hamburger">☰</label>
         <input type="checkbox" id="hamburger">
@@ -37,7 +37,7 @@
           [[if globals().get('user'):]]
           <li>
             <a class="navbar-link is-primary">
-              [[=globals().get('user',{}).get('email')]]
+              [[=globals().get('user',{}).get('first_name')]]
             </a>
             <ul>
               <li><a href="[[=URL('auth/logout')]]">Logout</a></li>
@@ -55,6 +55,7 @@
         </ul>
       </nav>
       <!-- Flash alert messages, first optional one in data-alert -->
+      <!-- <h1>[[block page_title]][[end]]</h1> -->
       <flash-alerts class="padded" data-alert="[[=globals().get('flash','')]]"></flash-alerts>
     </header>
     <!-- beginning of HTML inserted by extending template -->
