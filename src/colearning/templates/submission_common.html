@@ -23,10 +23,10 @@
       <b>Student Name:</b> [[=first_name+' '+last_name]]<br>
       <b>Submitted At:</b> [[=submitted_at.strftime("%b %-d, %Y %I:%M %p")]]<br>
       [[if len(verdict)>0:]]
-        <b>Verdict:</b> [[=verdict[0]['verdict'] ]]<br>
+        <b>Status:</b> Graded [[=verdict[0]['verdict'] ]]<br>
         <b>Point: </b> [[=verdict[0]['score'] ]]
       [[else:]]
-        <b>Verdict: </b>Not Graded
+        <b>Status: </b>Not Graded
       [[pass]]
       <hr style="height:30px">
       <textarea id="editor1">[[=content]]</textarea>

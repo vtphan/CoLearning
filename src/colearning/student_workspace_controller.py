@@ -14,7 +14,7 @@ def workspace(student_id, problem_id):
         if 'student' not in groups.get(user_id):
                 redirect(URL('not_authorized'))
 
-        problem, workspace, submissions, messages, feedbacks = get_workspace_info(student_id, problem_id)
+        problem, workspace, submissions, messages, feedbacks, status = get_workspace_info(student_id, problem_id)
 
         student_name = auth.get_user()['first_name']
         help_form = Form([Field('question', type='text')])
@@ -23,7 +23,8 @@ def workspace(student_id, problem_id):
                 db.commit()
                 create_notification("New help seeking message recieved.", recipients=[ user['id'] for user in db(db.auth_user).select('id') if 'teacher' in groups.get(user['id'])],\
                         expire_at=problem.deadline)
-        return dict(problem=problem, workspace=workspace, time_interval=30000, submissions=submissions, student_name=student_name, student_id=student_id, help_form=help_form, messages=messages, feedbacks=feedbacks)
+        return dict(problem=problem, workspace=workspace, time_interval=30000, submissions=submissions, student_name=student_name, student_id=student_id, help_form=help_form,\
+                status=status, messages=messages, feedbacks=feedbacks)
 
 @action('student_workspace_view/<student_id>/<problem_id>', method='GET')
 @action.uses(auth.user, 'student_workspace_view.html')
@@ -40,11 +41,11 @@ def workspace_view(student_id, problem_id):
                 if db.help_queue[help_message_id].status == "opened":
                         db(db.help_queue.id==help_message_id).update(status='viewed')
                         db.commit()
-        problem, workspace, submissions, messages, feedbacks = get_workspace_info(student_id, problem_id)
+        problem, workspace, submissions, messages, feedbacks, status = get_workspace_info(student_id, problem_id)
         student_name = db.auth_user[student_id].first_name
         return dict(problem=problem, workspace=workspace, time_interval=1000, submissions=submissions,\
                  student_name=student_name, student_id=student_id, messages=messages, feedbacks=feedbacks,\
-                          help_message_id=help_message_id)
+                          help_message_id=help_message_id, status=status)
 
 def get_workspace_info(student_id, problem_id):
         problem = db.problem[problem_id]
@@ -62,7 +63,13 @@ def get_workspace_info(student_id, problem_id):
         submissions = db((db.submission.student_id==student_id)&(db.submission.problem_id==problem_id)).select(db.submission.id, orderby=~db.submission.submitted_at)
         messages = db((db.help_seeking_message.student_id==student_id)&(db.help_seeking_message.problem_id==problem_id)&(db.help_seeking_message.submission_id==None)).select()
         feedbacks = db.executesql("select id, given_at from feedback where problem_id="+str(problem_id)+" and submission_id is NULL order by given_at desc", as_dict=True)
-        return problem, workspace, submissions, messages, feedbacks
+        if len(db((db.submission_verdict.verdict=="correct")&(db.submission_verdict.submission_id==db.submission.id)&(db.submission.problem_id==problem_id)&(db.submission.student_id==student_id)).select())>0:
+                status = "Graded correct"
+        elif len(db((db.submission_verdict.submission_id==db.submission.id)&(db.submission.problem_id==problem_id)&(db.submission.student_id==student_id)).select())>0:
+                status = "Graded incorrect"
+        else:
+                status = "Not Graded"
+        return problem, workspace, submissions, messages, feedbacks, status
 
 
 @action('get_student_code/<workspace_id>', method='GET')

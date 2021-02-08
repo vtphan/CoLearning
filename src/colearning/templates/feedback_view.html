@@ -1,6 +1,7 @@
 [[extend 'layout_student.html']]
 [[block page_head]]
 <link rel="stylesheet" href="codemirror-5.58.1/lib/codemirror.css">
+<link rel="stylesheet" href="codemirror-5.58.1/theme/monokai.css">
 <!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
 [[end]]
@@ -14,6 +15,6 @@
       var editor1 = document.getElementById("editor1");
       var myCodeMirror = CodeMirror.fromTextArea(editor1, {lineNumbers: true, mode: "[[="python" if language=="Python" else "text/x-java" if language=="Java" else "text/x-c++src"]]", theme: "monokai", matchBrackets: true, indentUnit: 4, indentWithTabs: true, readOnly: "nocursor"});
       var editor2 = document.getElementById("editor2");
-      var myCodeMirror2 = CodeMirror.fromTextArea(editor2, {lineNumbers: true, indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
+      var myCodeMirror2 = CodeMirror.fromTextArea(editor2, {lineNumbers: true, mode: "null", theme: "monokai", indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
   </script>
   [[end]]

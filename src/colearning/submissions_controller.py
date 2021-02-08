@@ -103,18 +103,18 @@ def submission_grader():
     # print(submission_id, correct, feedback)
     submission = db.submission[submission_id]
     problem = db.problem[submission.problem_id]
-    submissions = db(db.submission.problem_id==problem.id).select(db.submission.id, orderby=db.submission.submitted_at)
-    idx = [s['id'] for s in submissions].index(submission_id)+1
+    # submissions = db(db.submission.problem_id==problem.id).select(db.submission.id, orderby=db.submission.submitted_at)
+    # idx = [s['id'] for s in submissions].index(submission_id)+1
     now = datetime.datetime.utcnow()
     if correct == 1:
         db.submission_verdict.update_or_insert(db.submission_verdict.submission_id==submission_id, submission_id=submission_id, verdict="correct", score=problem.max_points, evaluated_at=now)
         db((db.student_workspace.problem_id==problem.id)&(db.student_workspace.student_id==submission.student_id)).update(attempt_left=0)
-        create_notification("Your "+ get_number_word(idx)+" submission for problem: "+problem.problem_name+" is correct.", recipients=[submission.student_id], \
+        create_notification("Your "+ get_number_word(submission.attempt)+" submission for problem: "+problem.problem_name+" is correct.", recipients=[submission.student_id], \
             expire_at=datetime.datetime.utcnow()+datetime.timedelta(days=90), send_editor=True)
     elif correct == 0:
         credit = float(request.query.get('credit'))
         db.submission_verdict.update_or_insert(db.submission_verdict.submission_id==submission_id, submission_id=submission_id, verdict="incorrect", score=credit, evaluated_at=now)
-        create_notification("Your "+ get_number_word(idx) +" submission for problem: "+problem.problem_name+" is incorrect.", recipients=[submission.student_id], \
+        create_notification("Your "+ get_number_word(submission.attempt) +" submission for problem: "+problem.problem_name+" is incorrect.", recipients=[submission.student_id], \
             expire_at=datetime.datetime.utcnow()+datetime.timedelta(days=90), send_editor=True)
 
     # if feedback is not None and feedback != "":

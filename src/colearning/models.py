@@ -36,7 +36,7 @@ def create_tables():
           Field('content', type='text'), Field('attempt_left', type='integer'), Field('updated_at', type='datetime', default=datetime.datetime.utcnow()), redefine=True)
      db.define_table('submission', Field('problem_id', type='reference problem'), Field('student_id', type='reference auth_user'),\
           Field('content', type='text'), Field('submitted_at', type='datetime', default=datetime.datetime.utcnow()), \
-               Field('submission_category', type='integer', default=1), redefine=True)
+               Field('submission_category', type='integer', default=1), Field('attempt', type='integer'), redefine=True)
      
      db.define_table('submission_verdict', Field('submission_id', type='reference submission'), Field('verdict'), Field('score', type='double'),\
            Field('evaluated_at', type='datetime'))

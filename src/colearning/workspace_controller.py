@@ -106,10 +106,12 @@ def editor_submission_handler():
               return "You do not have any attempt left."
        attempt_left = attempt_left - 1
        submission_category = int(request.POST['category'])
-       submission_id = db.submission.insert(problem_id=problem_id, student_id=student_id, content=content, submission_category=submission_category,\
-               submitted_at=datetime.datetime.utcnow())
-      
        problem = db.problem[problem_id]
+
+       submission_id = db.submission.insert(problem_id=problem_id, student_id=student_id, content=content, submission_category=submission_category,\
+               attempt=problem.attempts-attempt_left, submitted_at=datetime.datetime.utcnow())
+      
+       
        if submission_category==1:
               if problem.exact_answer==1:
                      if problem.answer == content:
@@ -123,6 +125,8 @@ def editor_submission_handler():
               else:
                      msg = "Your submission for " + problem.problem_name + " will be looked soon."
                      db((db.student_workspace.problem_id==problem_id)&(db.student_workspace.student_id==student_id)).update(attempt_left=attempt_left)
+                     recipents = [row['id'] for row in db(db.auth_user).select('id') if ('teacher' in groups.get(row['id'])) or ('ta' in groups.get(row['id'])) ]
+                     create_notification("New <a href="+URL("view_submission/"+str(submission_id))+">submission</a> recieved.", recipients=recipents, expire_at=problem.deadline)
        else:
               recipents = [row['id'] for row in db(db.auth_user).select('id') if ('teacher' in groups.get(row['id'])) or ('ta' in groups.get(row['id'])) ]
               create_notification("Help seeking submission recieved.", recipients=recipents, expire_at=problem.deadline)

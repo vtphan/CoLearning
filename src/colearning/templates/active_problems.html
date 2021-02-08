@@ -8,15 +8,18 @@
         <tr>
             <th>Problem Name</th>
             <th>Deadline</th>
+            <th>Alloted Time</th>
             <th></th>
         </tr>
     </tbody>
     <tbody>
     
     [[for idx, p in enumerate(problems):]]
+        [[diff = p.deadline - p.problem_uploaded_at]]
         <tr>
             <td><a class="button" href="[[=URL('problem/'+str(p.id))]]">[[=p.problem_name]]</a></td>
             <td><p id="deadline_[[=idx]]"></p></td>
+            <td>[[="1 day" if diff.days == 1 else str(diff.days)+" days" if diff.days>1 else str(diff.seconds//60)+" minutes"]]</td>
             <td><a class="button is-primary" href="[[=URL('student_workspace/'+str(globals().get('user',{}).get('id'))+'/'+str(p.id))]]">Go to workspace</a></td>
         </tr>
     [[pass]]
