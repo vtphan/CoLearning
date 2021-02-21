@@ -48,7 +48,7 @@ def create_tables():
            Field('read_at', type='datetime'))
 
      db.define_table('notification', Field('message', type='text'), Field('recipients', type='list:reference auth_user'), Field('generated_at', type='datetime'),\
-          Field('expire_at', type='datetime'), redefine=True)
+          Field('expire_at', type='datetime'), Field('type'), Field('type_id', type='integer'), redefine=True)
      db.define_table('global_value', Field('variable'), Field('value'), redefine=True)
      db.define_table('notification_queue', Field('notification_id', type='reference notification'), Field('user_id', type='reference auth_user'))
      db.define_table('editor_notification_queue', Field('notification_id', type='reference notification'), Field('user_id', type='reference auth_user'))

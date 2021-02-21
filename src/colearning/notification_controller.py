@@ -22,9 +22,10 @@ def get_editor_notification():
     
     notif_message = ""
     notifs = db((db.editor_notification_queue.user_id==user_id)&(db.editor_notification_queue.notification_id==db.notification.id)\
-        &(db.notification.expire_at>=datetime.datetime.utcnow())).select(orderby=db.notification.generated_at, limitby=(0, 1))
+        &(db.notification.expire_at>=datetime.datetime.utcnow())).select(db.notification.id, db.notification.message,\
+             db.notification.type, db.notification.type_id, orderby=db.notification.generated_at, limitby=(0, 1))
     if len(notifs) == 1:
-        notif_message = notifs.first()['notification.message']
+        notif_message = json.dumps(notifs.first().as_dict())#notifs.first()['notification.message']
         db(db.editor_notification_queue.id==notifs.first()['notification.id']).delete()
     expired_entries = db(db.notification.expire_at>=datetime.datetime.utcnow()).select(db.notification.id)
     db(db.editor_notification_queue.notification_id.belongs([row['id'] for row in expired_entries])).delete()

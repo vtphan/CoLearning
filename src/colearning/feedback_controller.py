@@ -2,7 +2,7 @@ from py4web import action, request, Field,redirect, URL
 from .common import db, groups, auth, flash
 from . import settings
 from py4web.utils.form import Form, FormStyleBulma
-import datetime
+import datetime, json
 
 from .utils import create_notification
 
@@ -72,5 +72,19 @@ def save_feedback():
         db(db.help_queue.id==message_id).update(status="closed")
     db.commit()
 
-    create_notification("You have got new feedback. Visit "+URL('view_feedback/'+str(feedback_id), scheme=True), recipients=[student_id],\
-        expire_at=db.problem[problem_id].deadline, send_editor=True)
+    create_notification("You have got a new feedback. Visit "+URL('view_feedback/'+str(feedback_id), scheme=True), recipients=[student_id],\
+        expire_at=db.problem[problem_id].deadline, send_editor=True, type="feedback", type_id=feedback_id)
+
+@action('get_feedback/<feedback_id>', method='GET')
+@action.uses(auth.user)
+def get_feedback(feedback_id):
+    user_id = auth.get_user()['id']
+    feedback = db.feedback[feedback_id]
+    
+    if feedback.given_for != user_id:
+        redirect(URL("not_authorized"))
+    problem = db.problem[feedback.problem_id]
+    feedback = feedback.as_dict()
+    feedback['language'] = problem.language
+    feedback['problem_name'] = problem.problem_name
+    return json.dumps(feedback, default=str)
