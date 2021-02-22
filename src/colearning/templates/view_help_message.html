@@ -5,8 +5,12 @@
 <b>Student:</b> [[=student_name]]<br>
 <b>Problem:</b> [[=problem['problem_name'] ]]
 <article class="message">
-    <div class="message-header">Message</div>
-    <div class="message-body">[[=message['message'] ]]</div>
+    <div class="message-header">Explain what are you trying to do</div>
+    <div class="message-body">[[=message['what_trying_message'] ]]</div>
+</article>
+<article class="message">
+    <div class="message-header">Explain the problem(s) the code has</div>
+    <div class="message-body">[[=message['code_problem_message'] ]]</div>
 </article>
 <br>
 [[if submission is not None:]]

@@ -53,7 +53,7 @@ def new_inclass_problem():
             pid = db.problem.insert(teacher_id=teacher_id, problem_description=problem_form.vars.problem_description, code=problem_form.vars.content,\
                 answer=problem_form.vars.answer.strip(), problem_name=problem_form.vars.problem_name.strip(), max_points=problem_form.vars.maximum_score,\
                 attempts=problem_form.vars.number_of_attempts, language=problem_form.vars.language,problem_uploaded_at=datetime.datetime.utcnow(),\
-                     exact_answer=exact_answer, deadline=deadline)
+                     exact_answer=exact_answer, deadline=deadline, type="in-class")
             topics = problem_form.vars.topics.strip()
             if topics != "":
                 for topic in topics.split(','):
@@ -119,7 +119,7 @@ def new_homework_problem():
             pid = db.problem.insert(teacher_id=teacher_id, problem_description=problem_form.vars.problem_description, code=problem_form.vars.content,\
                 answer=problem_form.vars.answer.strip(), problem_name=problem_form.vars.problem_name.strip(), max_points=problem_form.vars.maximum_score,\
                 attempts=problem_form.vars.number_of_attempts, language=problem_form.vars.language,problem_uploaded_at=datetime.datetime.utcnow(),\
-                     exact_answer=exact_answer, deadline=deadline)
+                     exact_answer=exact_answer, deadline=deadline, type="homework")
             topics = problem_form.vars.topics.strip()
             if topics != "":
                 for topic in topics.split(','):

@@ -16,10 +16,12 @@
     <tbody>
     
     [[for m in messages:]]
+        
+        [[message = m['what_trying_message'] if m['what_trying_message'] is not None and len(m['what_trying_message'])>0 else m['code_problem_message'] if m['code_problem_message'] is not None else "" ]]
         <tr>
             <td>[[=m['first_name'] ]] [[=m['last_name'] ]]</td>
             <td>[[=m['problem_name'] ]]</td>
-            <td>[[if len(m['message'])>10:]][[=m['message'][:8]+".."]][[else:]][[=m['message'] ]][[pass]]</td>
+            <td>[[if len(message)>15:]][[=message[:13]+".."]][[else:]][[=message]][[pass]]</td>
             <td>[[=m['status'] ]]</td>
             <td><a class="button" href="[[=URL('view_help_message/'+str(m['message_id']))]]" >View Details</a></td>
         </tr>
@@ -42,10 +44,11 @@
     <tbody>
     
     [[for m in past_messages:]]
+    [[message = m['what_trying_message'] if m['what_trying_message'] is not None and len(m['what_trying_message'])>0 else m['code_problem_message'] if m['code_problem_message'] is not None else "" ]]
         <tr>
             <td>[[=m['first_name'] ]] [[=m['last_name'] ]]</td>
             <td>[[=m['problem_name'] ]]</td>
-            <td>[[if len(m['message'])>10:]][[=m['message'][:8]+".."]][[else:]][[=m['message'] ]][[pass]]</td>
+            <td>[[if len(message)>15:]][[=message[:13]+".."]][[else:]][[=message]][[pass]]</td>
             <td>[[=m['status'] ]]</td>
             <td><a class="button" href="[[=URL('view_help_message/'+str(m['message_id']))]]" target="_blank">View Details</a></td>
         </tr>

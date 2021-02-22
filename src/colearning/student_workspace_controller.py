@@ -14,17 +14,17 @@ def workspace(student_id, problem_id):
         if 'student' not in groups.get(user_id):
                 redirect(URL('not_authorized'))
 
-        problem, workspace, submissions, messages, feedbacks, status = get_workspace_info(student_id, problem_id)
+        problem, workspace, submissions, feedbacks, status = get_workspace_info(student_id, problem_id)
 
         student_name = auth.get_user()['first_name']
-        help_form = Form([Field('question', type='text')])
+        help_form = Form([Field('what_trying_message', label="Explain what are you trying to do"), Field("code_problem_message", label="Explain the problem(s) the code has")])
         if help_form.accepted:
-                db.help_queue.insert(student_id=user_id, problem_id=problem.id, message=help_form.vars.question, asked_at=datetime.datetime.utcnow())
+                db.help_queue.insert(student_id=user_id, problem_id=problem.id, what_trying_message=help_form.vars.what_trying_message, code_problem_message=help_form.vars.code_problem_message, asked_at=datetime.datetime.utcnow())
                 db.commit()
                 create_notification("New help seeking message recieved.", recipients=[ user['id'] for user in db(db.auth_user).select('id') if 'teacher' in groups.get(user['id'])],\
                         expire_at=problem.deadline)
         return dict(problem=problem, workspace=workspace, time_interval=30000, submissions=submissions, student_name=student_name, student_id=student_id, help_form=help_form,\
-                status=status, messages=messages, feedbacks=feedbacks)
+                status=status, feedbacks=feedbacks)
 
 @action('student_workspace_view/<student_id>/<problem_id>', method='GET')
 @action.uses(auth.user, 'student_workspace_view.html')
@@ -41,10 +41,10 @@ def workspace_view(student_id, problem_id):
                 if db.help_queue[help_message_id].status == "opened":
                         db(db.help_queue.id==help_message_id).update(status='viewed')
                         db.commit()
-        problem, workspace, submissions, messages, feedbacks, status = get_workspace_info(student_id, problem_id)
+        problem, workspace, submissions, feedbacks, status = get_workspace_info(student_id, problem_id)
         student_name = db.auth_user[student_id].first_name
         return dict(problem=problem, workspace=workspace, time_interval=1000, submissions=submissions,\
-                 student_name=student_name, student_id=student_id, messages=messages, feedbacks=feedbacks,\
+                 student_name=student_name, student_id=student_id, feedbacks=feedbacks,\
                           help_message_id=help_message_id, status=status)
 
 def get_workspace_info(student_id, problem_id):
@@ -61,7 +61,7 @@ def get_workspace_info(student_id, problem_id):
         #         from submission s left join submission_verdict v on s.id=v.submission_id left join feedback f on s.id=f.submission_id where \
         #                 s.problem_id="+str(problem_id)+" and s.student_id="+str(student_id)+" order by s.submitted_at desc", as_dict=True)
         submissions = db((db.submission.student_id==student_id)&(db.submission.problem_id==problem_id)).select(db.submission.id, orderby=~db.submission.submitted_at)
-        messages = db((db.help_seeking_message.student_id==student_id)&(db.help_seeking_message.problem_id==problem_id)&(db.help_seeking_message.submission_id==None)).select()
+        # messages = db((db.help_seeking_message.student_id==student_id)&(db.help_seeking_message.problem_id==problem_id)&(db.help_seeking_message.submission_id==None)).select()
         feedbacks = db.executesql("select id, given_at from feedback where problem_id="+str(problem_id)+" and submission_id is NULL order by given_at desc", as_dict=True)
         if len(db((db.submission_verdict.verdict=="correct")&(db.submission_verdict.submission_id==db.submission.id)&(db.submission.problem_id==problem_id)&(db.submission.student_id==student_id)).select())>0:
                 status = "Graded correct"
@@ -69,7 +69,7 @@ def get_workspace_info(student_id, problem_id):
                 status = "Graded incorrect"
         else:
                 status = "Not Graded"
-        return problem, workspace, submissions, messages, feedbacks, status
+        return problem, workspace, submissions, feedbacks, status
 
 
 @action('get_student_code/<workspace_id>', method='GET')
