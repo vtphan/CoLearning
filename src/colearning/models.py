@@ -2,7 +2,6 @@
 This file defines the database models
 """
 
-from src.colearning.settings import REQUIRES_APPROVAL
 from .common import db, Field, groups, auth
 from pydal.validators import *
 import datetime
@@ -20,7 +19,7 @@ def create_global_parameter(variable, value):
           return "Variable already exists"
      db.global_value.insert(variable=variable, value=value)
      db.commit()
-     
+
 def create_admin_account(email, username, first_name, last_name, password):
      if db(db.auth_user.email==email).select().first() is not None:
           return "User already exists."
