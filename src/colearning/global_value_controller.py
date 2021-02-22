@@ -18,3 +18,7 @@ def global_values():
         db.commit()
 
     return dict(form=form)
+
+# @action('get_update_frequency', method='GET')
+# @action.uses(auth.user)
+# def get_update_frequency():
