@@ -2,6 +2,12 @@
 [[block page_head]]
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
 [[end]]
+<div class="tabs is-toggle is-fullwidth">
+    <ul>
+      <li><a href="[[=URL('view_problem/'+str(problem_id))]]">Problem Information</a></li>
+      <li class="is-active"><a>Student Workspaces</a></li>    
+    </ul>
+</div>
 <table class="table">
     <tbody>
         <tr>

@@ -5,7 +5,22 @@
 <script src="codemirror-5.58.1/mode/python/python.js"></script>
 <script src="codemirror-5.58.1/mode/clike/clike.js"></script>
 <link rel="stylesheet" href="codemirror-5.58.1/theme/monokai.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
 [[end]]
+[[role=2]]
+<div class="tabs is-toggle is-fullwidth">
+    <ul>
+      <li class="is-active"><a>Problem Information</a></li>
+      <li><a href="[[=URL('student_workspace/'+str(student_id)+'/'+str(id))]]">Workspace</a></li>
+      [[i = len(submissions)]]
+      
+        [[for s in submissions:]]
+            <li><a href="[[=URL('submission/'+str(s['id']))]]">Submission [[=i]]</a></li>
+            [[i-=1]]
+        [[pass]]
+      
+    </ul>
+</div>
 [[include 'problem_view_common.html']]
 [[block page_scripts]]
 <script>

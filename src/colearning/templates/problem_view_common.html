@@ -1,5 +1,4 @@
 
-[[block page_title]]Problem[[end]]
 <div>
     <div><label>Problem Name: </label>[[=problem_name]]</div>
     <div><label>Deadline: </label>[[=deadline.strftime("%B %d, %Y %I:%M %p")]]</div>
@@ -8,6 +7,10 @@
     <div><label>Problem Description: </label>[[=problem_description]]</div>
     <div><label>Language: </label>[[=language]]</div>
     <div><label>Code: </label><div><textarea id="code">[[=code]]</textarea></div></div>
-    <div><label>Answer: </label>[[=answer]]</div>
-    <div><label>Topics: </label>[[=topics]]</div>
+    [[if role==1:]]
+        <div><label>Answer: </label>[[=answer]]</div>
+        <div><label>Topics: </label>[[=topics]]</div>
+    [[pass]]
+    <div><label>Total Submissions:</label> [[=number_of_submission]] ([[=graded_correct]] Correct, [[=graded_incorrect]] Incorrect, [[=number_of_submission-graded_correct-graded_incorrect]] Ungraded)</div>
+    <div><label>Total Given Feedbacks:</label> [[=teacher_feedback+ta_feedback+student_feedback]] ([[=teacher_feedback]] given by instructor, [[=ta_feedback]] given by TA, [[=student_feedback]] given by students)</div>
 </div>
