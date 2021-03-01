@@ -11,12 +11,17 @@ from .utils import create_notification
 def view_feedback(feedback_id):
     user_id = auth.get_user()['id']
     feedback = db.feedback[feedback_id]
-    print(feedback.given_for, user_id)
+    # print(feedback.given_for, user_id)
     if feedback.given_for != user_id:
         redirect(URL("not_authorized"))
     problem = db.problem[feedback.problem_id]
+    if feedback.help_message_id is not None and feedback.help_message_id!=0:
+        message = db.help_queue[feedback.help_message_id].as_dict()
+    else:
+        message = None
     feedback = feedback.as_dict()
     feedback['language'] = problem.language
+    feedback['message'] = message
     return feedback
 
 @action('viewt_feedback/<feedback_id>', method='GET')
@@ -27,8 +32,13 @@ def viewt_feedback(feedback_id):
         redirect(URL('not_authorized'))
     feedback = db.feedback[feedback_id]
     problem = db.problem[feedback.problem_id]
+    if feedback.help_message_id is not None and feedback.help_message_id!=0:
+        message = db.help_queue[feedback.help_message_id].as_dict()
+    else:
+        message = None
     feedback = feedback.as_dict()
     feedback['language'] = problem.language
+    feedback['message'] = message
     return feedback
 
 @action('give_feedback/<sub_or_wp_id>/<type>/<message_id>', method='GET')
@@ -64,10 +74,10 @@ def save_feedback():
     code = request.query.get('code')
     feedback = request.query.get('feedback')
     student_id = int(request.query.get('student_id'))
-    feedback_id = db.feedback.insert(problem_id=problem_id, submission_id=submission_id, feedback=feedback, code_snapshot=code,\
-         given_for=student_id, given_by=user_id, given_at=datetime.datetime.utcnow())
-    
     message_id = int(request.query.get('message_id'))
+    feedback_id = db.feedback.insert(problem_id=problem_id, submission_id=submission_id, feedback=feedback, code_snapshot=code,\
+         help_message_id=message_id, given_for=student_id, given_by=user_id, given_at=datetime.datetime.utcnow())
+    
     if message_id != 0:
         db(db.help_queue.id==message_id).update(status="closed")
     db.commit()

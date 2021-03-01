@@ -22,22 +22,20 @@ def help_message_list():
 def view_help_message(message_id):
     message = db.help_queue[message_id]
     problem = db.problem[message.problem_id]
-    if message.submission_id is not None:
-        submission = db.submission[message.submission_id]
-    else:
-        submission = None
-    # workspace = db((db.student_workspace.student_id==message.student_id) & (db.student_workspace.problem_id==message.problem_id)).select()
     student = db.auth_user[message.student_id]
     if db.help_queue[message_id].status == "not opened":
         db(db.help_queue.id==message_id).update(status='opened')
         db.commit()
+    if message.submission_id is None:
+        submission = None
+        code_snapshot = db((db.student_workspace.problem_id==message.problem_id)&(db.student_workspace.student_id==message.student_id)).select().first().content
+    else:
+        submission = db.submission[message.submission_id]
+        code_snapshot = submission.content
+    feedback = db(db.feedback.help_message_id==message_id).select().first()
+    if feedback is not None:
+        feedback = feedback.feedback
+    else:
+        feedback = ""
 
-    # have to delete from queue
-    # reply_form = Form([Field('reply', type='text')])
-    # if reply_form.accepted:
-    #     db.help_seeking_message[message_id] = dict(reply=reply_form.vars.reply, replied_at=datetime.datetime.utcnow())
-    #     db.commit()
-    #     create_notification("Recieved reply from instructor/TA.", recipients=[message.student_id],expire_at=problem.deadline)
-
-
-    return dict(message=message, submission=submission, problem=problem, student_name=student.first_name+" "+student.last_name)
+    return dict(message=message, submission=submission, problem=problem, student_name=student.first_name+" "+student.last_name, code_snapshot=code_snapshot, feedback=feedback)

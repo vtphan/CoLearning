@@ -1,5 +1,7 @@
 [[extend "layout_instructor.html"]]
 [[block page_head]]
+<link rel="stylesheet" href="codemirror-5.58.1/lib/codemirror.css">
+<link rel="stylesheet" href="codemirror-5.58.1/theme/monokai.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
 [[end]]
 <b>Student:</b> [[=student_name]]<br>
@@ -12,9 +14,72 @@
     <div class="message-header">Explain the problem(s) the code has</div>
     <div class="message-body">[[=message['code_problem_message'] ]]</div>
 </article>
+<span><label>Help Asked At: </label>[[=message['asked_at'].strftime("%b %-d, %Y %I:%M %p")]]</span>
+<div>
+    <div id="problem">
+      <table>
+          <tr>
+              <th>Code</th>
+              <th></th>
+              <th>Feedback</th>
+          </tr>
+          <tr>
+              <td style="width: 49%"><textarea id="editor1">[[=code_snapshot]]</textarea></td>
+              <td style="width: 2%">&nbsp;</td>
+              <td style="width: 49%"><textarea id="editor2">[[=feedback]]</textarea></td>
+          </tr>
+      </table>
+      
+    </div>
+    <div id="submit-button" v-show="show">
+      <button class="button is-primary" v-on:click="submit_feedback">
+          <span class="icon is-small">
+          <i class="fas fa-comment"></i>
+          </span>
+          <span>Submit Feedback</span>
+      </button>
+    </div>
+</div>
 <br>
 [[if submission is not None:]]
 <a href="[[=URL('view_submission/'+str(submission['id']))]]" class="button is-primary">Go to the code</a>
 [[else:]]
 <a href="[[=URL('student_workspace_view/'+str(message['student_id'])+'/'+str(message['problem_id']))]]" class="button is-primary"> Go to the code</a>
 [[pass]]
+
+[[block page_scripts]]
+<script src="codemirror-5.58.1/lib/codemirror.js"></script>
+<script src="codemirror-5.58.1/mode/python/python.js"></script>
+<script src="codemirror-5.58.1/mode/clike/clike.js"></script>
+<script>
+    var editor1 = document.getElementById("editor1");
+    var myCodeMirror1 = CodeMirror.fromTextArea(editor1, {lineNumbers: true, mode: "[[="python" if problem.language=="Python" else "text/x-java" if problem.language=="Java" else "text/x-c++src"]]", theme: "monokai", matchBrackets: true, indentUnit: 4, indentWithTabs: true, readOnly: "nocursor"});
+    var editor2 = document.getElementById("editor2");
+    var myCodeMirror2 = CodeMirror.fromTextArea(editor2, {lineNumbers: true, mode: "null", theme: 'monokai', indentWithTabs: true, cursorHeight: 0.75, [[if message.status=="closed":]]readOnly: "nocursor" [[pass]]});
+    myCodeMirror1.setSize("100%", null)
+    myCodeMirror2.setSize("100%", null)
+    var submit_button = new Vue({
+            el: '#submit-button',
+            data: {show: true},
+            methods: {
+                submit_feedback: async function(event){
+                    var feedback = myCodeMirror2.getValue()
+                    var code = myCodeMirror1.getValue();
+                    
+                    axios.get("[[=URL('save_feedback')]]", {
+                        params: {
+                            problem_id: [[=problem.id]], student_id: [[=message.student_id]], code: code,
+                            feedback: feedback, message_id: [[=message.id]], [[if submission is not None:]]submission_id: [[=submission.id]][[pass]]
+                    }})
+                    .then(function(msg){
+                        alert("Feedback submitted successfully.");
+                        window.location.replace("[[=URL('help_message_list')]]")
+                    })
+                    .catch(function(){
+                        alert("Could not submit feedback! Please try again.");
+                    });
+                }
+            }
+        });
+</script>
+[[end]]
