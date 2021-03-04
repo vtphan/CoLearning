@@ -22,7 +22,7 @@
             <td><a class="button" href="[[=URL('view_problem/'+str(p.id))]]">[[=p.problem_name]]</a></td>
             <td><p id="deadline_[[=idx]]"></p></td>
             <td>[[="1 day" if diff.days == 1 else str(diff.days)+" days" if diff.days>1 else str(diff.seconds//60)+" minutes"]]</td>
-            <td><a class="button" href="[[=URL('student_workspace_list/'+str(p.id))]]">View Student Workspace</a></td>
+            <td><a class="button" href="[[=URL('student_workspace_list/'+str(p.id))]]">Student Workspaces</a></td>
         </tr>
     [[pass]]
      
