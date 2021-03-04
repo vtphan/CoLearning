@@ -1,0 +1,56 @@
+[
+  {
+    "children": [
+      {
+        "command": "load_colearning_problem_info",
+        "id": "loadColearningProblemInfo",
+        "caption": "Check for latest problems"
+      },
+      {
+        "id": "side-bar-separator",
+        "caption": "-"
+      },
+      {
+        "id": "side-bar-separator",
+        "caption": "-"
+      },
+      {
+        "command": "colearning_submit_code",
+        "id": "colearningSubmitCode",
+        "caption": "Submit Code"
+      },
+      {
+        "command": "colearning_view_problem",
+        "id": "colearningViewProblem",
+        "caption": "View Problem"
+      },
+      {
+        "command": "save_colearning_workspace",
+        "id": "saveColearningWorkspace",
+        "caption": "Save Workspace"
+      },
+      {
+        "id": "side-bar-separator",
+        "caption": "-"
+      },
+      {
+        "command": "colearning_login",
+        "id": "colearningLogin",
+        "caption": "Login"
+      },
+      {
+        "children": [
+          {
+            "command": "colearning_set_server_address",
+            "id": "colearningSetServerAddress",
+            "caption": "Set Server Address"
+          }
+        ],
+        "id": "colearningSettings",
+        "caption": "Settings"
+      }
+    ],
+    "id": "LiveCoding",
+    "caption": "LiveCoding"
+  }
+]
