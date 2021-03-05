@@ -117,6 +117,7 @@ def colearningRequest(path, data, method='GET'):
 		if DEBUG:
 			sublime.message_dialog("{0}\nCannot connect to server.".format(err))
 	print('Error making request')
+	return "Error"
 
 def loadColearningFeedback(feedback_id):
 	global feedbackFolder
@@ -240,6 +241,22 @@ class saveColearningWorkspace(sublime_plugin.ApplicationCommand):
 	
 	def run(self):
 		send_all_codes()
+
+class colearningAskForHelp(sublime_plugin.ApplicationCommand):
+	def is_visible(self):
+		return is_authenticated()
+	
+	def run(self):
+		sublime.active_window().show_input_panel("Explain the problem you are facing:", "", self.send_message, None, self.send_message)
+	
+	def send_message(self, message=""):
+		current_view = sublime.active_window().active_view()
+		for problem_id, view in loaded_problems.items():
+			if current_view == view:
+				response = colearningRequest("save_help_request", {'message': message, 'problem_id': problem_id}, method='POST')
+				sublime.message_dialog(response)
+				break
+
 
 class colearningLogin(sublime_plugin.ApplicationCommand):
 	def __init__(self):

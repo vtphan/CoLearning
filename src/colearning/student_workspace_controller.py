@@ -17,11 +17,11 @@ def workspace(student_id, problem_id):
         problem, workspace, submissions, feedbacks, status = get_workspace_info(student_id, problem_id)
 
         student_name = auth.get_user()['first_name']
-        help_form = Form([Field('what_trying_message', label="Explain what are you trying to do"), Field("code_problem_message", label="Explain the problem(s) the code has")])
+        help_form = Form([Field('message', label="Explain the problem you are facing")])
         if help_form.accepted:
-                db.help_queue.insert(student_id=user_id, problem_id=problem.id, what_trying_message=help_form.vars.what_trying_message, code_problem_message=help_form.vars.code_problem_message, asked_at=datetime.datetime.utcnow())
+                db.help_queue.insert(student_id=user_id, problem_id=problem.id, message=help_form.vars.message, asked_at=datetime.datetime.utcnow())
                 db.commit()
-                create_notification("New help seeking message recieved.", recipients=[ user['id'] for user in db(db.auth_user).select('id') if 'teacher' in groups.get(user['id'])],\
+                create_notification("New help request recieved.", recipients=[ user['id'] for user in db(db.auth_user).select('id') if 'teacher' in groups.get(user['id'])],\
                         expire_at=problem.deadline)
         return dict(problem=problem, workspace=workspace, time_interval=30000, submissions=submissions, student_name=student_name, student_id=student_id, help_form=help_form,\
                 status=status, feedbacks=feedbacks)
@@ -82,3 +82,22 @@ def get_student_code(workspace_id):
         if 'student' in groups.get(user_id) and user_id == ws['student_id']:
                 return json.dumps(ws, default=str)
         redirect(URL('not_authorized'))
+
+
+@action('save_help_request', method='POST')
+@action.uses(auth.user)
+def save_help_request():
+        user_id = auth.get_user()['id']
+        if 'student' not in groups.get(user_id):
+                return "Unauthorized access"
+        # print(request.GET.keys())
+        message = request.POST['message']
+        problem_id = request.POST['problem_id']
+        # print(message, problem_id)
+        problem = db.problem[problem_id]
+        db.help_queue.insert(student_id=user_id, problem_id=problem_id, message=message, asked_at=datetime.datetime.utcnow())
+        db.commit()
+        create_notification("New help request recieved.", \
+                recipients=[ user['id'] for user in db(db.auth_user).select('id') if 'teacher' in groups.get(user['id'])], \
+                        expire_at=problem.deadline)
+        return "Your help request will be looked at soon."

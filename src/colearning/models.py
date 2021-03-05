@@ -47,25 +47,25 @@ def create_tables():
            Field('evaluated_at', type='datetime'))
 
      db.define_table('help_queue', Field('student_id', type='reference auth_user'), Field('problem_id', type='reference problem'),\
-           Field('submission_id', type='reference submission'), Field('what_trying_message', type='text'), Field('code_problem_message', type='text'),\
-                 Field('status', requires=IS_IN_SET(['not opened', 'opened', 'viewed', 'closed']), default='not opened'), Field('asked_at', type='datetime'), redefine=True)
+           Field('submission_id', type='reference submission'), Field('message', type='text'), Field('status', requires=IS_IN_SET(['not opened', 'opened', 'viewed', 'closed']),\
+                 default='not opened'), Field('asked_at', type='datetime'), redefine=True)
 
      db.define_table('feedback', Field('problem_id', type='reference problem'), Field('submission_id', type='reference submission'), Field('feedback', type='text'), Field('help_message_id', type='reference help_queue'),\
            Field('code_snapshot', type='text'), Field('given_for', type='reference auth_user'), Field('given_by', type='reference auth_user'), Field('given_at', type='datetime'), redefine=True)
-     db.define_table('alert_message', Field('creator_id', type='reference auth_user'), Field('message', type='text'), Field('problem_id',\
-           type='reference problem'), Field('created_at', type='datetime'), redefine=True)
-     db.define_table('alert_read', Field('alert_id', type='reference alert_message'), Field('student_id', type='reference auth_user'),\
-           Field('read_at', type='datetime'))
+     # db.define_table('alert_message', Field('creator_id', type='reference auth_user'), Field('message', type='text'), Field('problem_id',\
+     #       type='reference problem'), Field('created_at', type='datetime'), redefine=True)
+     # db.define_table('alert_read', Field('alert_id', type='reference alert_message'), Field('student_id', type='reference auth_user'),\
+     #       Field('read_at', type='datetime'))
 
      db.define_table('notification', Field('message', type='text'), Field('recipients', type='list:reference auth_user'), Field('generated_at', type='datetime'),\
           Field('expire_at', type='datetime'), Field('type'), Field('type_id', type='integer'), redefine=True)
      db.define_table('global_value', Field('variable'), Field('value'), redefine=True)
      db.define_table('notification_queue', Field('notification_id', type='reference notification'), Field('user_id', type='reference auth_user'))
      db.define_table('editor_notification_queue', Field('notification_id', type='reference notification'), Field('user_id', type='reference auth_user'))
-     db.define_table('help_seeking_message', Field('student_id', type='reference auth_user'), Field('problem_id', type='reference problem'), \
-          Field('submission_id', type='reference submission'), Field('message', type='text'), Field('submitted_at', type='datetime'), Field('reply', type='text'),\
-                Field('replied_at', type='datetime'), redefine=True)
-     db.define_table('help_seeking_message_queue', Field('message_id', type='reference help_seeking_message'))
+     # db.define_table('help_seeking_message', Field('student_id', type='reference auth_user'), Field('problem_id', type='reference problem'), \
+     #      Field('submission_id', type='reference submission'), Field('message', type='text'), Field('submitted_at', type='datetime'), Field('reply', type='text'),\
+     #            Field('replied_at', type='datetime'), redefine=True)
+     # db.define_table('help_seeking_message_queue', Field('message_id', type='reference help_seeking_message'))
      
 
      db.commit()

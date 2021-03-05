@@ -17,7 +17,7 @@
     
     [[for m in messages:]]
         
-        [[message = m['what_trying_message'] if m['what_trying_message'] is not None and len(m['what_trying_message'])>0 else m['code_problem_message'] if m['code_problem_message'] is not None else "" ]]
+        [[message = m['message'] if m['message'] is not None else "" ]]
         <tr>
             <td>[[=m['first_name'] ]] [[=m['last_name'] ]]</td>
             <td>[[=m['problem_name'] ]]</td>
@@ -44,7 +44,7 @@
     <tbody>
     
     [[for m in past_messages:]]
-    [[message = m['what_trying_message'] if m['what_trying_message'] is not None and len(m['what_trying_message'])>0 else m['code_problem_message'] if m['code_problem_message'] is not None else "" ]]
+    [[message = m['message'] if m['message'] is not None else ""]]
         <tr>
             <td>[[=m['first_name'] ]] [[=m['last_name'] ]]</td>
             <td>[[=m['problem_name'] ]]</td>

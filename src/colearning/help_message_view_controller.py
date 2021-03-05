@@ -9,10 +9,10 @@ from .utils import create_notification
 @action('help_message_list', method='GET')
 @action.uses(auth.user, 'help_message_list.html')
 def help_message_list():
-    messages = db.executesql("select s.first_name, s.last_name, h.id as message_id, h.student_id, h.problem_id, p.problem_name, h.what_trying_message,\
-        h.code_problem_message, h.status from help_queue h, problem p, auth_user s where p.id=h.problem_id and s.id=h.student_id and h.status<>\"closed\" order by h.asked_at desc", as_dict=True)
+    messages = db.executesql("select s.first_name, s.last_name, h.id as message_id, h.student_id, h.problem_id, p.problem_name, h.message, h.status \
+        from help_queue h, problem p, auth_user s where p.id=h.problem_id and s.id=h.student_id and h.status<>\"closed\" order by h.asked_at desc", as_dict=True)
 
-    past_messages = db.executesql("select s.first_name, s.last_name, h.id as message_id, h.student_id, h.problem_id, p.problem_name, h.what_trying_message, h.code_problem_message, h.status\
+    past_messages = db.executesql("select s.first_name, s.last_name, h.id as message_id, h.student_id, h.problem_id, p.problem_name, h.message, h.status\
         from help_queue h, problem p, auth_user s where p.id=h.problem_id and s.id=h.student_id and h.status=\"closed\" order by h.asked_at desc", as_dict=True)
     
     return dict(messages=messages, past_messages=past_messages)

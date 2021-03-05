@@ -37,7 +37,7 @@ def submission(submission_id):
         redirect(URL('not_authorized'))
     
     sub = submission[0]
-    help_form = Form([Field('what_trying_message', label="Explain what are you trying to do"), Field("code_problem_message", label="Explain the problem(s) the code has")])
+    help_form = Form([Field('message', label="Explain the problem you are facing")])
     sub['help_form'] = help_form
     
     message = db((db.help_seeking_message.student_id==sub['student_id'])&(db.help_seeking_message.problem_id==sub['problem_id'])&(db.help_seeking_message.submission_id==sub['id'])).select().first()
@@ -49,11 +49,8 @@ def submission(submission_id):
     submissions = db((db.submission.student_id==sub['student_id'])&(db.submission.problem_id==sub['problem_id'])).select(db.submission.id, orderby=~db.submission.submitted_at)
     sub['submissions'] = submissions
     if help_form.accepted:
-        # message_id = db.help_seeking_message.insert(student_id=user_id, submission_id=sub['id'], problem_id=sub['problem_id'], message=help_form.vars.question,\
-        #     submitted_at=datetime.datetime.utcnow())
-        # db.help_seeking_message_queue.insert(message_id=message_id)
-        db.help_queue.insert(student_id=user_id, problem_id=sub['problem_id'], submission_id=sub['id'], what_trying_message=help_form.vars.what_trying_message,\
-            code_problem_message=help_form.vars.code_problem_message, asked_at=datetime.datetime.utcnow())
+        
+        db.help_queue.insert(student_id=user_id, problem_id=sub['problem_id'], submission_id=sub['id'], message=help_form.vars.message, asked_at=datetime.datetime.utcnow())
         db.commit()
         create_notification("New help seeking message recieved.", recipients=[ user['id'] for user in db(db.auth_user).select('id') if 'teacher' in groups.get(user['id'])],\
             expire_at=db.problem[sub['problem_id']].deadline)
