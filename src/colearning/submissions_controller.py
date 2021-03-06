@@ -91,18 +91,11 @@ def view_submission(submission_id):
 def submission_grader():
     if 'teacher' not in groups.get(auth.get_user()['id']):
         redirect(URL('not_authorized'))
-    # print(request.POST.keys())
-    # submission_id = int(request.POST['submission_id'])
-    # correct = int(request.POST['correct'])
-    # feedback = request.POST['feedback']
     submission_id = int(request.query.get('submission_id'))
     correct = int(request.query.get('correct'))
-    # feedback = request.query.get('feedback')
-    # print(submission_id, correct, feedback)
     submission = db.submission[submission_id]
     problem = db.problem[submission.problem_id]
-    # submissions = db(db.submission.problem_id==problem.id).select(db.submission.id, orderby=db.submission.submitted_at)
-    # idx = [s['id'] for s in submissions].index(submission_id)+1
+
     now = datetime.datetime.utcnow()
     if correct == 1:
         db.submission_verdict.update_or_insert(db.submission_verdict.submission_id==submission_id, submission_id=submission_id, verdict="correct", score=problem.max_points, evaluated_at=now)
@@ -115,8 +108,6 @@ def submission_grader():
         create_notification("Your "+ get_number_word(submission.attempt) +" submission for problem: "+problem.problem_name+" is incorrect.", recipients=[submission.student_id], \
             expire_at=datetime.datetime.utcnow()+datetime.timedelta(days=90), send_editor=True)
 
-    # if feedback is not None and feedback != "":
-    #     db.feedback.insert(submission_id=submission_id, content=feedback, given_at=now)
     db.commit()
 
 

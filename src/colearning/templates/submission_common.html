@@ -2,6 +2,7 @@
     <p id="countdown" style="text-align: right;font-size: 25px; margin-top: 0px;"></p>
     <div class="tabs is-toggle is-fullwidth">
         <ul>
+          <li><a href="[[=URL(('view_' if role==1 else '')+'problem/'+str(problem_id))]]">Problem Information</a></li>
           <li><a href="[[=URL('student_workspace'+ ('_view/' if role==1 else '/') +str(student_id)+'/'+str(problem_id))]]">Workspace</a></li>
           [[i = len(submissions)]]
           [[if role==1:]]
