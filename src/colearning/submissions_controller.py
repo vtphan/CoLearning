@@ -31,7 +31,7 @@ def my_submissions():
 @action.uses(auth.user, 'submission.html')
 def submission(submission_id):
     user_id = auth.get_user()['id']
-    submission = db.executesql('SELECT s.id, s.content, s.problem_id, p.problem_name, p.language, s.student_id, st.first_name, st.last_name, s.submission_category, s.submitted_at\
+    submission = db.executesql('SELECT s.id, s.content, s.comment, s.problem_id, p.problem_name, p.language, s.student_id, st.first_name, st.last_name, s.submission_category, s.submitted_at\
          from submission s, problem p, auth_user st where s.problem_id=p.id and s.student_id=st.id and s.id='+submission_id, as_dict=True)
     if len(submission)==0 or int(user_id)!=submission[0]['student_id']:
         redirect(URL('not_authorized'))
@@ -61,7 +61,7 @@ def submission(submission_id):
 @action.uses(auth.user, 'view_submission.html')
 def view_submission(submission_id):
     user_id = auth.get_user()['id']
-    submission = db.executesql('SELECT s.id, s.content, s.problem_id, p.problem_name, p.language, s.student_id, st.first_name, st.last_name, s.submission_category, s.submitted_at\
+    submission = db.executesql('SELECT s.id, s.content, s.comment, s.problem_id, p.problem_name, p.language, s.student_id, st.first_name, st.last_name, s.submission_category, s.submitted_at\
          from submission s, problem p, auth_user st where s.problem_id=p.id and s.student_id=st.id and s.id='+submission_id, as_dict=True)
     if len(submission)==0:
         redirect(URL('not_authorized'))

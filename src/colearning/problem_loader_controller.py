@@ -19,13 +19,13 @@ def load_problem(problem_id):
     student_id = auth.get_user()['id']
     problem = db(db.problem.id==problem_id).select(db.problem.problem_name, db.problem.code, db.problem.language, db.problem.attempts).as_list()[0]
 
-    workspace = db((db.student_workspace.problem_id==problem_id) & (db.student_workspace.student_id==student_id)).select(db.student_workspace.content)
+    workspace = db((db.student_workspace.problem_id==problem_id) & (db.student_workspace.student_id==student_id)).select(db.student_workspace.content, db.student_workspace.comment)
     if workspace is None or len(workspace)==0:
-            db.student_workspace.insert(problem_id=problem_id, student_id=student_id, content=problem['code'], attempt_left=problem['attempts'])
+            db.student_workspace.insert(problem_id=problem_id, student_id=student_id, content=problem['code'], comment="", attempt_left=problem['attempts'])
             db.commit()
-            workspace = db((db.student_workspace.problem_id==problem_id) & (db.student_workspace.student_id==student_id)).select(db.student_workspace.content).first()
+            workspace = db((db.student_workspace.problem_id==problem_id) & (db.student_workspace.student_id==student_id)).select(db.student_workspace.content, db.student_workspace.comment).first()
     else:
             workspace = workspace.first()
     problem['code'] = workspace['content']
-    
+    problem['comment'] = workspace['comment']
     return json.dumps(problem)

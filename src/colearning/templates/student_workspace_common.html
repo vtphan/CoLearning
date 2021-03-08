@@ -29,7 +29,19 @@
         <b>Status:</b> [[=status]]<br>
         <b>Description:</b> [[=problem.problem_description]]<br>
         <hr style="height:30px">
-        <textarea id="editor"> [[=workspace.content]]</textarea>
+        <table>
+          <tr>
+              <th>Code</th>
+              <th></th>
+              <th>Comment</th>
+          </tr>
+          <tr>
+              <td style="width: 49%"><textarea id="editor1">[[=workspace.content]]</textarea></td>
+              <td style="width: 2%">&nbsp;</td>
+              <td style="width: 49%"><textarea id="editor2">[[=workspace.comment]]</textarea></td>
+          </tr>
+      </table>
+        
         [[if workspace.attempt_left>0 and role==2:]]
         <div id="submit-buttons">
           <button class="ui-button ui-widget ui-corner-all" id="submit-button" v-on:click="submit_code">Submit Code</button>

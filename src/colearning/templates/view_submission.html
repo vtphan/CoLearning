@@ -16,6 +16,8 @@
   <script>
       var editor1 = document.getElementById("editor1");
       var myCodeMirror = CodeMirror.fromTextArea(editor1, {lineNumbers: true, mode: "[[="python" if language=="Python" else "text/x-java" if language=="Java" else "text/x-c++src"]]", theme: "monokai", matchBrackets: true, indentUnit: 4, indentWithTabs: true, readOnly: "nocursor"});
+      var editor2 = document.getElementById("editor2");
+      var myCodeMirror2 = CodeMirror.fromTextArea(editor2, {lineNumbers: true, mode: "null", theme: 'monokai', indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
       var graded = -1;
       [[if len(verdict)>0 and verdict[0]['verdict']=="correct": ]]
         graded = 1;

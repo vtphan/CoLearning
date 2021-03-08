@@ -37,10 +37,10 @@ def create_tables():
                 Field('problem_uploaded_at', type='datetime'), Field('exact_answer', type='integer'), Field('deadline', type='datetime'),\
                       Field('type', requires=IS_IN_SET("in-class", "homework")), Field('last_updated_at', type='datetime', default=datetime.datetime.utcnow()), redefine=True) 
      db.define_table('problem_topic', Field('problem_id', type='reference problem'), Field('topic_id', type='reference topic'))
-     db.define_table('student_workspace', Field('problem_id', type='reference problem'), Field('student_id', type='reference auth_user'),\
+     db.define_table('student_workspace', Field('problem_id', type='reference problem'), Field('student_id', type='reference auth_user'), Field('comment', type='text'),\
           Field('content', type='text'), Field('attempt_left', type='integer'), Field('updated_at', type='datetime', default=datetime.datetime.utcnow()), redefine=True)
      db.define_table('submission', Field('problem_id', type='reference problem'), Field('student_id', type='reference auth_user'),\
-          Field('content', type='text'), Field('submitted_at', type='datetime', default=datetime.datetime.utcnow()), \
+          Field('content', type='text'), Field('submitted_at', type='datetime', default=datetime.datetime.utcnow()), Field('comment', type='text'), \
                Field('submission_category', type='integer', default=1), Field('attempt', type='integer'), redefine=True)
      
      db.define_table('submission_verdict', Field('submission_id', type='reference submission'), Field('verdict'), Field('score', type='double'),\
