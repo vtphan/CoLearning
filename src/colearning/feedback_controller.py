@@ -75,6 +75,8 @@ def save_feedback():
     feedback = request.query.get('feedback')
     student_id = int(request.query.get('student_id'))
     message_id = int(request.query.get('message_id'))
+    if message_id == 0:
+        message_id = None
     feedback_id = db.feedback.insert(problem_id=problem_id, submission_id=submission_id, feedback=feedback, code_snapshot=code,\
          help_message_id=message_id, given_for=student_id, given_by=user_id, given_at=datetime.datetime.utcnow())
     
