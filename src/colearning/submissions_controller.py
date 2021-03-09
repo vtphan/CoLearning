@@ -40,8 +40,8 @@ def submission(submission_id):
     help_form = Form([Field('message', label="Explain the problem you are facing")])
     sub['help_form'] = help_form
     
-    message = db((db.help_seeking_message.student_id==sub['student_id'])&(db.help_seeking_message.problem_id==sub['problem_id'])&(db.help_seeking_message.submission_id==sub['id'])).select().first()
-    sub['message'] = message
+    # message = db((db.help_seeking_message.student_id==sub['student_id'])&(db.help_seeking_message.problem_id==sub['problem_id'])&(db.help_seeking_message.submission_id==sub['id'])).select().first()
+    # sub['message'] = message
     feedbacks = db.executesql("select id, given_at from feedback where submission_id is not NULL and submission_id="+str(submission_id)+" order by given_at desc", as_dict=True)
     sub['feedbacks'] = feedbacks
     verdict = db(db.submission_verdict.submission_id==submission_id).select()
