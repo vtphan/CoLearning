@@ -56,7 +56,8 @@ def new_inclass_problem():
                 attempts=problem_form.vars.number_of_attempts, language=problem_form.vars.language,problem_uploaded_at=datetime.datetime.utcnow(),\
                      exact_answer=exact_answer, alloted_time=dl, type="in-class")
             deadline=None
-            if problem_form.vars.publish == True:
+            
+            if problem_form.vars.publish == 'ON':
                 deadline = datetime.datetime.utcnow() + datetime.timedelta(minutes=dl)
                 db.problem[pid] = dict(deadline=deadline)
 
@@ -129,7 +130,7 @@ def new_homework_problem():
                 attempts=problem_form.vars.number_of_attempts, language=problem_form.vars.language,problem_uploaded_at=datetime.datetime.utcnow(),\
                      exact_answer=exact_answer, alloted_time=dl, type="homework")
             deadline = None
-            if problem_form.vars.publish==True:
+            if problem_form.vars.publish=='ON':
                 deadline = datetime.datetime.utcnow() + datetime.timedelta(days=dl)
                 db.problem[pid] = dict(deadline=deadline)
 
