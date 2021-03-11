@@ -2,7 +2,7 @@
 <div>
     <div><label>Problem Name: </label>[[=problem_name]]</div>
     [[if deadline is not None:]]<div><label>Deadline: </label>[[=deadline.strftime("%B %d, %Y %I:%M %p")]]</div>[[pass]]
-    <div><label>Alloted Time: </label> [[=alloted_time]] [[if type=='in-class':]]minute[[else:]]day[[if alloted_time>1:]]s[[pass]]<div>
+    <div><label>Alloted Time: </label> [[=alloted_time]] [[if type=='in-class':]]minute[[else:]]day[[pass]][[if alloted_time>1:]]s[[pass]]<div>
     <div><label>Number of attempts allowed: </label>[[=attempts]]</div>
     <div><label>Maximum Score: </label>[[=max_points]]</div>
     <div><label>Problem Description: </label>[[=problem_description]]</div>
