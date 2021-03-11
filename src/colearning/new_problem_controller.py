@@ -148,7 +148,7 @@ def new_homework_problem():
 
     return dict(form=problem_form)
 
-@action('publish_problem/<problem_id:integer>')
+@action('publish_problem/<problem_id>')
 @action.uses(auth.user)
 def publish_problem(problem_id):
     problem = db.problem[problem_id]
