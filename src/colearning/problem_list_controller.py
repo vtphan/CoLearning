@@ -19,7 +19,7 @@ def problem_list(problem_category='published'):
     if 'teacher' not in groups.get(auth.get_user()['id']):
         redirect(URL('not_authorized'))
     if problem_category=='unpublished':
-        problems = db(db.problem.deadline is None).select(orderby=~db.problem.uploaded_at)
+        problems = db(db.problem.deadline is None).select(orderby=~db.problem.problem_uploaded_at)
     elif problem_category=='published':
         problems = db((db.problem.deadline is not None)&(db.problem.deadline>datetime.datetime.utcnow())).select(orderby=~db.problem.deadline)
     elif problem_category=='expired':
