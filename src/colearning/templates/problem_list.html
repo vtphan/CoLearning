@@ -4,31 +4,40 @@
 [[end]]
 
 [[block page_title]]Active Problems[[end]]
+
+<div class="tabs is-toggle is-fullwidth">
+    <ul>
+      <li [[if category=='published']]class="is-active"[[pass]]><a href="[[=URL('problem_list/published')]]">Published</a></li>
+      <li [[if category=='unpublished']]class="is-active"[[pass]]><a href="[[=URL('problem_list/unpublished')]]">Unpublished</a></li>
+      <li [[if category=='expired']]class="is-active"[[pass]]><a href="[[=URL('problem_list/expired')]]">Expired</a></li>
+    </ul>
+</div>
+
 <table class="table">
     <tbody>
         <tr>
             <th>Problem Name</th>
-            <th>Deadline</th>
+            [[if category!='unpublished']]<th>Deadline</th>[[pass]]
             <th>Alloted Time</th>
-            <th></th>
+            [[if category!='unpublished']]<th></th>[[pass]]
         </tr>
     </tbody>
     <tbody>
     
     [[for idx, p in enumerate(problems):]]
-        [[diff = p.deadline - p.problem_uploaded_at]]
         
         <tr>
             <td><a class="button" href="[[=URL('view_problem/'+str(p.id))]]">[[=p.problem_name]]</a></td>
-            <td><p id="deadline_[[=idx]]"></p></td>
-            <td>[[="1 day" if diff.days == 1 else str(diff.days)+" days" if diff.days>1 else str(diff.seconds//60)+" minutes"]]</td>
-            <td><a class="button" href="[[=URL('student_workspace_list/'+str(p.id))]]">View Student Workspaces</a></td>
+            [[if category!='unpublished']]<td><p id="deadline_[[=idx]]"><script>new Date(Date.UTC([[=p.deadline.year]], [[=p.deadline.month-1]], [[=p.deadline.day]], [[=p.deadline.hour]], [[=p.deadline.minute]], [[=p.deadline.second]], 0)).toLocaleString();</script></p></td>[[pass]]
+            <td>[[=p.alloted_time]] [[if p.type=='in-class']]day[[else:]]minute[[pass]][[if p.alloted_time>1]]s[[pass]]</td>
+            [[if category!='unpublished']]<td><a class="button" href="[[=URL('student_workspace_list/'+str(p.id))]]">View Student Workspaces</a></td>[[pass]]
         </tr>
     [[pass]]
      
     </tbody>
 </table>
 [[block page_scripts]]
+[[if category=='published']]
 <script>
     var deadlines = new Array()
     [[for p in problems:]]
@@ -73,4 +82,5 @@
     }
     calc_deadlines();
 </script>
+[[pass]]
 [[end]]

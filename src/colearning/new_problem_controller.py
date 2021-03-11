@@ -20,7 +20,7 @@ def new_inclass_problem():
     problem_form = Form(
         [
             Field('problem_name', required=True, default='assignment_'+datetime.datetime.utcnow().strftime("%Y%m%d%M%S")),
-            Field('deadline', requires=IS_IN_SET(["15 minutes", "30 minutes", "45 minutes", "60 minutes"]), default="30 minutes"),
+            Field('alloted_time', requires=IS_IN_SET(["15 minutes", "30 minutes", "45 minutes", "60 minutes"]), default="30 minutes"),
             Field('number_of_attempts', type='integer', default=1),
             Field('maximum_score', type='integer', default=10),
             Field('problem_description', 'text'),
@@ -28,6 +28,7 @@ def new_inclass_problem():
             Field('content', 'text'),
             Field('answer'),
             Field('topics'),
+            Field('publish', type='boolean')
         ], 
         formstyle=FormStyleBulma
     )
@@ -47,13 +48,17 @@ def new_inclass_problem():
                 exact_answer = 0
             teacher_id = auth.get_user()['id']
             # deadline=datetime.datetime.strptime(problem_form.vars['deadline'].strip(), "%Y-%m-%dT%H:%M")
-            dl = problem_form.vars['deadline']
+            dl = problem_form.vars['alloted_time']
             dl = int(dl[:2])
-            deadline = datetime.datetime.utcnow() + datetime.timedelta(minutes=dl)
+            
             pid = db.problem.insert(teacher_id=teacher_id, problem_description=problem_form.vars.problem_description, code=problem_form.vars.content,\
                 answer=problem_form.vars.answer.strip(), problem_name=problem_form.vars.problem_name.strip(), max_points=problem_form.vars.maximum_score,\
                 attempts=problem_form.vars.number_of_attempts, language=problem_form.vars.language,problem_uploaded_at=datetime.datetime.utcnow(),\
-                     exact_answer=exact_answer, deadline=deadline, type="in-class")
+                     exact_answer=exact_answer, alloted_time=dl, type="in-class")
+            if problem_form.vars.publish == True:
+                deadline = datetime.datetime.utcnow() + datetime.timedelta(minutes=dl)
+                db.problem[pid] = dict(deadline=deadline)
+
             topics = problem_form.vars.topics.strip()
             if topics != "":
                 for topic in topics.split(','):
@@ -94,6 +99,7 @@ def new_homework_problem():
             Field('content', 'text'),
             Field('answer'),
             Field('topics'),
+            Field('publish', type='boolean')
         ], 
         formstyle=FormStyleBulma
     )
@@ -115,11 +121,15 @@ def new_homework_problem():
             # deadline=datetime.datetime.strptime(problem_form.vars['deadline'].strip(), "%Y-%m-%dT%H:%M")
             dl = problem_form.vars['deadline']
             dl = int(dl[:1])
-            deadline = datetime.datetime.utcnow() + datetime.timedelta(days=dl)
+            
             pid = db.problem.insert(teacher_id=teacher_id, problem_description=problem_form.vars.problem_description, code=problem_form.vars.content,\
                 answer=problem_form.vars.answer.strip(), problem_name=problem_form.vars.problem_name.strip(), max_points=problem_form.vars.maximum_score,\
                 attempts=problem_form.vars.number_of_attempts, language=problem_form.vars.language,problem_uploaded_at=datetime.datetime.utcnow(),\
-                     exact_answer=exact_answer, deadline=deadline, type="homework")
+                     exact_answer=exact_answer, alloted_time=dl, type="homework")
+            if problem_form.vars.publish==True:
+                deadline = datetime.datetime.utcnow() + datetime.timedelta(days=dl)
+                db.problem[pid] = dict(deadline=deadline)
+
             topics = problem_form.vars.topics.strip()
             if topics != "":
                 for topic in topics.split(','):
@@ -137,3 +147,15 @@ def new_homework_problem():
             redirect(URL('view_problem/'+str(pid)))
 
     return dict(form=problem_form)
+
+@action('publish_problem/<problem_id:integer>')
+@action.uses(auth.user)
+def publish_problem(problem_id):
+    problem = db.problem[problem_id]
+    if problem.type=='in-class':
+        deadline = datetime.datetime.utcnow() + datetime.timedelta(minutes=problem.alloted_time)
+    elif problem.type=='homework':
+        deadline = datetime.datetime.utcnow() + datetime.timedelta(days=problem.alloted_time)
+    db.problem[problem_id] = dict(deadline=deadline)
+    db.commit()
+    return "Problem has been published!"

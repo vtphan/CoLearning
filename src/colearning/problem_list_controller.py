@@ -4,12 +4,26 @@ from . import settings
 from py4web.utils.form import Form, FormStyleBulma
 import datetime
 
-@action('problem_list', method='GET')
-@action.uses(auth.user, 'problem_list.html')
-def problem_list():
-    if 'teacher' not in groups.get(auth.get_user()['id']):
-        redirect(URL('not_authorized'))
-    problems = db(db.problem).select(orderby=~db.problem.deadline)
-    return dict(problems=problems)
+# @action('problem_list', method='GET')
+# @action.uses(auth.user, 'problem_list.html')
+# def problem_list():
+#     if 'teacher' not in groups.get(auth.get_user()['id']):
+#         redirect(URL('not_authorized'))
+#     problems = db(db.problem).select(orderby=~db.problem.deadline)
+#     return dict(problems=problems)
     
 
+@action('problem_list/<problem_category>')
+@action.uses(auth.user, 'problem_list.html')
+def problem_list(problem_category='published'):
+    if 'teacher' not in groups.get(auth.get_user()['id']):
+        redirect(URL('not_authorized'))
+    if problem_category=='unpublished':
+        problems = db(db.problem.deadline is None).select(orderby=~db.problem.uploaded_at)
+    elif problem_category=='published':
+        problems = db((db.problem.deadline is not None)&(db.problem.deadline>datetime.datetime.utcnow())).select(orderby=~db.problem.deadline)
+    elif problem_category=='expired':
+        problems = db((db.problem.deadline is not None)&(db.problem.deadline<=datetime.datetime.utcnow())).select(orderby=~db.problem.deadline)
+    else:
+        problems = None
+    return dict(problems=problems, category=problem_category)

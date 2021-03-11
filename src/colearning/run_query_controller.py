@@ -9,7 +9,7 @@ from pydal.validators import IS_IN_SET, IS_NOT_EMPTY
 @action.uses(auth.user, 'run_query.html')
 def run_query():
     if 'admin' not in groups.get(auth.get_user()['id']):
-        redirect(URL('unauthorized_access'))
+        redirect(URL('not_authorized'))
     query_form = Form([Field('query', type='text')])
     if query_form.accepted:
         db.executesql(query_form.vars.query)
