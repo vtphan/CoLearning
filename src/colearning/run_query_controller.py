@@ -5,7 +5,7 @@ from py4web.utils.form import Form, FormStyleBulma
 import datetime
 from pydal.validators import IS_IN_SET, IS_NOT_EMPTY
 
-@action('run_query', method='GET')
+@action('run_query', method=['GET', 'POST'])
 @action.uses(auth.user, 'run_query.html')
 def run_query():
     if 'admin' not in groups.get(auth.get_user()['id']):
