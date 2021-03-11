@@ -55,6 +55,7 @@ def new_inclass_problem():
                 answer=problem_form.vars.answer.strip(), problem_name=problem_form.vars.problem_name.strip(), max_points=problem_form.vars.maximum_score,\
                 attempts=problem_form.vars.number_of_attempts, language=problem_form.vars.language,problem_uploaded_at=datetime.datetime.utcnow(),\
                      exact_answer=exact_answer, alloted_time=dl, type="in-class")
+            deadline=None
             if problem_form.vars.publish == True:
                 deadline = datetime.datetime.utcnow() + datetime.timedelta(minutes=dl)
                 db.problem[pid] = dict(deadline=deadline)
@@ -71,8 +72,9 @@ def new_inclass_problem():
             db.commit()
             add_global_value('language', problem_form.vars.language)
             flash.set(message='Problem '+problem_form.vars.problem_name.strip()+' has been added successfully.')
-            users = [row['id'] for row in db(db.auth_user).select('id') if row['id']!=teacher_id]
-            create_notification('New in-class exercise '+problem_form.vars.problem_name+' has been added.', users, deadline)
+            if deadline is not None:
+                users = [row['id'] for row in db(db.auth_user).select('id') if row['id']!=teacher_id]
+                create_notification('New in-class exercise '+problem_form.vars.problem_name+' has been added.', users, deadline)
             redirect(URL('view_problem/'+str(pid)))
 
     return dict(form=problem_form)
@@ -126,6 +128,7 @@ def new_homework_problem():
                 answer=problem_form.vars.answer.strip(), problem_name=problem_form.vars.problem_name.strip(), max_points=problem_form.vars.maximum_score,\
                 attempts=problem_form.vars.number_of_attempts, language=problem_form.vars.language,problem_uploaded_at=datetime.datetime.utcnow(),\
                      exact_answer=exact_answer, alloted_time=dl, type="homework")
+            deadline = None
             if problem_form.vars.publish==True:
                 deadline = datetime.datetime.utcnow() + datetime.timedelta(days=dl)
                 db.problem[pid] = dict(deadline=deadline)
@@ -142,8 +145,9 @@ def new_homework_problem():
             db.commit()
             add_global_value('language', problem_form.vars.language)
             flash.set(message='Problem '+problem_form.vars.problem_name.strip()+' has been added successfully.')
-            users = [row['id'] for row in db(db.auth_user).select('id') if row['id']!=teacher_id]
-            create_notification('New homework assignment '+problem_form.vars.problem_name+' has been added.', users, deadline)
+            if deadline is not None:
+                users = [row['id'] for row in db(db.auth_user).select('id') if row['id']!=teacher_id]
+                create_notification('New homework assignment '+problem_form.vars.problem_name+' has been added.', users, deadline)
             redirect(URL('view_problem/'+str(pid)))
 
     return dict(form=problem_form)
