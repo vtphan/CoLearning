@@ -1,3 +1,14 @@
 [[extend 'layout_instructor.html' ]]
-
+[[block page_head]]
+<script src="codemirror-5.58.1/lib/codemirror.js"></script>
+<link rel="stylesheet" href="codemirror-5.58.1/lib/codemirror.css">
+<script src="codemirror-5.58.1/mode/sql/sql.js"></script>
+<link rel="stylesheet" href="codemirror-5.58.1/theme/monokai.css">
+[[end]]
 [[=form]]
+[[block page_scripts]]
+<script>
+    var editor = document.getElementById("none_query");
+    var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "text/x-mysql", theme: "monokai", indentWithTabs: true});
+</script>
+[[end]]
