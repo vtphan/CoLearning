@@ -47,6 +47,7 @@ from .problem_loader_controller import *
 from .feedback_controller import *
 from .view_problem_controller import *
 # from .test_controller import *
+from .run_query_controller import *
 
 
 @unauthenticated("index", "index.html")
