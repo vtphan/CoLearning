@@ -29,7 +29,7 @@
         <tr>
             <td><a class="button" href="[[=URL('view_problem/'+str(p.id))]]">[[=p.problem_name]]</a></td>
             [[if category!='unpublished':]]<td><p id="deadline_[[=idx]]"><script>new Date(Date.UTC([[=p.deadline.year]], [[=p.deadline.month-1]], [[=p.deadline.day]], [[=p.deadline.hour]], [[=p.deadline.minute]], [[=p.deadline.second]], 0)).toLocaleString();</script></p></td>[[pass]]
-            <td>[[=p.alloted_time]] [[if p.type=='in-class':]]day[[else:]]minute[[pass]][[if p.alloted_time>1:]]s[[pass]]</td>
+            <td>[[=p.alloted_time]] [[if p.type=='in-class':]]minute[[else:]]day[[pass]][[if p.alloted_time>1:]]s[[pass]]</td>
             [[if category!='unpublished':]]<td><a class="button" href="[[=URL('student_workspace_list/'+str(p.id))]]">View Student Workspaces</a></td>[[pass]]
         </tr>
     [[pass]]

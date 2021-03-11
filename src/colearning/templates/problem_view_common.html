@@ -1,7 +1,8 @@
 
 <div>
     <div><label>Problem Name: </label>[[=problem_name]]</div>
-    <div><label>Deadline: </label>[[=deadline.strftime("%B %d, %Y %I:%M %p")]]</div>
+    [[if deadline is not None:]]<div><label>Deadline: </label>[[=deadline.strftime("%B %d, %Y %I:%M %p")]]</div>[[pass]]
+    <div><label>Alloted Time: </label> [[=alloted_time]] [[if type=='in-class':]]minute[[else:]]day[[if alloted_time>1:]]s[[pass]]<div>
     <div><label>Number of attempts allowed: </label>[[=attempts]]</div>
     <div><label>Maximum Score: </label>[[=max_points]]</div>
     <div><label>Problem Description: </label>[[=problem_description]]</div>
@@ -11,6 +12,8 @@
         <div><label>Answer: </label>[[=answer]]</div>
         <div><label>Topics: </label>[[=topics]]</div>
     [[pass]]
-    <div><label>Total Submissions:</label> [[=number_of_submission]] ([[=graded_correct]] Correct, [[=graded_incorrect]] Incorrect, [[=number_of_submission-graded_correct-graded_incorrect]] Ungraded)</div>
-    <div><label>Total Given Feedback:</label> [[=teacher_feedback+ta_feedback+student_feedback]] ([[=teacher_feedback]] given by instructor, [[=ta_feedback]] given by TA, [[=student_feedback]] given by students)</div>
+    [[if deadline is not None:]]
+        <div><label>Total Submissions:</label> [[=number_of_submission]] ([[=graded_correct]] Correct, [[=graded_incorrect]] Incorrect, [[=number_of_submission-graded_correct-graded_incorrect]] Ungraded)</div>
+        <div><label>Total Given Feedback:</label> [[=teacher_feedback+ta_feedback+student_feedback]] ([[=teacher_feedback]] given by instructor, [[=ta_feedback]] given by TA, [[=student_feedback]] given by students)</div>
+    [[pass]]
 </div>
