@@ -28,7 +28,7 @@
         
         <tr>
             <td><a class="button" href="[[=URL('view_problem/'+str(p.id))]]">[[=p.problem_name]]</a></td>
-            [[if category!='unpublished':]]<td><p id="deadline_[[=idx]]"><script>new Date(Date.UTC([[=p.deadline.year]], [[=p.deadline.month-1]], [[=p.deadline.day]], [[=p.deadline.hour]], [[=p.deadline.minute]], [[=p.deadline.second]], 0)).toLocaleString();</script></p></td>[[pass]]
+            [[if category!='unpublished':]]<td><p id="deadline_[[=idx]]"></p></td>[[pass]]
             <td>[[=p.alloted_time]] [[if p.type=='in-class':]]minute[[else:]]day[[pass]][[if p.alloted_time>1:]]s[[pass]]</td>
             [[if category!='unpublished':]]<td><a class="button" href="[[=URL('student_workspace_list/'+str(p.id))]]">View Student Workspaces</a></td>[[pass]]
         </tr>
@@ -81,6 +81,16 @@
         setInterval(calc_deadlines, 60000);
     }
     calc_deadlines();
+</script>
+[[elif category=='expired':]]
+<script>
+    var deadlines = new Array()
+    [[for p in problems:]]
+    deadlines.push(new Date(Date.UTC([[=p.deadline.year]], [[=p.deadline.month-1]], [[=p.deadline.day]], [[=p.deadline.hour]], [[=p.deadline.minute]], [[=p.deadline.second]], 0)).toLocaleString())
+    [[pass]]
+    for(var i = 0; i<deadlines.length; i++){
+        document.getElementById("deadline_"+i).innerHTML = deadlines[i];
+    }
 </script>
 [[pass]]
 [[end]]
