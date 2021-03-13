@@ -50,14 +50,15 @@ from .view_problem_controller import *
 from .run_query_controller import *
 
 
-@unauthenticated("index", "index.html")
+@action("index", method='GET')
+@action.uses(auth.user, "index.html")
 def index():
     user = auth.get_user()
     if user:
         if 'student' in groups.get(auth.get_user()['id']):
             redirect(URL('active_problems'))
         elif 'teacher' in groups.get(auth.get_user()['id']):
-            redirect(URL('problem_list'))
+            redirect(URL('problem_list/published'))
             
     flash.set("Hello world")
     message = T("Hello {first_name}".format(**user) if user else "Hello")
