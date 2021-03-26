@@ -15,9 +15,44 @@
     </ul>
 </div>
 [[include 'problem_view_common.html']]
+[[if deadline is None:]]
+<div id="publish-button">
+  <button class="button is-success" v-on:click="publish_problem" >
+    <span class="icon is-small">
+    <i class="fas fa-check"></i>
+    </span>
+    <span>Publish</span>
+  </button>
+</div>
+[[pass]]
 [[block page_scripts]]
 <script>
     var editor = document.getElementById("code");
     var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "[[="python" if language=="Python" else "text/x-java" if language=="Java" else "text/x-c++src"]]", theme: "monokai", matchBrackets: true, indentUnit: 4, indentWithTabs: true, readOnly: "nocursor"});
+    var instroctor_buttons = new Vue({
+              el: '#publish-button',
+              
+              methods: {
+                  
+                  publish_problem: function(event){
+                    
+                    axios.get("[[=URL('publish_problem/'+str(id))]]")
+                    .then(function(msg){
+                        alert("Problem has been published.");
+                        window.location.replace("[[=URL('problem_list/published')]]")
+
+                    })
+                    .catch(function(e){
+                        alert("Could not publish the problem! Please try again.");
+                    });
+                    
+                  },
+                  
+              }
+          });
+    [[if deadline is not None:]]
+      var deadline = new Date(Date.UTC([[=deadline.year]], [[=deadline.month-1]], [[=deadline.day]], [[=deadline.hour]], [[=deadline.minute]], [[=deadline.second]], 0));
+      document.getElementById("deadline").innerHTML = deadline.toLocaleString();
+    [[pass]]
 </script>
 [[end]]

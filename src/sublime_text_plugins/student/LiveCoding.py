@@ -32,7 +32,7 @@ folderPath = os.path.join(os.path.expanduser('~'), 'CL')
 
 colearningCookieFile = os.path.join(folderPath, "cookies")
 feedbackFolder = os.path.join(folderPath, "FEEDBACK")
-commentFolder = os.path.join(folderPath, "COMMENTS")
+# commentFolder = os.path.join(folderPath, "COMMENTS")
 
 if not os.path.exists(folderPath):
 	os.mkdir(folderPath)
@@ -40,15 +40,15 @@ if not os.path.exists(folderPath):
 if not os.path.exists(feedbackFolder):
 	os.mkdir(feedbackFolder)
 
-if not os.path.exists(commentFolder):
-	os.mkdir(commentFolder)
+# if not os.path.exists(commentFolder):
+# 	os.mkdir(commentFolder)
 
 SYNC_INTERVAL = 30
 
 loaded_problems = {}
-loaded_comments = {}
+# loaded_comments = {}
 last_saved_code = {}
-last_saved_comments = {}
+# last_saved_comments = {}
 last_saved_problems = None
 student_id = None
 session = ''
@@ -57,15 +57,15 @@ session_expiration_time = None
 def send_all_codes():
 	for problem_id, view in loaded_problems.items():
 		code = view.substr(sublime.Region(0, view.size())).rstrip()
-		comment = loaded_comments[problem_id].substr(sublime.Region(0, loaded_comments[problem_id].size())).rstrip()
+		# comment = loaded_comments[problem_id].substr(sublime.Region(0, loaded_comments[problem_id].size())).rstrip()
 		if DEBUG:
 			print(problem_id)
-		if code == last_saved_code[problem_id] and comment==last_saved_comments[problem_id]:
+		if code == last_saved_code[problem_id]:
 			continue
 		last_saved_code[problem_id] = code
-		last_saved_comments[problem_id] = comment
+		# last_saved_comments[problem_id] = comment
 		data = {'content': code, 
-				'comment': comment,
+				# 'comment': comment,
 				'problem_id': problem_id, 
 				'student_id': student_id
 				}
@@ -226,25 +226,25 @@ class loadColearningProblemCommand(sublime_plugin.TextCommand):
 		with open(code_filename, 'w', encoding='utf-8') as f:
 			f.write(problem['code'])
 
-		comment_filename = os.path.join(commentFolder, "comments_"+problem['problem_name']+".txt")
-		with open(comment_filename, 'w+', encoding='utf-8') as f:
-			f.write(problem['comment'])
+		# comment_filename = os.path.join(commentFolder, "comments_"+problem['problem_name']+".txt")
+		# with open(comment_filename, 'w+', encoding='utf-8') as f:
+		# 	f.write(problem['comment'])
 		
 		sublime.run_command('new_window')
 		current_window = sublime.active_window()
-		current_window.set_layout({
-				"cols": [0, 0.5, 1],
-				"rows": [0, 1],
-				"cells": [[0, 0, 1, 1], [1, 0, 2, 1]]
-			})
+		# current_window.set_layout({
+		# 		"cols": [0, 0.5, 1],
+		# 		"rows": [0, 1],
+		# 		"cells": [[0, 0, 1, 1], [1, 0, 2, 1]]
+		# 	})
 		code_view = current_window.open_file(code_filename)
-		current_window.focus_group(1)
-		comment_view = current_window.open_file(comment_filename)
-		current_window.focus_group(0)
+		# current_window.focus_group(1)
+		# comment_view = current_window.open_file(comment_filename)
+		# current_window.focus_group(0)
 		loaded_problems[problem_id] = code_view
-		loaded_comments[problem_id] = comment_view
+		# loaded_comments[problem_id] = comment_view
 		last_saved_code[problem_id] = ''
-		last_saved_comments[problem_id] = ''
+		# last_saved_comments[problem_id] = ''
 
 class colearningSubmitCode(sublime_plugin.WindowCommand):
 	def is_visible(self):
@@ -255,19 +255,19 @@ class colearningSubmitCode(sublime_plugin.WindowCommand):
 		for problem_id, view in loaded_problems.items():
 			if view == current_view:
 				code = view.substr(sublime.Region(0, view.size())).rstrip()
-				comment = loaded_comments[problem_id].substr(sublime.Region(0, loaded_comments[problem_id].size())).rstrip()
-				data = {'problem_id': problem_id, 'category': 1, 'content': code, 'comment': comment}
+				# comment = loaded_comments[problem_id].substr(sublime.Region(0, loaded_comments[problem_id].size())).rstrip()
+				data = {'problem_id': problem_id, 'category': 1, 'content': code}
 				response = colearningRequest('editor_submission_handler', data, method='POST')
 				sublime.message_dialog(response)
 				return
-		for problem_id, view in loaded_comments.items():
-			if view == current_view:
-				comment = view.substr(sublime.Region(0, view.size())).rstrip()
-				code = loaded_problems[problem_id].substr(sublime.Region(0, loaded_problems[problem_id].size())).rstrip()
-				data = {'problem_id': problem_id, 'category': 1, 'content': code, 'comment': comment}
-				response = colearningRequest('editor_submission_handler', data, method='POST')
-				sublime.message_dialog(response)
-				return
+		# for problem_id, view in loaded_comments.items():
+		# 	if view == current_view:
+		# 		comment = view.substr(sublime.Region(0, view.size())).rstrip()
+		# 		code = loaded_problems[problem_id].substr(sublime.Region(0, loaded_problems[problem_id].size())).rstrip()
+		# 		data = {'problem_id': problem_id, 'category': 1, 'content': code, 'comment': comment}
+		# 		response = colearningRequest('editor_submission_handler', data, method='POST')
+		# 		sublime.message_dialog(response)
+		# 		return
 		sublime.message_dialog("Nothing to be submitted!")
 
 class saveColearningWorkspace(sublime_plugin.ApplicationCommand):
@@ -282,9 +282,13 @@ class colearningAskForHelp(sublime_plugin.ApplicationCommand):
 		return is_authenticated()
 	
 	def run(self):
-		sublime.active_window().show_input_panel("Explain the problem you are facing:", "", self.send_message, None, self.send_message)
+		sublime.active_window().show_input_panel("Explain the problem you are facing:", "", self.send_message, None, self.cancel_sending_message)
 	
-	def send_message(self, message=""):
+	def send_message(self, message):
+		if message=="":
+			sublime.message_dialog("Your help request message is too short.")
+			return
+
 		current_view = sublime.active_window().active_view()
 		for problem_id, view in loaded_problems.items():
 			if current_view == view:
@@ -292,6 +296,8 @@ class colearningAskForHelp(sublime_plugin.ApplicationCommand):
 				sublime.message_dialog(response)
 				break
 
+	def cancel_sending_message(self):
+		sublime.message_dialog("Your help request has been canceled.")
 
 class colearningLogin(sublime_plugin.ApplicationCommand):
 	def __init__(self):

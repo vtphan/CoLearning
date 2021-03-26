@@ -29,19 +29,7 @@
         <b>Status:</b> [[=status]]<br>
         <b>Description:</b> [[=problem.problem_description]]<br>
         <hr style="height:30px">
-        <table>
-          <tr>
-              <th>Code</th>
-              <th></th>
-              <th>Comment</th>
-          </tr>
-          <tr>
-              <td style="width: 49%"><textarea id="editor1">[[=workspace.content]]</textarea></td>
-              <td style="width: 2%">&nbsp;</td>
-              <td style="width: 49%"><textarea id="editor2">
-                [[=workspace.comment]]</textarea></td>
-          </tr>
-      </table>
+        <textarea id="editor1">[[=workspace.content]]</textarea>
         
         [[if workspace.attempt_left>0 and role==2:]]
         <div id="submit-buttons">

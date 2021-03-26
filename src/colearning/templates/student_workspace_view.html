@@ -17,8 +17,8 @@
 <script>
     var editor1 = document.getElementById("editor1");
     var myCodeMirror1 = CodeMirror.fromTextArea(editor1, {lineNumbers: true, mode: "[[="python" if problem['language']=="Python" else "text/x-java" if problem['language']=="Java" else "text/x-c++src"]]", theme: "monokai", matchBrackets: true, indentUnit: 4, indentWithTabs: true, readOnly: "nocursor"});
-    var editor2 = document.getElementById("editor2");
-    var myCodeMirror2 = CodeMirror.fromTextArea(editor2, {lineNumbers: true, mode: "null", theme: 'monokai', indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
+    // var editor2 = document.getElementById("editor2");
+    // var myCodeMirror2 = CodeMirror.fromTextArea(editor2, {lineNumbers: true, mode: "null", theme: 'monokai', indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
     var countDownDate = new Date(Date.UTC([[=problem.deadline.year]], [[=problem.deadline.month-1]], [[=problem.deadline.day]], [[=problem.deadline.hour]], [[=problem.deadline.minute]], [[=problem.deadline.second]], 0)).getTime();
 
     // Update the count down every 1 second

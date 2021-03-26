@@ -26,5 +26,8 @@
 <script>
     var editor = document.getElementById("code");
     var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "[[="python" if language=="Python" else "text/x-java" if language=="Java" else "text/x-c++src"]]", theme: "monokai", matchBrackets: true, indentUnit: 4, indentWithTabs: true, readOnly: "nocursor"});
+
+    var deadline = new Date(Date.UTC([[=deadline.year]], [[=deadline.month-1]], [[=deadline.day]], [[=deadline.hour]], [[=deadline.minute]], [[=deadline.second]], 0));
+    document.getElementById("deadline").innerHTML = deadline.toLocaleString();
 </script>
 [[end]]

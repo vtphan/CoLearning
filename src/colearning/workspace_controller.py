@@ -43,8 +43,7 @@ def save_workspace():
        student_id = request.POST['student_id']
        problem_id = request.POST['problem_id']
        content = request.POST['content']
-       comment = request.POST['comment']
-       db((db.student_workspace.problem_id==problem_id)&(db.student_workspace.student_id==student_id)).update(content=content, comment=comment, updated_at=datetime.datetime.utcnow())
+       db((db.student_workspace.problem_id==problem_id)&(db.student_workspace.student_id==student_id)).update(content=content, updated_at=datetime.datetime.utcnow())
        db.commit()
 
 @action('submission_handler', method='POST')
@@ -59,7 +58,6 @@ def submission_handler():
        student_id = user_id
        problem_id = request.json['problem_id']
        content = request.json['content'].rstrip()
-       comment = request.json['comment'].rstrip()
        # attempt_left = request.json['attempt_left']
        attempt_left = db((db.student_workspace.problem_id==problem_id)&(db.student_workspace.student_id==student_id)).select(db.student_workspace.attempt_left).first()['attempt_left']
        if attempt_left == 0:
@@ -103,7 +101,6 @@ def editor_submission_handler():
        student_id = user_id
        problem_id = int(request.POST['problem_id'])
        content = request.POST['content'].rstrip()
-       comment = request.POST['comment'].rstrip()
        # attempt_left = request.json['attempt_left']
        attempt_left = db((db.student_workspace.problem_id==problem_id)&(db.student_workspace.student_id==student_id)).select(db.student_workspace.attempt_left).first()['attempt_left']
        if attempt_left == 0:
@@ -113,7 +110,7 @@ def editor_submission_handler():
        problem = db.problem[problem_id]
 
        submission_id = db.submission.insert(problem_id=problem_id, student_id=student_id, content=content, submission_category=submission_category,\
-               comment=comment, attempt=problem.attempts-attempt_left, submitted_at=datetime.datetime.utcnow())
+              attempt=problem.attempts-attempt_left, submitted_at=datetime.datetime.utcnow())
       
        
        if submission_category==1:

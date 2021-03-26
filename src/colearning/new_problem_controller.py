@@ -156,6 +156,8 @@ def new_homework_problem():
 @action('publish_problem/<problem_id>')
 @action.uses(auth.user)
 def publish_problem(problem_id):
+    if 'teacher' not in groups.get(auth.get_user()['id']):
+        redirect('not_authorized')
     problem = db.problem[problem_id]
     if problem.type=='in-class':
         deadline = datetime.datetime.utcnow() + datetime.timedelta(minutes=problem.alloted_time)

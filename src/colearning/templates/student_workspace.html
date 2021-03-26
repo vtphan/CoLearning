@@ -17,8 +17,8 @@
 <script>
     var editor1 = document.getElementById("editor1");
     var myCodeMirror1 = CodeMirror.fromTextArea(editor1, {lineNumbers: true, mode: "[[="python" if problem['language']=="Python" else "text/x-java" if problem['language']=="Java" else "text/x-c++src"]]", theme: "monokai", matchBrackets: true, indentUnit: 4, indentWithTabs: true, readOnly: "nocursor"});
-    var editor2 = document.getElementById("editor2");
-    var myCodeMirror2 = CodeMirror.fromTextArea(editor2, {lineNumbers: true, mode: "null", theme: 'monokai', indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
+    // var editor2 = document.getElementById("editor2");
+    // var myCodeMirror2 = CodeMirror.fromTextArea(editor2, {lineNumbers: true, mode: "null", theme: 'monokai', indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
     // function sendContent(){
     //   try{
     //     axios.post("[[=URL('save_workspace')]]", {
@@ -41,7 +41,7 @@
         submit_code: function(event){
           axios.post("[[=URL('submission_handler')]]",{
             student_id: [[=workspace.student_id]], problem_id: [[=workspace.problem_id]], content: myCodeMirror1.getValue(), 
-            comment: myCodeMirror2.getValue(), attempt_left: [[=workspace.attempt_left]], category: 1
+            attempt_left: [[=workspace.attempt_left]], category: 1
           })
           .then(function(response){
             alert('Code submitted successfully.')
@@ -116,7 +116,6 @@
       axios.get("[[=URL('get_student_code/'+str(workspace['id']))]]")
       .then(function(response){
         myCodeMirror1.setValue(response.data.content);
-        myCodeMirror2.setValue(response.data.comment);
       })
       .catch(function(err){
         console.log(err);

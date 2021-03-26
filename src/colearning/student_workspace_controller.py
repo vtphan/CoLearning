@@ -30,7 +30,11 @@ def workspace(student_id, problem_id):
 @action.uses(auth.user, 'student_workspace_view.html')
 def workspace_view(student_id, problem_id):
         user_id = auth.get_user()['id']
-        if 'teacher' not in groups.get(user_id):
+        if 'teacher' in groups.get(user_id):
+                user_role = 'instructor'
+        elif 'ta' in groups.get(user_id):
+                user_role = 'ta'
+        else:
                 redirect(URL('not_authorized'))
         ref = request.get_header('Referer')
         if ref is not None:
@@ -45,7 +49,7 @@ def workspace_view(student_id, problem_id):
         student_name = db.auth_user[student_id].first_name
         return dict(problem=problem, workspace=workspace, time_interval=1000, submissions=submissions,\
                  student_name=student_name, student_id=student_id, feedbacks=feedbacks,\
-                          help_message_id=help_message_id, status=status)
+                          help_message_id=help_message_id, status=status, user_role=user_role)
 
 def get_workspace_info(student_id, problem_id):
         problem = db.problem[problem_id]
