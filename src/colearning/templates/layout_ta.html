@@ -16,22 +16,23 @@
         <!-- Logo -->
         <!-- <a href="[[=URL('index')]]">
           <b><script>document.write(window.location.href.split('/')[3]);</script>:</b>
-        </a>
-        <b>[[block page_title]][[end]]</b> -->
+        </a> -->
+        <!-- <b>[[block page_title]] [[end]]</b> -->
         <!-- Do not touch this -->
         <label for="hamburger">☰</label>
         <input type="checkbox" id="hamburger">
         <!-- Left menu ul/li -->
         [[block page_left_menu]]
         <ul>
+          
           <li>
-            <a class="navbar-link" href="[[=URL('active_problems')]]">Problems</a>
+            <a class="navbar-link" href="[[=URL('active_problems_ta')]]">Problems</a>
           </li>
           <li>
-            <a class="navbar-link" href="[[=URL('my_submissions')]]">My Submissions</a>
+            <a class="navbar-link" href="[[=URL('submissions_ta')]]">Submissions</a>
           </li>
           <li>
-            <a class="navbar-link" href="[[=URL('student_help_message_list')]]">Help Requests</a>
+            <a class="navbar-link" href="[[=URL('help_message_list_ta')]]">Help Requests</a>
           </li>
         </ul>
         [[end]]
@@ -57,8 +58,8 @@
           [[pass]]
         </ul>
       </nav>
-      <!-- Flash alert messages, first optional one in data-alert -->
       <!-- <h1>[[block page_title]][[end]]</h1> -->
+      <!-- Flash alert messages, first optional one in data-alert -->
       <flash-alerts class="padded" data-alert="[[=globals().get('flash','')]]"></flash-alerts>
     </header>
     <!-- beginning of HTML inserted by extending template -->

@@ -28,7 +28,11 @@ def view_feedback(feedback_id):
 @action.uses(auth.user, 'feedbackt_view.html')
 def viewt_feedback(feedback_id):
     user_id = auth.get_user()['id']
-    if 'teacher' not in groups.get(user_id):
+    if 'teacher' in groups.get(user_id):
+        user_role = 'instructor'
+    elif 'ta' in groups.get(user_id):
+        user_role = 'ta'
+    else:
         redirect(URL('not_authorized'))
     feedback = db.feedback[feedback_id]
     problem = db.problem[feedback.problem_id]
@@ -39,11 +43,18 @@ def viewt_feedback(feedback_id):
     feedback = feedback.as_dict()
     feedback['language'] = problem.language
     feedback['message'] = message
+    feedback['user_role'] = user_role
     return feedback
 
 @action('give_feedback/<sub_or_wp_id>/<type>/<message_id>', method='GET')
 @action.uses(auth.user, 'give_feedback.html')
 def give_feedback(sub_or_wp_id, type, message_id):
+    if 'teacher' in groups.get(auth.get_user()['id']):
+        user_role = 'instructor'
+    elif 'ta' in groups.get(auth.get_user()['id']):
+        user_role = 'ta'
+    elif 'student' in groups.get(auth.get_user()['id']):
+        user_role = 'student'
     type = int(type)
     sub_or_wp_id = int(sub_or_wp_id)
     if type == 1: # submission feedback
@@ -57,14 +68,15 @@ def give_feedback(sub_or_wp_id, type, message_id):
     # print(dir(sub))
     sub['message_id'] = message_id
     sub['referer'] = request.get_header('Referer')
+    sub['user_role'] = user_role
     return sub.as_dict()
 
 @action('save_feedback', method='GET')
 @action.uses(auth.user)
 def save_feedback():
     user_id = auth.get_user()['id'] 
-    if 'teacher' not in groups.get(user_id):
-        redirect(URL('not_authorized'))
+    # if 'teacher' not in groups.get(user_id):
+    #     redirect(URL('not_authorized'))
     problem_id = int(request.query.get('problem_id'))
     try:
         submission_id = int(request.query.get('submission_id'))

@@ -70,4 +70,4 @@ def edit_problem(problem_id):
             redirect(URL('edit_problem/'+problem_id))
             # return "<script>alert('Problem updated successfully.'); window.location.replace(window.location.href);</script>"
 
-    return dict(form=problem_form)
+    return dict(form=problem_form, user_role='instructor')

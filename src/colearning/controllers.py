@@ -57,7 +57,7 @@ def index():
     if user:
         if 'student' in groups.get(auth.get_user()['id']):
             redirect(URL('active_problems'))
-        elif 'teacher' in groups.get(auth.get_user()['id']):
+        elif ('teacher' or 'ta') in groups.get(auth.get_user()['id']):
             redirect(URL('problem_list/published'))
             
     flash.set("Hello world")

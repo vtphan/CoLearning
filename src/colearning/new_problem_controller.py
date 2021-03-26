@@ -78,7 +78,7 @@ def new_inclass_problem():
                 create_notification('New in-class exercise '+problem_form.vars.problem_name+' has been added.', users, deadline)
             redirect(URL('view_problem/'+str(pid)))
 
-    return dict(form=problem_form)
+    return dict(form=problem_form, user_role='instructor')
 
 
 @action('new_homework_problem', method=['GET', 'POST'])
@@ -151,7 +151,7 @@ def new_homework_problem():
                 create_notification('New homework assignment '+problem_form.vars.problem_name+' has been added.', users, deadline)
             redirect(URL('view_problem/'+str(pid)))
 
-    return dict(form=problem_form)
+    return dict(form=problem_form, user_role='instructor')
 
 @action('publish_problem/<problem_id>')
 @action.uses(auth.user)

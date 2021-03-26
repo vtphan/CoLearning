@@ -34,6 +34,6 @@ def activate_user():
             flash.set("User removed successfully!")
         else:
             flash.set("User activated successfully!")
-        redirect(URL('problem_list'))
-    return dict(form=form)
+        redirect(URL('activate_user'))
+    return dict(form=form, user_role='instructor')
 

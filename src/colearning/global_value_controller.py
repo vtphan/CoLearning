@@ -17,7 +17,7 @@ def global_values():
             db(db.global_value.variable==row['variable']).update(value=form.vars[row['variable']])
         db.commit()
 
-    return dict(form=form)
+    return dict(form=form, user_role='instructor')
 
 # @action('get_update_frequency', method='GET')
 # @action.uses(auth.user)

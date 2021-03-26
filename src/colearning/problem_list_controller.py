@@ -16,7 +16,11 @@ import datetime
 @action('problem_list/<problem_category>')
 @action.uses(auth.user, 'problem_list.html')
 def problem_list(problem_category='published'):
-    if 'teacher' not in groups.get(auth.get_user()['id']):
+    if 'teacher' in groups.get(auth.get_user()['id']):
+        user_role = 'instructor'
+    elif 'ta' in groups.get(auth.get_user()['id']):
+        user_role = 'ta'
+    else:
         redirect(URL('not_authorized'))
     if problem_category=='unpublished':
         problems = db(db.problem.deadline==None).select(orderby=~db.problem.problem_uploaded_at)
@@ -26,4 +30,4 @@ def problem_list(problem_category='published'):
         problems = db((db.problem.deadline is not None)&(db.problem.deadline<=datetime.datetime.utcnow())).select(orderby=~db.problem.deadline)
     else:
         problems = None
-    return dict(problems=problems, category=problem_category)
+    return dict(problems=problems, category=problem_category, user_role=user_role)

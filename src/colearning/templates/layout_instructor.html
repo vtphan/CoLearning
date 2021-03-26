@@ -24,8 +24,11 @@
         <!-- Left menu ul/li -->
         [[block page_left_menu]]
         <ul>
+          [[if user_role=='instructor':]]
           <li>
+            <a class="navbar-link is-primary">
             Add New Problem
+            </a>
             <ul>
               <li>
                 <a class="navbar-link" href="[[=URL('new_inclass_problem')]]">In-class Exercise</a>
@@ -35,21 +38,25 @@
               </li>
             </ul>
           </li>
+          [[pass]]
           <li>
             <a class="navbar-link" href="[[=URL('problem_list/published')]]">Problems</a>
           </li>
+          
           <li>
             <a class="navbar-link" href="[[=URL('submissions')]]">Submissions</a>
           </li>
           <li>
             <a class="navbar-link" href="[[=URL('help_message_list')]]">Help Requests</a>
           </li>
+          [[if user_role=='instructor':]]
           <li>
             <a class="navbar-link" href="[[=URL('global_values')]]">Global Parameters</a>
           </li>
           <li>
             <a class="navbar-link" href="[[=URL('activate_user')]]">Activate User</a>
           </li>
+          [[pass]]
         </ul>
         [[end]]
         <!-- Right menu ul/li -->

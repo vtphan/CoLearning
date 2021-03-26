@@ -10,14 +10,23 @@ from .utils import create_notification
 @action('view_problem/<problem_id>', method='GET')
 @action.uses(auth.user, 'view_problem.html')
 def view_problem(problem_id):
-    if 'teacher' not in groups.get(auth.get_user()['id']):
+    if 'teacher' in groups.get(auth.get_user()['id']):
+        user_role = 'instructor'
+    elif 'ta' in groups.get(auth.get_user()['id']):
+        user_role = 'ta'
+    else:
         redirect(URL('not_authorized'))
-    return get_problem_information(problem_id)
+    problem = get_problem_information(problem_id)
+    problem['user_role'] = user_role
+    return problem
 
 @action('problem/<problem_id>', method='GET')
 @action.uses(auth.user, 'problem.html')
-def view_problem(problem_id):
-    return get_problem_information(problem_id, auth.get_user()['id'])
+def problem(problem_id):
+    problem = get_problem_information(problem_id, auth.get_user()['id'])
+    if problem['deadline'] is None:
+        redirect(URL('not_authorized'))
+    return problem
 
 def get_problem_information(problem_id, student_id=None):
     problem = db.problem[problem_id].as_dict()

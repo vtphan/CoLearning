@@ -1,0 +1,58 @@
+[[extend 'layout_student.html']]
+[[block page_head]]
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css"> -->
+[[end]]
+<h3>Current Messages</h3>
+<table class="table">
+    <tbody>
+        <tr>
+            <th>Student Name</th>
+            <th>Problem Name</th>
+            <th>Message</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </tbody>
+    <tbody>
+    
+    [[for m in messages:]]
+        
+        [[message = m['message'] if m['message'] is not None else "" ]]
+        <tr>
+            <td>[[=m['first_name'] ]] [[=m['last_name'] ]]</td>
+            <td>[[=m['problem_name'] ]]</td>
+            <td>[[if len(message)>15:]][[=message[:13]+".."]][[else:]][[=message]][[pass]]</td>
+            <td>[[=m['status'] ]]</td>
+            <td><a class="button" href="[[=URL('view_help_message/'+str(m['message_id']))]]" >View Details</a></td>
+        </tr>
+    [[pass]]
+     
+    </tbody>
+</table>
+
+<h3>Past Messages</h3>
+<table class="table">
+    <tbody>
+        <tr>
+            <th>Student Name</th>
+            <th>Problem Name</th>
+            <th>Message</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </tbody>
+    <tbody>
+    
+    [[for m in past_messages:]]
+    [[message = m['message'] if m['message'] is not None else ""]]
+        <tr>
+            <td>[[=m['first_name'] ]] [[=m['last_name'] ]]</td>
+            <td>[[=m['problem_name'] ]]</td>
+            <td>[[if len(message)>15:]][[=message[:13]+".."]][[else:]][[=message]][[pass]]</td>
+            <td>[[=m['status'] ]]</td>
+            <td><a class="button" href="[[=URL('help_message/'+str(m['message_id']))]]" target="_blank">View Details</a></td>
+        </tr>
+    [[pass]]
+     
+    </tbody>
+</table>
