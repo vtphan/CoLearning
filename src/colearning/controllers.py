@@ -46,6 +46,7 @@ from .help_message_view_controller import *
 from .problem_loader_controller import *
 from .feedback_controller import *
 from .view_problem_controller import *
+from .publish_problem_controller import *
 # from .test_controller import *
 from .run_query_controller import *
 
