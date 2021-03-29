@@ -15,10 +15,12 @@
     </ul>
 </div>
 [[include 'problem_view_common.html']]
+[[if user_role=='instructor':]]
 [[if deadline is None:]]
 <a role="button" href="[[=URL('publish_problem_'+('inclass/' if type=='in-class' else 'homework/')+str(id))]]">Publish</a>
 [[else:]]
 <a role="button" href="[[=URL('publish_problem_'+('inclass/' if type=='in-class' else 'homework/')+str(id))]]">Republish</a>
+[[pass]]
 [[pass]]
 [[block page_scripts]]
 <script>

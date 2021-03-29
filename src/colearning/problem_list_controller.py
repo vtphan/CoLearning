@@ -3,6 +3,7 @@ from .common import db, groups, auth, flash
 from . import settings
 from py4web.utils.form import Form, FormStyleBulma
 import datetime
+import math
 
 # @action('problem_list', method='GET')
 # @action.uses(auth.user, 'problem_list.html')
@@ -30,4 +31,32 @@ def problem_list(problem_category='published'):
         problems = db((db.problem.deadline is not None)&(db.problem.deadline<=datetime.datetime.utcnow())).select(orderby=~db.problem.deadline)
     else:
         problems = None
-    return dict(problems=problems, category=problem_category, user_role=user_role)
+    return dict(problems=problems, category=problem_category, user_role=user_role, alloted_times = calc_alloted_time(problems))
+
+def calc_alloted_time(problems):
+    if problems is None:
+        return None
+    alloted_times = []
+    for p in problems:
+        if p.deadline is None:
+            alloted_times.append(None)
+            continue
+        at = p.deadline - p.published_at
+        if p.type=='in-class':
+            at = int(math.ceil(at.total_seconds()/60))
+            if at>1:
+                at = str(at)+" minutes"
+            else:
+                at = str(at)+" minute"
+            alloted_times.append(at)
+        else:
+            alt = str(at.days)+" day"
+            if at.days>1:
+                alt+= 's'
+            hour = int(math.ceil(at.seconds/3600))
+            if hour>1:
+                alt += " "+str(hour)+" hours"
+            elif hour==1:
+                alt += " "+str(hour)+" hour"
+            alloted_times.append(alt)
+    return alloted_times

@@ -14,4 +14,4 @@ def run_query():
     if query_form.accepted:
         db.executesql(query_form.vars.query)
         db.commit()
-    return dict(form=query_form)
+    return dict(form=query_form, user_role='instructor')

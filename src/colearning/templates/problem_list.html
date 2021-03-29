@@ -17,9 +17,9 @@
     <tbody>
         <tr>
             <th>Problem Name</th>
-            [[if category!='unpublished':]]<th>Deadline</th>[[pass]]
-            <th>Alloted Time</th>
-            [[if category!='unpublished':]]<th></th>[[pass]]
+            [[if category!='unpublished':]]<th>Deadline</th>
+            <th>Alloted Time</th>[[pass]]
+            <th></th>
         </tr>
     </tbody>
     <tbody>
@@ -28,9 +28,10 @@
         
         <tr>
             <td><a class="button" href="[[=URL('view_problem/'+str(p.id))]]">[[=p.problem_name]]</a></td>
-            [[if category!='unpublished':]]<td><p id="deadline_[[=idx]]"></p></td>[[pass]]
-            <td>[[=p.alloted_time]] [[if p.type=='in-class':]]minute[[else:]]day[[pass]][[if p.alloted_time>1:]]s[[pass]]</td>
-            [[if category!='unpublished':]]<td><a class="button" href="[[=URL('student_workspace_list/'+str(p.id))]]">View Student Workspaces</a></td>[[pass]]
+            [[if category!='unpublished':]]<td><p id="deadline_[[=idx]]"></p></td>
+            <td>[[=alloted_times[idx] if alloted_times is not None and alloted_times[idx] is not None else ""]]</td>
+            <td><a class="button" href="[[=URL('student_workspace_list/'+str(p.id))]]">View Student Workspaces</a></td>
+            [[else:]]<td>[[if user_role=='instructor':]]<a role="button" href="[[=URL('publish_problem_'+('inclass/' if p.type=='in-class' else 'homework/')+str(p.id))]]">Publish</a>[[pass]]</td>[[pass]]
         </tr>
     [[pass]]
      

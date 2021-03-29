@@ -11,7 +11,11 @@ from .utils import create_notification
 @action.uses(auth.user, 'edit_problem.html', flash)
 def edit_problem(problem_id):
     teacher_id = auth.get_user()['id']
-    if not 'teacher' in groups.get(teacher_id):
+    if 'teacher' in groups.get(teacher_id):
+        user_role = 'instructor'
+    elif 'ta' in groups.get(teacher_id):
+        user_role = 'ta'
+    else:
         redirect(URL('not_authorized'))
     problem = db.problem[problem_id]
     topics = db(db.problem_topic.problem_id==problem_id).select()
@@ -20,7 +24,7 @@ def edit_problem(problem_id):
     problem_form = Form(
         [
             Field('problem_name', requires=IS_NOT_EMPTY(), default=problem.problem_name),
-            Field('deadline', "datetime", default=problem.deadline.strftime("%Y-%m-%dT%H:%M")),
+            # Field('deadline', "datetime", default=problem.deadline.strftime("%Y-%m-%dT%H:%M")),
             Field('number_of_attempts', type='integer', default=problem.attempts),
             Field('maximum_score', type='integer', default=problem.max_points),
             Field('problem_description', 'text', default=problem.problem_description),
@@ -47,10 +51,10 @@ def edit_problem(problem_id):
             else:
                 exact_answer = 0
             
-            deadline=datetime.datetime.strptime(problem_form.vars['deadline'].strip(), "%Y-%m-%dT%H:%M")
+            # deadline=datetime.datetime.strptime(problem_form.vars['deadline'].strip(), "%Y-%m-%dT%H:%M")
             db(db.problem.id==problem_id).update(code=problem_form.vars.content, problem_description=problem_form.vars.problem_description, answer=problem_form.vars.answer.strip(),\
                  problem_name=problem_form.vars.problem_name.strip(), max_points=problem_form.vars.maximum_score, attempts=problem_form.vars.number_of_attempts,\
-                 language=problem_form.vars.language,last_updated_at=datetime.datetime.utcnow(), exact_answer=exact_answer, deadline=deadline)
+                 language=problem_form.vars.language,last_updated_at=datetime.datetime.utcnow(), exact_answer=exact_answer)
             new_topics = problem_form.vars.topics.strip()
             if new_topics != topics:
                 db(db.problem_topic.problem_id==problem_id).delete()
@@ -66,8 +70,9 @@ def edit_problem(problem_id):
             db.commit()
             flash.set('Problem '+problem_form.vars.problem_name.strip()+' has been updated successfully.')
             users = [row['id'] for row in db(db.auth_user).select('id') if row['id']!=teacher_id]
-            create_notification('Problem '+problem_form.vars.problem_name+' has been updated. Please reload!', users, deadline)
-            redirect(URL('edit_problem/'+problem_id))
+            if problem.deadline is not None:
+                create_notification('Problem '+problem_form.vars.problem_name+' has been updated. Please reload!', users, problem.deadline)
+            redirect(URL('view_problem/'+problem_id))
             # return "<script>alert('Problem updated successfully.'); window.location.replace(window.location.href);</script>"
 
-    return dict(form=problem_form, user_role='instructor')
+    return dict(form=problem_form, user_role=user_role)
