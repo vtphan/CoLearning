@@ -32,10 +32,10 @@ def create_admin_account(email, username, first_name, last_name, password):
 
 def create_tables():
      db.define_table('topic', Field('topic_description', unique=True))
-     db.define_table('problem', Field('teacher_id', type='reference auth_user'), Field('problem_name'), Field('problem_description', type='text'),\
-           Field('code', type='text'), Field('answer', type='text'), Field('max_points', type='integer'), Field('language'), Field('attempts', type='integer'), \
-                Field('problem_uploaded_at', type='datetime'), Field('exact_answer', type='integer'), Field('deadline', type='datetime'), Field('published_at', type='datetime'),\
-                      Field('type', requires=IS_IN_SET("in-class", "homework")), Field('last_updated_at', type='datetime', default=datetime.datetime.utcnow()), redefine=True) 
+     db.define_table('problem', Field('teacher_id', type='reference auth_user'), Field('problem_name'), Field('problem_description', type='text'), Field('code', type='text'),\
+           Field('answer', type='text'), Field('max_points', type='integer'), Field('language'), Field('attempts', type='integer'), Field('problem_uploaded_at', type='datetime'),\
+                 Field('exact_answer', type='integer'), Field('deadline', type='datetime'), Field('published_at', type='datetime'), Field('type', requires=IS_IN_SET("in-class", "homework")),\
+                       Field('last_updated_at', type='datetime', default=datetime.datetime.utcnow()), redefine=True) 
      db.define_table('problem_topic', Field('problem_id', type='reference problem'), Field('topic_id', type='reference topic'))
      db.define_table('student_workspace', Field('problem_id', type='reference problem'), Field('student_id', type='reference auth_user'), \
           Field('content', type='text'), Field('attempt_left', type='integer'), Field('updated_at', type='datetime', default=datetime.datetime.utcnow()), redefine=True)

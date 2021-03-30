@@ -17,8 +17,10 @@
     <tbody>
         <tr>
             <th>Problem Name</th>
+            <th>Added by</th>
             [[if category!='unpublished':]]<th>Deadline</th>
             <th>Alloted Time</th>[[pass]]
+            <th></th>
             <th></th>
         </tr>
     </tbody>
@@ -28,10 +30,12 @@
         
         <tr>
             <td><a class="button" href="[[=URL('view_problem/'+str(p.id))]]">[[=p.problem_name]]</a></td>
+            <td>[[=p.teacher_id.first_name]] [[=p.teacher_id.last_name]]</td>
             [[if category!='unpublished':]]<td><p id="deadline_[[=idx]]"></p></td>
             <td>[[=alloted_times[idx] if alloted_times is not None and alloted_times[idx] is not None else ""]]</td>
             <td><a class="button" href="[[=URL('student_workspace_list/'+str(p.id))]]">View Student Workspaces</a></td>
             [[else:]]<td>[[if user_role=='instructor':]]<a role="button" href="[[=URL('publish_problem_'+('inclass/' if p.type=='in-class' else 'homework/')+str(p.id))]]">Publish</a>[[pass]]</td>[[pass]]
+            <td><a role="button" href="[[=URL('edit_problem/'+str(p.id))]]">Edit</a></td>
         </tr>
     [[pass]]
      
