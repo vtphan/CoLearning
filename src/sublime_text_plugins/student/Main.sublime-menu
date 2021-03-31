@@ -15,19 +15,18 @@
         "caption": "-"
       },
       {
-        "command": "colearning_submit_code",
-        "id": "colearningSubmitCode",
-        "caption": "Submit Code"
-      },
-      {
-        "command": "colearning_view_problem",
-        "id": "colearningViewProblem",
-        "caption": "View Problem"
-      },
-      {
         "command": "save_colearning_workspace",
         "id": "saveColearningWorkspace",
         "caption": "Save Workspace"
+      },
+      {
+        "id": "side-bar-separator",
+        "caption": "-"
+      },
+      {
+        "command": "colearning_ask_for_help",
+        "id": "colearningAskForHelp",
+        "caption": "Ask for help"
       },
       {
         "id": "side-bar-separator",

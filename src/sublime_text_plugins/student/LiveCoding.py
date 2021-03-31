@@ -14,6 +14,7 @@ import pickle
 
 import sched
 import time
+import math
 
 DEBUG = True
 
@@ -48,6 +49,9 @@ SYNC_INTERVAL = 30
 loaded_problems = {}
 # loaded_comments = {}
 last_saved_code = {}
+problem_max_points = {}
+problem_attempts = {}
+problem_deadlines = {}
 # last_saved_comments = {}
 last_saved_problems = None
 student_id = None
@@ -179,20 +183,26 @@ class loadColearningProblemInfo(sublime_plugin.ApplicationCommand):
 		p = []
 		idx = 3
 		while idx < len(menu[0]['children']):
-			if menu[0]['children'][idx]['caption'] == 'Submit Code':
+			if menu[0]['children'][idx]['caption'] == 'Save Workspace':
 				break
 			idx += 1
 
-		if menu[0]['children'][idx]['caption'] != 'Submit Code':
-			print('Submit code menu not found!')
+		if menu[0]['children'][idx]['caption'] != 'Save Workspace':
+			print('Save Workspace menu not found!')
 			return
 		idx -= 1
 		for i in range(len(problem_info)):
 			problem = problem_info[i]
+			problem_menu = {"caption": problem['problem_name'], "id": problem['problem_name']+"_menu",\
+					 "children": [{"caption": "Load Workspace", "command": "load_colearning_problem", 'id': "loadColearningProblem"+str(problem['id']),\
+						  'args': {'problem_id': problem['id']}}, {"caption": "Submit Code", "id": "colearningSubmitCode",\
+							   "command": "colearning_submit_code", 'args': {'problem_id': problem['id']}}, \
+								   {"caption": "View on App", "id": "colearningViewProblem", "command": "colearning_view_problem", 'args': {'problem_id': problem['id']}},\
+									   {"caption": "Problem Information", "id": "colearningProblemInformation", "command": "colearning_problem_information", 'args': {'problem_id': problem['id']}}]}
 			if i+2<idx:
-				menu[0]['children'][i+2] = {"caption": problem['problem_name'], "command": "load_colearning_problem", 'id': "loadColearningProblem"+str(problem['id']), 'args': {'problem_id': problem['id']}}
+				menu[0]['children'][i+2] = problem_menu
 			else:
-				menu[0]['children'].insert(i+2, {"caption": problem['problem_name'], "command": "load_colearning_problem", 'id': "loadColearningProblem"+str(problem['id']), 'args': {'problem_id': problem['id']}})
+				menu[0]['children'].insert(i+2, problem_menu)
 		i = len(problem_info)
 		while i+2<idx:
 			menu[0]['children'].pop(i+2)
@@ -203,17 +213,45 @@ class loadColearningProblemInfo(sublime_plugin.ApplicationCommand):
 		sublime.message_dialog("Problems has been updated.")
 
 class colearningViewProblem(sublime_plugin.WindowCommand):
-	def is_visible(self):
-		return len(loaded_problems)> 0 and is_authenticated()
 
-	def run(self):
-		current_view = sublime.active_window().active_view()
-		for problem_id, view in loaded_problems.items():
-			if view == current_view:
-				url = os.path.join(colearningSERVER, "problem/"+str(problem_id))
-				webbrowser.open(url)
-				return
-		sublime.message_dialog("No problem selected.")
+	def run(self, problem_id):
+		url = os.path.join(colearningSERVER, "problem/"+str(problem_id))
+		webbrowser.open(url)
+
+def get_due_time(deadline):
+	now = datetime.datetime.utcnow()
+	if deadline<=now:
+		return 'expired'
+	diff = deadline - now
+	s = ""
+	if diff.days>1:
+		s+=str(diff.days)+" days "
+	elif diff.days==1:
+		s+=str(diff.days)+" day "
+	seconds = math.floor(int(diff.total_seconds()))
+	hours = seconds // 3600
+	seconds = seconds % 3600
+	minutes = seconds // 60
+	seconds = seconds % 60
+	if hours>1:
+		s += str(hours)+" hours "
+	elif hours == 1:
+		s += str(hours) + " hour "
+	if minutes>1:
+		s += str(minutes)+" minutes "
+	else:
+		s += str(minutes) + " minute "
+	if seconds>1:
+		s += str(seconds)+" seconds"
+	else:
+		s += str(seconds) + " second"
+	
+	return s
+
+class colearningProblemInformation(sublime_plugin.WindowCommand):
+	def run(self, problem_id):
+		sublime.message_dialog("Due in: "+get_due_time(problem_deadlines[problem_id])+"\nMax Point: "+str(problem_max_points[problem_id])+"\nNumber of attempt allowed: "+str(problem_attempts[problem_id]))
+
 
 class loadColearningProblemCommand(sublime_plugin.TextCommand):
 	def is_visible(self):
@@ -245,30 +283,22 @@ class loadColearningProblemCommand(sublime_plugin.TextCommand):
 		# loaded_comments[problem_id] = comment_view
 		last_saved_code[problem_id] = ''
 		# last_saved_comments[problem_id] = ''
+		problem_deadlines[problem_id] = datetime.datetime.strptime(problem['deadline'], "%Y-%m-%d %H:%M:%S")
+		problem_attempts[problem_id] = problem['attempts']
+		problem_max_points[problem_id] = problem['max_points']
+		# print(problem)
 
 class colearningSubmitCode(sublime_plugin.WindowCommand):
 	def is_visible(self):
 		return is_authenticated()
 	
-	def run(self):
-		current_view = sublime.active_window().active_view()
-		for problem_id, view in loaded_problems.items():
-			if view == current_view:
-				code = view.substr(sublime.Region(0, view.size())).rstrip()
-				# comment = loaded_comments[problem_id].substr(sublime.Region(0, loaded_comments[problem_id].size())).rstrip()
-				data = {'problem_id': problem_id, 'category': 1, 'content': code}
-				response = colearningRequest('editor_submission_handler', data, method='POST')
-				sublime.message_dialog(response)
-				return
-		# for problem_id, view in loaded_comments.items():
-		# 	if view == current_view:
-		# 		comment = view.substr(sublime.Region(0, view.size())).rstrip()
-		# 		code = loaded_problems[problem_id].substr(sublime.Region(0, loaded_problems[problem_id].size())).rstrip()
-		# 		data = {'problem_id': problem_id, 'category': 1, 'content': code, 'comment': comment}
-		# 		response = colearningRequest('editor_submission_handler', data, method='POST')
-		# 		sublime.message_dialog(response)
-		# 		return
-		sublime.message_dialog("Nothing to be submitted!")
+	def run(self, problem_id):
+		view = loaded_problems[problem_id]
+		code = view.substr(sublime.Region(0, view.size())).rstrip()		
+		data = {'problem_id': problem_id, 'category': 1, 'content': code}
+		response = colearningRequest('editor_submission_handler', data, method='POST')
+		sublime.message_dialog(response)
+		
 
 class saveColearningWorkspace(sublime_plugin.ApplicationCommand):
 	def is_visible(self):
