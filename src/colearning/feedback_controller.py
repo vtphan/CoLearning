@@ -4,13 +4,14 @@ from . import settings
 from py4web.utils.form import Form, FormStyleBulma
 import datetime, json
 
-from .utils import create_notification
+from .utils import create_notification, is_eligible_for_help
 
 @action('view_feedback/<feedback_id>', method='GET')
 @action.uses(auth.user, 'feedback_view.html')
 def view_feedback(feedback_id):
     user_id = auth.get_user()['id']
     feedback = db.feedback[feedback_id]
+    given_by = feedback.given_by.first_name+" "+feedback.given_by.last_name
     # print(feedback.given_for, user_id)
     if feedback.given_for != user_id:
         redirect(URL("not_authorized"))
@@ -19,7 +20,12 @@ def view_feedback(feedback_id):
         message = db.help_queue[feedback.help_message_id].as_dict()
     else:
         message = None
+    total_like = db(db.feedback_like.feedback_id==feedback_id).count()
+    like_given = db((db.feedback_like.feedback_id==feedback_id)&(db.feedback_like.liked_by==user_id)).count()
     feedback = feedback.as_dict()
+    feedback['total_like'] = total_like
+    feedback['like_given'] = like_given
+    feedback['given_by'] = given_by
     feedback['language'] = problem.language
     feedback['message'] = message
     return feedback
@@ -27,20 +33,29 @@ def view_feedback(feedback_id):
 @action('viewt_feedback/<feedback_id>', method='GET')
 @action.uses(auth.user, 'feedbackt_view.html')
 def viewt_feedback(feedback_id):
+    feedback = db.feedback[feedback_id]
     user_id = auth.get_user()['id']
     if 'teacher' in groups.get(user_id):
         user_role = 'instructor'
     elif 'ta' in groups.get(user_id):
         user_role = 'ta'
+    elif 'student' in groups(user_id) and is_eligible_for_help(user_id, feedback.problem_id):
+        user_role = 'student'
     else:
         redirect(URL('not_authorized'))
     feedback = db.feedback[feedback_id]
+    given_by = feedback.given_by.first_name+" "+feedback.given_by.last_name
     problem = db.problem[feedback.problem_id]
     if feedback.help_message_id is not None and feedback.help_message_id!=0:
         message = db.help_queue[feedback.help_message_id].as_dict()
     else:
         message = None
+    total_like = db(db.feedback_like.feedback_id==feedback_id).count()
+    like_given = db((db.feedback_like.feedback_id==feedback_id)&(db.feedback_like.liked_by==user_id)).count()
     feedback = feedback.as_dict()
+    feedback['total_like'] = total_like
+    feedback['like_given'] = like_given
+    feedback['given_by'] = given_by
     feedback['language'] = problem.language
     feedback['message'] = message
     feedback['user_role'] = user_role
@@ -112,3 +127,14 @@ def get_feedback(feedback_id):
     feedback['language'] = problem.language
     feedback['problem_name'] = problem.problem_name
     return json.dumps(feedback, default=str)
+
+
+@action('save_feedback_like/<feedback_id>', method='GET')
+@action.uses(auth.user)
+def save_feedback_like(feedback_id):
+    user_id = auth.get_user()['id']
+    if db((db.feedback_like.feedback_id==feedback_id)&(db.feedback_like.liked_by==user_id)).count()>0:
+        db((db.feedback_like.feedback_id==feedback_id)&(db.feedback_like.liked_by==user_id)).delete()
+    else:
+        db.feedback_like.insert(feedback_id=feedback_id, liked_by=user_id, liked_at=datetime.datetime.utcnow())
+    db.commit()

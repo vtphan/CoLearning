@@ -103,8 +103,7 @@ def new_homework_problem():
             Field('language', requires=IS_IN_SET(['Python', 'Java', 'C++']), default=default_lang),
             Field('content', 'text'),
             Field('answer'),
-            Field('topics'),
-            Field('publish', type='boolean')
+            Field('topics')
         ], 
         formstyle=FormStyleBulma
     )

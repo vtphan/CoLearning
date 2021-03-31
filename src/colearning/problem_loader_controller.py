@@ -17,7 +17,8 @@ def load_problem(problem_id):
     if 'student' not in groups.get(auth.get_user()['id']):
         return None
     student_id = auth.get_user()['id']
-    problem = db(db.problem.id==problem_id).select(db.problem.problem_name, db.problem.code, db.problem.language, db.problem.attempts).as_list()[0]
+    problem = db(db.problem.id==problem_id).select(db.problem.problem_name, db.problem.code, db.problem.language, \
+        db.problem.attempts, db.problem.max_points, db.problem.deadline).as_list()[0]
 
     workspace = db((db.student_workspace.problem_id==problem_id) & (db.student_workspace.student_id==student_id)).select(db.student_workspace.content)
     if workspace is None or len(workspace)==0:
@@ -27,4 +28,4 @@ def load_problem(problem_id):
     else:
             workspace = workspace.first()
     problem['code'] = workspace['content']
-    return json.dumps(problem)
+    return json.dumps(problem, default=str)

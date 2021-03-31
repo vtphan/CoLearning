@@ -1,5 +1,5 @@
 [[if message is not None:]]
-<span><label>Help Asked At: </label>[[=message['asked_at'].strftime("%b %-d, %Y %I:%M %p")]]</span>
+<span><label>Help Asked At: </label><span id="help_asked_at"></span></span>
 <article class="message">
     <div class="message-header">Explain the problem you are facing</div>
     <div class="message-body">[[=message['message'] ]]</div>
@@ -7,7 +7,8 @@
 [[pass]]
 <div>
       <div id="problem">
-        <b>Feedback Given At:</b> [[=given_at.strftime("%b %-d, %Y %I:%M %p")]]<br>
+        <label>Feedback Given by:</label> [[=given_by]]<br>
+        <label>Feedback Given At:</label> <span id="feedback_given_at"></span><br>
         <hr style="height:30px">
         <table>
             <tr>
@@ -24,6 +25,19 @@
         </table>
         
       
+    </div>
+    <div id="like_div">
+        <label>Total Likes: </label>[[=total_like]] 
+        <button class="button is-success" v-on:click="toggle_like" >
+            <span class="icon is-small">
+            <i class="fas fa-check"></i>
+            </span>
+            [[if like_given==1:]]
+            <span>Remove Like</span>
+            [[else:]]
+            <span>Like</span>
+            [[pass]]
+        </button>
     </div>
     
 </div>

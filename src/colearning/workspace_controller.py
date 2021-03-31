@@ -64,10 +64,11 @@ def submission_handler():
               return "You do not have any attempt left."
        attempt_left = attempt_left - 1
        submission_category = request.json['category']
-       submission_id = db.submission.insert(problem_id=problem_id, student_id=student_id, content=content, submission_category=submission_category,\
-               submitted_at=datetime.datetime.utcnow())
-      
        problem = db.problem[problem_id]
+       submission_id = db.submission.insert(problem_id=problem_id, student_id=student_id, content=content, submission_category=submission_category,\
+               attempt=problem.attempts-attempt_left, submitted_at=datetime.datetime.utcnow())
+      
+       
        if submission_category==1:
               if problem.exact_answer==1:
                      if problem.answer == content:

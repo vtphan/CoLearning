@@ -17,3 +17,11 @@ def add_global_value(variable, value):
     db.global_value.update_or_insert(db.global_value.variable==variable, variable=variable, value=value)
     db.commit()
     
+def is_eligible_for_help(user_id, problem_id):
+    if ('teacher' or 'ta') in groups.get(user_id):
+        return True
+    if 'student' in groups.get(user_id):
+        if len(db((db.submission.problem_id==problem_id)&(db.submission.student_id==user_id)& \
+            (db.submission_verdict.submission_id==db.submission.id)&(db.submission_verdict.verdict=='correct')).select())>0:
+            return True
+    return False

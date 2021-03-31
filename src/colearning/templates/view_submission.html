@@ -93,6 +93,7 @@
               }
           });
       [[pass]]
-     
+      var submission_time = new Date(Date.UTC([[=submitted_at.year]], [[=submitted_at.month-1]], [[=submitted_at.day]], [[=submitted_at.hour]], [[=submitted_at.minute]], [[=submitted_at.second]], 0));
+      document.getElementById("submitted_at").innerHTML = submission_time.toLocaleString();
   </script>
   [[end]]

@@ -56,6 +56,7 @@
          <thead>
            <tr>
              <td>#</td>
+             <td>Given By</td>
              <td>Given At</td>
              <td></td>
            </tr>
@@ -64,7 +65,8 @@
            [[for idx, feedback in enumerate(feedbacks):]]
               <tr>
                 <td>[[=idx+1]]</td>
-                <td>[[=feedback['given_at'].strftime("%b %-d, %Y %I:%M %p")]]</td>
+                <td>[[=feedback['first_name'] ]] [[=feedback['last_name'] ]]</td>
+                <td><span id="given_at_[[=idx]]"></span></td>
                 [[if role==1:]]
                   <td><a role="button" href="[[=URL('viewt_feedback/'+str(feedback['id']))]]">View</a></td>
                 [[elif role==2:]]

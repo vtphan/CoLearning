@@ -17,5 +17,8 @@
       var myCodeMirror = CodeMirror.fromTextArea(editor1, {lineNumbers: true, mode: "[[="python" if language=="Python" else "text/x-java" if language=="Java" else "text/x-c++src"]]", theme: "monokai", matchBrackets: true, indentUnit: 4, indentWithTabs: true, readOnly: "nocursor"});
       // var editor2 = document.getElementById("editor2");
       // var myCodeMirror2 = CodeMirror.fromTextArea(editor2, {lineNumbers: true, mode: "null", theme: 'monokai', indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
+
+      var submission_time = new Date(Date.UTC([[=submitted_at.year]], [[=submitted_at.month-1]], [[=submitted_at.day]], [[=submitted_at.hour]], [[=submitted_at.minute]], [[=submitted_at.second]], 0));
+       document.getElementById("submitted_at").innerHTML = submission_time.toLocaleString();
   </script>
   [[end]]

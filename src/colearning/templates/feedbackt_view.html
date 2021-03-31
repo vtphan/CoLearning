@@ -16,5 +16,29 @@
       var myCodeMirror1 = CodeMirror.fromTextArea(editor1, {lineNumbers: true, mode: "[[="python" if language=="Python" else "text/x-java" if language=="Java" else "text/x-c++src"]]", theme: "monokai", matchBrackets: true, indentUnit: 4, indentWithTabs: true, readOnly: "nocursor"});
       var editor2 = document.getElementById("editor2");
       var myCodeMirror2 = CodeMirror.fromTextArea(editor2, {lineNumbers: true, mode: "null", theme: "monokai", indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
+
+      feedback_time = new Date(Date.UTC([[=message['asked_at'].year]], [[=message['asked_at'].month-1]], [[=message['asked_at'].day]], [[=message['asked_at'].hour]], [[=message['asked_at'].minute]], [[=message['asked_at'].second]], 0));
+      document.getElementById("help_asked_at").innerHTML = feedback_time.toLocaleString();   
+      feedback_time = new Date(Date.UTC([[=given_at.year]], [[=given_at.month-1]], [[=given_at.day]], [[=given_at.hour]], [[=given_at.minute]], [[=given_at.second]], 0));
+      document.getElementById("feedback_given_at").innerHTML = feedback_time.toLocaleString();
+
+      new Vue({
+              el: '#like_div',
+              methods: {
+                  
+                  toggle_like: function(event){
+                    axios.get("[[=URL('save_feedback_like/'+str(id))]]", {
+                        })
+                    .then(function(msg){
+                        
+                        window.location.reload()
+
+                    })
+                    .catch(function(e){
+                        alert("Something went wrong!");
+                    });
+                  }
+              }
+            });
   </script>
   [[end]]

@@ -122,5 +122,12 @@
       });
     }
     setInterval(get_student_code, 30000);
+
+    var feedback_time = null;
+    [[for idx, feedback in enumerate(feedbacks):]]
+      [[ft = feedback['given_at'] ]]
+      feedback_time = new Date(Date.UTC([[=ft.year]], [[=ft.month-1]], [[=ft.day]], [[=ft.hour]], [[=ft.minute]], [[=ft.second]], 0));
+       document.getElementById("given_at_[[=idx]]").innerHTML = feedback_time.toLocaleString();
+    [[pass]]
 </script>
 [[end]]

@@ -5,7 +5,7 @@ from . import settings
 from py4web.utils.form import Form, FormStyleBulma
 import datetime
 import json
-from .utils import create_notification
+from .utils import create_notification, is_eligible_for_help
 
 @action('student_workspace/<student_id>/<problem_id>', method=['GET', 'POST'])
 @action.uses(auth.user, 'student_workspace.html')
@@ -34,6 +34,8 @@ def workspace_view(student_id, problem_id):
                 user_role = 'instructor'
         elif 'ta' in groups.get(user_id):
                 user_role = 'ta'
+        elif 'student' in groups.get(user_id) and is_eligible_for_help(user_id, problem_id):
+                user_role = 'student'
         else:
                 redirect(URL('not_authorized'))
         ref = request.get_header('Referer')
@@ -66,7 +68,7 @@ def get_workspace_info(student_id, problem_id):
         #                 s.problem_id="+str(problem_id)+" and s.student_id="+str(student_id)+" order by s.submitted_at desc", as_dict=True)
         submissions = db((db.submission.student_id==student_id)&(db.submission.problem_id==problem_id)).select(db.submission.id, orderby=~db.submission.submitted_at)
         # messages = db((db.help_seeking_message.student_id==student_id)&(db.help_seeking_message.problem_id==problem_id)&(db.help_seeking_message.submission_id==None)).select()
-        feedbacks = db.executesql("select id, given_at from feedback where problem_id="+str(problem_id)+" and submission_id is NULL order by given_at desc", as_dict=True)
+        feedbacks = db.executesql("select f.id, u.first_name, u.last_name,  f.given_at from feedback f, auth_user u where f.problem_id="+str(problem_id)+" and f.given_for="+str(student_id)+" and f.submission_id is NULL and u.id=f.given_by order by f.given_at desc", as_dict=True)
         if len(db((db.submission_verdict.verdict=="correct")&(db.submission_verdict.submission_id==db.submission.id)&(db.submission.problem_id==problem_id)&(db.submission.student_id==student_id)).select())>0:
                 status = "Graded correct"
         elif len(db((db.submission_verdict.submission_id==db.submission.id)&(db.submission.problem_id==problem_id)&(db.submission.student_id==student_id)).select())>0:

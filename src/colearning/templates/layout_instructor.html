@@ -23,6 +23,19 @@
         <input type="checkbox" id="hamburger">
         <!-- Left menu ul/li -->
         [[block page_left_menu]]
+        [[if user_role=='student':]]
+        <ul>
+          <li>
+            <a class="navbar-link" href="[[=URL('active_problems')]]">Problems</a>
+          </li>
+          <li>
+            <a class="navbar-link" href="[[=URL('my_submissions')]]">My Submissions</a>
+          </li>
+          <li>
+            <a class="navbar-link" href="[[=URL('student_help_message_list')]]">Help Requests</a>
+          </li>
+        </ul>
+        [[else:]]
         <ul>
           
           <li>
@@ -58,6 +71,7 @@
           </li>
           [[pass]]
         </ul>
+        [[pass]]
         [[end]]
         <!-- Right menu ul/li -->
         <ul>
