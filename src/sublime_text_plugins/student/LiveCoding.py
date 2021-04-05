@@ -15,16 +15,19 @@ import pickle
 import sched
 import time
 import math
+from shutil import copyfile
 
 DEBUG = True
 
 menu_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Main.sublime-menu")
+menu_backup_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Main.sublime-menu.bk")
 settings_file =os.path.join(os.path.dirname(os.path.realpath(__file__)), "settings.json")
 if not os.path.exists(settings_file):
     with open(settings_file, 'w') as f:
         f.write("{\"server_address\": \"\", \"username\": \"\"}")
 settings = json.load(open(settings_file, 'r'))
 # print(settings)
+copyfile(menu_backup_file, menu_file)
 default_menu = json.load(open(menu_file, 'r'))
 colearningSERVER = "" #http://shiplu.pythonanywhere.com/colearning/"
 if 'server_address' in settings:
@@ -181,24 +184,25 @@ class loadColearningProblemInfo(sublime_plugin.ApplicationCommand):
 		last_saved_problems = problem_info
 		menu = default_menu.copy()
 		p = []
-		idx = 3
+		idx = 2
 		while idx < len(menu[0]['children']):
-			if menu[0]['children'][idx]['caption'] == 'Save Workspace':
+			if menu[0]['children'][idx]['caption'] == '-':
 				break
 			idx += 1
 
-		if menu[0]['children'][idx]['caption'] != 'Save Workspace':
-			print('Save Workspace menu not found!')
+		if menu[0]['children'][idx]['caption'] != '-':
+			print('Login menu not found!')
 			return
-		idx -= 1
+		
 		for i in range(len(problem_info)):
 			problem = problem_info[i]
 			problem_menu = {"caption": problem['problem_name'], "id": problem['problem_name']+"_menu",\
-					 "children": [{"caption": "Load Workspace", "command": "load_colearning_problem", 'id': "loadColearningProblem"+str(problem['id']),\
+					 "children": [{"caption": "Reload Code", "command": "load_colearning_problem", 'id': "loadColearningProblem"+str(problem['id']),\
 						  'args': {'problem_id': problem['id']}}, {"caption": "Submit Code", "id": "colearningSubmitCode",\
 							   "command": "colearning_submit_code", 'args': {'problem_id': problem['id']}}, \
 								   {"caption": "View on App", "id": "colearningViewProblem", "command": "colearning_view_problem", 'args': {'problem_id': problem['id']}},\
-									   {"caption": "Problem Information", "id": "colearningProblemInformation", "command": "colearning_problem_information", 'args': {'problem_id': problem['id']}}]}
+									   {"caption": "Save", "id": "saveColearningWorkspace", "command": "save_colearning_workspace"}, \
+									   {"caption": "Ask for Help", "id": "colearningAskForHelp", "command": "colearning_ask_for_help", 'args': {'problem_id': problem['id']}}]}
 			if i+2<idx:
 				menu[0]['children'][i+2] = problem_menu
 			else:
@@ -261,31 +265,30 @@ class loadColearningProblemCommand(sublime_plugin.TextCommand):
 		problem = colearningRequest('load_problem/'+str(problem_id), {}, 'GET')
 		problem = json.loads(problem)
 		code_filename = os.path.join(folderPath, problem['problem_name']+('.py' if problem['language']=='Python' else '.cpp' if problem['language']=='C++' else '.java'))
-		with open(code_filename, 'w', encoding='utf-8') as f:
-			f.write(problem['code'])
-
-		# comment_filename = os.path.join(commentFolder, "comments_"+problem['problem_name']+".txt")
-		# with open(comment_filename, 'w+', encoding='utf-8') as f:
-		# 	f.write(problem['comment'])
 		
 		sublime.run_command('new_window')
 		current_window = sublime.active_window()
-		# current_window.set_layout({
-		# 		"cols": [0, 0.5, 1],
-		# 		"rows": [0, 1],
-		# 		"cells": [[0, 0, 1, 1], [1, 0, 2, 1]]
-		# 	})
-		code_view = current_window.open_file(code_filename)
-		# current_window.focus_group(1)
-		# comment_view = current_window.open_file(comment_filename)
-		# current_window.focus_group(0)
+		if os.path.exists(code_filename):
+			code_view = current_window.open_file(code_filename)
+			response = sublime.yes_no_cancel_dialog(os.path.basename(code_filename)+" already exists. Do you want to keep the local file?", "Yes", "Load from remote workspace")
+			if response == sublime.DIALOG_NO:
+				response = sublime.ok_cancel_dialog("Warning: loading from remote workspace will overwrite local file", "Overwrite!")
+				if response == True:
+					with open(code_filename, 'w', encoding='utf-8') as f:
+						f.write(problem['code'])
+					code_view = current_window.open_file(code_filename)
+		else:
+			with open(code_filename, 'w', encoding='utf-8') as f:
+				f.write(problem['code'])
+			code_view = current_window.open_file(code_filename)
+	
 		loaded_problems[problem_id] = code_view
 		# loaded_comments[problem_id] = comment_view
 		last_saved_code[problem_id] = ''
 		# last_saved_comments[problem_id] = ''
-		problem_deadlines[problem_id] = datetime.datetime.strptime(problem['deadline'], "%Y-%m-%d %H:%M:%S")
-		problem_attempts[problem_id] = problem['attempts']
-		problem_max_points[problem_id] = problem['max_points']
+		# problem_deadlines[problem_id] = datetime.datetime.strptime(problem['deadline'], "%Y-%m-%d %H:%M:%S")
+		# problem_attempts[problem_id] = problem['attempts']
+		# problem_max_points[problem_id] = problem['max_points']
 		# print(problem)
 
 class colearningSubmitCode(sublime_plugin.WindowCommand):
@@ -293,6 +296,7 @@ class colearningSubmitCode(sublime_plugin.WindowCommand):
 		return is_authenticated()
 	
 	def run(self, problem_id):
+		send_all_codes()
 		view = loaded_problems[problem_id]
 		code = view.substr(sublime.Region(0, view.size())).rstrip()		
 		data = {'problem_id': problem_id, 'category': 1, 'content': code}
@@ -311,20 +315,17 @@ class colearningAskForHelp(sublime_plugin.ApplicationCommand):
 	def is_visible(self):
 		return is_authenticated()
 	
-	def run(self):
+	def run(self, problem_id):
+		send_all_codes()
+		self.problem_id = problem_id
 		sublime.active_window().show_input_panel("Explain the problem you are facing:", "", self.send_message, None, self.cancel_sending_message)
 	
 	def send_message(self, message):
 		if message=="":
 			sublime.message_dialog("Your help request message is too short.")
 			return
-
-		current_view = sublime.active_window().active_view()
-		for problem_id, view in loaded_problems.items():
-			if current_view == view:
-				response = colearningRequest("save_help_request", {'message': message, 'problem_id': problem_id}, method='POST')
-				sublime.message_dialog(response)
-				break
+		response = colearningRequest("save_help_request", {'message': message, 'problem_id': self.problem_id}, method='POST')
+		sublime.message_dialog(response)
 
 	def cancel_sending_message(self):
 		sublime.message_dialog("Your help request has been canceled.")
