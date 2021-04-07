@@ -4,8 +4,10 @@
     [[if deadline is not None:]]<div><label>Deadline: </label><span id="deadline"></span></div>[[pass]]
     <div><label>Number of attempts allowed: </label>[[=attempts]]</div>
     <div><label>Maximum Score: </label>[[=max_points]]</div>
-    <div><label>Problem Description: </label>[[=problem_description]]</div>
     <div><label>Language: </label>[[=language]]</div>
+    <div><label>Description: </label>
+        <pre>[[=problem_description]]</pre>
+    </div>
     <div><label>Code: </label><div><textarea id="code">[[=code]]</textarea></div></div>
     [[if role==1:]]
         <div><label>Answer: </label>[[=answer]]</div>
