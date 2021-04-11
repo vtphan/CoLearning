@@ -2,27 +2,18 @@
 [[block page_head]]
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
 [[end]]
-<div class="tabs is-toggle is-fullwidth">
+<div class="tabs is-medium">
     <ul>
       <li><a href="[[=URL('view_problem/'+str(problem_id))]]">Problem Information</a></li>
       <li class="is-active"><a>Student Workspaces</a></li>    
     </ul>
 </div>
-<table class="table">
-    <tbody>
-        <tr>
-            <th>Student Name</th>
-            
-            
-        </tr>
-    </tbody>
-    <tbody>
-    
+
+    <ul>
     [[for s in students:]]
-        <tr>
-            <td><a class="button" href="[[=URL('student_workspace_view/'+str(s['student_id'])+'/'+problem_id)]]">[[=s['first_name'] ]] [[=s['last_name'] ]]</a></td>
-        </tr>
+        <li>
+            <a href="[[=URL('student_workspace_view/'+str(s['student_id'])+'/'+problem_id)]]">[[=s['first_name'] ]] [[=s['last_name'] ]]</a>
+        </li>
     [[pass]]
      
-    </tbody>
-</table>
+    </ul>

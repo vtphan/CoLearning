@@ -10,7 +10,7 @@
     [[block page_head]]<!-- individual pages can customize header here -->[[end]]
     <style>
       body > div {
-        max-width: 100% !important;
+        max-width: 1200px !important;
         
       }
 
@@ -47,21 +47,22 @@
           
           <li>
             <a class="navbar-link is-primary">
-            Add New Problem
+            Problems
             </a>
             <ul>
               <li>
-                <a class="navbar-link" href="[[=URL('new_inclass_problem')]]">In-class Exercise</a>
+                <a class="navbar-link" href="[[=URL('problem_list/published')]]">Problems</a>
               </li>
               <li>
-                <a class="navbar-link" href="[[=URL('new_homework_problem')]]">Homework Assignment</a>
+                <a class="navbar-link" href="[[=URL('new_inclass_problem')]]">New Exercise</a>
+              </li>
+              <li>
+                <a class="navbar-link" href="[[=URL('new_homework_problem')]]">New Assignment</a>
               </li>
             </ul>
           </li>
           
-          <li>
-            <a class="navbar-link" href="[[=URL('problem_list/published')]]">Problems</a>
-          </li>
+          
           
           <li>
             <a class="navbar-link" href="[[=URL('submissions')]]">Submissions</a>
@@ -71,10 +72,17 @@
           </li>
           [[if user_role=='instructor':]]
           <li>
-            <a class="navbar-link" href="[[=URL('global_values')]]">Global Parameters</a>
-          </li>
-          <li>
-            <a class="navbar-link" href="[[=URL('activate_user')]]">Activate User</a>
+            <a class="navbar-link is-primary">
+            Settings
+            </a>
+            <ul>
+              <li>
+                <a class="navbar-link" href="[[=URL('global_values')]]">Global Parameters</a>
+              </li>
+              <li>
+                <a class="navbar-link" href="[[=URL('activate_user')]]">Activate User</a>
+              </li>
+            </ul>
           </li>
           [[pass]]
         </ul>

@@ -4,7 +4,7 @@
 <div>
     
     <!-- <p id="countdown" style="text-align: right;font-size: 25px; margin-top: 0px;"></p> -->
-    <div class="tabs is-toggle is-fullwidth">
+    <div class="tabs is-medium">
         <ul>
           <li><a href="[[=URL(('view_' if role==1 else '')+'problem/'+str(problem.id))]]">Problem Information</a></li>
           <li class="is-active"><a>Workspace</a></li>
@@ -25,9 +25,7 @@
     <div>
         <b>Due in:</b> <span id="countdown"></span><br>
         <b>Remaining Attempts:</b> [[=workspace.attempt_left]]<br>
-        <b>Points:</b> [[=problem.max_points]]<br>
         <b>Status:</b> [[=status]]<br>
-        <b>Description:</b> [[=problem.problem_description]]<br>
         <hr style="height:30px">
         <textarea id="editor1">[[=workspace.content]]</textarea>
         
