@@ -5,9 +5,11 @@
           <li><a href="[[=URL(('view_' if role==1 else '')+'problem/'+str(problem_id))]]">Problem Information</a></li>
           <li><a href="[[=URL('student_workspace'+ ('_view/' if role==1 else '/') +str(student_id)+'/'+str(problem_id))]]">Workspace</a></li>
           [[i = len(submissions)]]
+          [[sub_no = -1]]
           [[if role==1:]]
             [[for s in submissions:]]
               <li [[="class=is-active" if s['id']==id else ""]]><a href="[[=URL('view_submission/'+str(s['id']))]]">Submission [[=i]]</a></li>
+              [[if s['id']==id:]][[sub_no = i]][[pass]]
               [[i-=1]]
             [[pass]]
           [[else:]]
@@ -30,6 +32,7 @@
       <hr style="height:30px">
       <textarea id="editor1">[[=content]]</textarea>
       [[if role==1:]]
+        <textarea id="feedback" placeholder="Optional feedback"></textarea>
         <div id="instructor-buttons" v-show="show">
             
             <button class="button is-success" v-on:click="mark_correct" >
@@ -45,11 +48,11 @@
                 </span>
             </button>
             
-            <button class="button is-primary" v-on:click="submit_feedback">
+            <button class="button is-primary" v-on:click="download_file">
                 <span class="icon is-small">
-                <i class="fas fa-comment"></i>
+                <i class="fas fa-download"></i>
                 </span>
-                <span>Give Feedback</span>
+                <span>Download File</span>
             </button>
             
         </div>

@@ -1,11 +1,10 @@
-
 from py4web import action, request, Field,redirect, URL
-from .common import db, groups, auth, flash
-from . import settings
+from .common import db, groups, auth
 from py4web.utils.form import Form, FormStyleBulma
 import datetime
 import json
 from .utils import create_notification, is_eligible_for_help
+
 
 @action('student_workspace/<student_id>/<problem_id>', method=['GET', 'POST'])
 @action.uses(auth.user, 'student_workspace.html')
@@ -14,7 +13,7 @@ def workspace(student_id, problem_id):
         if 'student' not in groups.get(user_id):
                 redirect(URL('not_authorized'))
 
-        problem, workspace, submissions, feedbacks, status = get_workspace_info(student_id, problem_id)
+        problem, workspace, submissions, feedbacks, status, discussions = get_workspace_info(student_id, problem_id)
 
         student_name = auth.get_user()['first_name']
         help_form = Form([Field('message', label="Explain the problem you are facing")])
@@ -34,7 +33,7 @@ def workspace_view(student_id, problem_id):
                 user_role = 'instructor'
         elif 'ta' in groups.get(user_id):
                 user_role = 'ta'
-        elif 'student' in groups.get(user_id) and is_eligible_for_help(user_id, problem_id):
+        elif 'student' in groups.get(user_id) and (int(student_id) == user_id or is_eligible_for_help(user_id, problem_id)):
                 user_role = 'student'
         else:
                 redirect(URL('not_authorized'))
@@ -42,16 +41,13 @@ def workspace_view(student_id, problem_id):
         if ref is not None:
                 ref = ref.split('/')
         help_message_id = 0
-        if ref is not None and len(ref)>2 and ref[-2]=='view_help_message':
-                help_message_id = int(ref[-1])
-                if db.help_queue[help_message_id].status == "opened":
-                        db(db.help_queue.id==help_message_id).update(status='viewed')
-                        db.commit()
-        problem, workspace, submissions, feedbacks, status = get_workspace_info(student_id, problem_id)
+        
+        problem, workspace, submissions, feedbacks, status, discussions = get_workspace_info(student_id, problem_id)
         student_name = db.auth_user[student_id].first_name
+        
         return dict(problem=problem, workspace=workspace, time_interval=1000, submissions=submissions,\
                  student_name=student_name, student_id=student_id, feedbacks=feedbacks,\
-                          help_message_id=help_message_id, status=status, user_role=user_role)
+                          help_message_id=help_message_id, status=status, user_role=user_role, discussions=discussions)
 
 def get_workspace_info(student_id, problem_id):
         problem = db.problem[problem_id]
@@ -75,7 +71,9 @@ def get_workspace_info(student_id, problem_id):
                 status = "Graded incorrect"
         else:
                 status = "Not Graded"
-        return problem, workspace, submissions, feedbacks, status
+        
+        discussions = db((db.discussion.problem_id==problem_id)&(db.discussion.student_id==student_id)).select(orderby=~db.discussion.posted_at)
+        return problem, workspace, submissions, feedbacks, status, discussions
 
 
 @action('get_student_code/<workspace_id>', method='GET')
@@ -107,3 +105,51 @@ def save_help_request():
                 recipients=[ user['id'] for user in db(db.auth_user).select('id') if 'teacher' in groups.get(user['id'])], \
                         expire_at=problem.deadline)
         return "Your help request will be looked at soon."
+
+
+@action('save_discussion', method='GET')
+@action.uses(auth.user)
+def save_discussion():
+        user_id = auth.get_user()['id']
+        student_id = int(request.query.get('student_id'))
+        message = request.query.get('message')
+        problem_id = int(request.query.get('problem_id'))
+        code_snapshot = request.query.get('code_snapshot')
+        db.discussion.insert(message=message, student_id=student_id, author_id=user_id, code_snapshot=code_snapshot,\
+                 problem_id=problem_id, posted_at=datetime.datetime.utcnow())
+        db.commit()
+
+@action('save_comment', method='GET')
+@action.uses(auth.user)
+def save_comment():
+        user_id = auth.get_user()['id']
+        message = request.query.get('message')
+        discussion_id = int(request.query.get('discussion_id'))
+        db.comment.insert(message=message, discussion_id=discussion_id, author_id = user_id, posted_at=datetime.datetime.utcnow())
+        db.commit()
+
+@action('save_comment_like', method='GET')
+@action.uses(auth.user)
+def save_comment_like():
+        user_id = auth.get_user()['id']
+        
+        comment_id = int(request.query.get('comment_id'))
+        comment = db.comment[comment_id]
+        if comment.comment_like.count()>0:
+                db(db.comment_like.comment_id==comment_id).delete()
+        else:
+                db.comment_like.insert(comment_id=comment_id, liked_by=user_id, liked_at=datetime.datetime.utcnow())
+        db.commit()
+
+@action('save_discussion_like', method='GET')
+@action.uses(auth.user)
+def save_discussion_like():
+        user_id = auth.get_user()['id']
+        
+        discussion_id = int(request.query.get('discussion_id'))
+        discussion = db.discussion[discussion_id]
+        if discussion.comment_like.count()>0:
+                db(db.comment_like.discussion_id==discussion_id).delete()
+        else:
+                db.comment_like.insert(discussion_id=discussion_id, liked_by=user_id, liked_at=datetime.datetime.utcnow())
+        db.commit()

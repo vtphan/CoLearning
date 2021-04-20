@@ -45,34 +45,73 @@
                 </div>
         </div>
         [[pass]]
-       [[if role==1:]]
-        <a target="_blank" href="[[=URL('give_feedback/'+str(workspace['id'])+'/2/'+ str(help_message_id) )]]" role="button">Give Feedback</a>
-       [[pass]]
        
-       <h5 class="title is-5">Feedback</h5>
-       <table>
-         <thead>
-           <tr>
-             <td>#</td>
-             <td>Given By</td>
-             <td>Given At</td>
-             <td></td>
-           </tr>
-         </thead>
-         <tbody>
-           [[for idx, feedback in enumerate(feedbacks):]]
-              <tr>
-                <td>[[=idx+1]]</td>
-                <td>[[=feedback['first_name'] ]] [[=feedback['last_name'] ]]</td>
-                <td><span id="given_at_[[=idx]]"></span></td>
-                [[if role==1:]]
-                  <td><a role="button" href="[[=URL('viewt_feedback/'+str(feedback['id']))]]">View</a></td>
-                [[elif role==2:]]
-                 <td><a role="button" href="[[=URL('view_feedback/'+str(feedback['id']))]]">View</a></td>
-                [[pass]]
-              </tr>
-            [[pass]]
-         </tbody>
-       </table>
+       
+      
     </div>
+    <div class="box">
+      <label>Discuss or ask a question</label>
+      <textarea id="discussion" ></textarea>
+      <button id="post_button" v-on:click="submit_discussion">Submit</button>
+      <div id="discussion_threads" class="box">
+        [[for d in discussions:]]
+        <article class="message is-dark">
+            <div class="message-header">
+              <p>[[=d.author_id.first_name]] <span style="font-size: 0.7em !important;" id="discussion_time_[[=d.id]]"></span></p>
+              
+            </div>
+              <div class="message-body">
+                <div class="columns">
+                  <div class="column is-four-fifths">[[=d.message]]</div>
+                  <div class="column">
+                    <a>
+                    <span @click="submit_discussion_like([[=d.id]])" style="font-size: 1.5em; [[if d.comment_like.count()>0:]] color:dodgerblue;[[pass]]">
+                      <i class="fas fa-thumbs-up"></i>
+                    </span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="accordion">
+                <input type="checkbox" id="x[[=d.id]]">
+                <label for="x[[=d.id]]">Code Snapshot</label>
+                <div>
+                  <textarea id="code_snapshot_[[=d.id]]">[[=d.code_snapshot]]</textarea>
+                </div>
+              </div>
+              <div style="margin-left: 50px;">
+                [[for comment in d.comment.select():]]
+                  <div class="card">
+                    <div class="card-content">
+                      <div class="media-content">
+                        <p class="title is-4">[[=comment.author_id.first_name]] <span style="font-size: 0.7em !important;" id="comment_time_[[=d.id]]_[[=comment.id]]"></span></p>
+                        
+                       </div>
+
+                        <div class="content">
+                          <div class="columns">
+                            <div class="column is-four-fifths">[[=comment.message]]</div>
+                            <div class="column">
+                              <a>
+                              <span @click="submit_comment_like([[=comment.id]])" style="font-size: 1.5em; [[if comment.comment_like.count()>0:]] color:dodgerblue;[[pass]]">
+                                <i class="fas fa-thumbs-up"></i>
+                              </span>
+                              </a>
+                            </div>
+                          </div>
+                          
+                        </div>
+                        
+                    </div>
+                    
+                  </div>
+                [[pass]]
+                <textarea id="new_comment_[[=d.id]]" rows="2" placeholder="Write your feedback"></textarea>
+                <button @click="submit_comment([[=d.id]])">Submit</button>
+              </div>
+        </article>
+        [[pass]]
+      </div>
+    </div>
+
 </div>

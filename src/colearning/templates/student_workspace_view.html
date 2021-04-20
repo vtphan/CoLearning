@@ -52,18 +52,101 @@
       axios.get("[[=URL('get_student_code/'+str(workspace['id']))]]")
       .then(function(response){
         myCodeMirror1.setValue(response.data.content);
-        myCodeMirror2.setValue(response.data.comment);
+        // myCodeMirror2.setValue(response.data.comment);
       })
       .catch(function(err){
         console.log(err);
       });
     }
     setInterval(get_student_code, 30000);
-    var feedback_time = null;
-    [[for idx, feedback in enumerate(feedbacks):]]
-      [[ft = feedback['given_at'] ]]
-      feedback_time = new Date(Date.UTC([[=ft.year]], [[=ft.month-1]], [[=ft.day]], [[=ft.hour]], [[=ft.minute]], [[=ft.second]], 0));
-       document.getElementById("given_at_[[=idx]]").innerHTML = feedback_time.toLocaleString();
+    var idx = 0;
+    var code_snapshots = [];
+    var editor = null;
+    [[for d in discussions:]]
+        document.getElementById("discussion_time_[[=d.id]]").innerHTML=
+            new Date(Date.UTC([[=d.posted_at.year]], [[=d.posted_at.month-1]], 
+            [[=d.posted_at.day]], [[=d.posted_at.day]], [[=d.posted_at.hour]], 
+            [[=d.posted_at.minute]], [[=d.posted_at.second]])).toLocaleString();
+            [[for comment in d.comment.select():]]
+               document.getElementById("comment_time_[[=d.id]]_[[=comment.id]]").innerHTML=
+                  new Date(Date.UTC([[=comment.posted_at.year]], [[=comment.posted_at.month-1]], 
+                  [[=comment.posted_at.day]], [[=comment.posted_at.day]], [[=comment.posted_at.hour]], 
+                  [[=comment.posted_at.minute]], [[=comment.posted_at.second]])).toLocaleString();
+            [[pass]]
+
+            editor = document.getElementById("code_snapshot_[[=d.id]]");
+            code_snapshots[idx] = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "[[="python" if problem['language']=="Python" else "text/x-java" if problem['language']=="Java" else "text/x-c++src"]]", theme: "monokai", matchBrackets: true, indentUnit: 4, indentWithTabs: true, readOnly: "nocursor"});
+            code_snapshots[idx].setSize("100%", 300);
+            idx ++;
     [[pass]]
+    new Vue({
+      el: '#post_button',
+      methods: {
+        submit_discussion: function(event){
+          var code = myCodeMirror1.getValue();
+          var message = document.getElementById("discussion").value;
+          axios.get("[[=URL('save_discussion')]]", {
+            params: {
+              problem_id: [[=problem.id]], student_id: [[=student_id]], code_snapshot: code,
+              message: message
+            }
+          })
+          .then(function(msg){
+            window.location.reload();
+          })
+          .catch(function(){
+            alert("Could not start the discussion! Please try again later!");
+          });
+        }
+      }
+    });
+
+    new Vue({
+      el: "#discussion_threads",
+      methods: {
+        submit_comment: function(discussion_id){
+          comment = document.getElementById("new_comment_"+discussion_id).value;
+          axios.get("[[=URL('save_comment')]]", {
+            params: {
+              discussion_id: discussion_id, message: comment
+            }
+          })
+          .then(function(msg){
+            window.location.reload();
+          })
+          .catch(function(){
+            alert('Could not post comment. Please try again later!');
+          });
+        },
+        submit_comment_like: function(comment_id){
+          
+          axios.get("[[=URL('save_comment_like')]]", {
+            params: {
+              comment_id: comment_id
+            }
+          })
+          .then(function(msg){
+            window.location.reload();
+          })
+          .catch(function(){
+            alert('Could not save the like. Please try again later!');
+          });
+        },
+        submit_discussion_like: function(discussion_id){
+          
+          axios.get("[[=URL('save_discussion_like')]]", {
+            params: {
+              discussion_id: discussion_id
+            }
+          })
+          .then(function(msg){
+            window.location.reload();
+          })
+          .catch(function(){
+            alert('Could not save the like. Please try again later!');
+          });
+        }
+      }
+    });
 </script>
 [[end]]

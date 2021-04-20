@@ -43,6 +43,7 @@
                             return
                         }
                     }
+                    save_submission_discussion();
                     axios.get("[[=URL('submission_grader')]]", {
                         params: {
                         submission_id: [[=id]], correct: 1
@@ -69,7 +70,7 @@
                       else{
                           partial_credit = parseFloat(partial_credit);
                       }
-                      
+                      save_submission_discussion();
                       axios.get("[[=URL('submission_grader')]]", {
                           params: {
                               submission_id: [[=id]], correct: 0, credit: partial_credit
@@ -89,12 +90,50 @@
                   
                   submit_feedback: async function(event){
                       window.open("[[=URL('give_feedback/'+str(id)+'/1/'+str(help_message_id))]]")
+                  },
+                  download_file: function(event){
+                      var filename = "[[=problem_name]]";
+                      [[if language=="Python":]]
+                        filename += ".py";
+                       [[elif language=='Java':]]
+                        filename += ".java";
+                        [[elif language=='C++':]]
+                            filename += ".cpp";
+                        [[pass]]
+                        download(filename, myCodeMirror.getValue());
                   }
                   
               }
           });
       [[pass]]
-      var submission_time = new Date(Date.UTC([[=submitted_at.year]], [[=submitted_at.month-1]], [[=submitted_at.day]], [[=submitted_at.hour]], [[=submitted_at.minute]], [[=submitted_at.second]], 0));
-      document.getElementById("submitted_at").innerHTML = submission_time.toLocaleString();
+    var submission_time = new Date(Date.UTC([[=submitted_at.year]], [[=submitted_at.month-1]], [[=submitted_at.day]], [[=submitted_at.hour]], [[=submitted_at.minute]], [[=submitted_at.second]], 0));
+    document.getElementById("submitted_at").innerHTML = submission_time.toLocaleString();
+    function download(filename, text) {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    }
+    function save_submission_discussion(){
+        var code = myCodeMirror.getValue();
+        var message = document.getElementById("feedback").value;
+        message = "[Feedback for submission #[[=sub_no]] ] " + message;
+        
+        axios.get("[[=URL('save_discussion')]]", {
+            params: {
+              problem_id: [[=problem_id]], student_id: [[=student_id]], code_snapshot: code,
+              message: message
+            }
+          })
+          .catch(function(){
+            alert("Could not start the discussion! Please try again later!");
+          });
+    }
   </script>
   [[end]]

@@ -49,6 +49,7 @@ from .view_problem_controller import *
 from .publish_problem_controller import *
 # from .test_controller import *
 from .run_query_controller import *
+from .statistics_controller import *
 
 
 @action("index", method='GET')

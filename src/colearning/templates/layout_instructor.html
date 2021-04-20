@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="data:image/x-icon;base64,AAABAAEAAQEAAAEAIAAwAAAAFgAAACgAAAABAAAAAgAAAAEAIAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAAAA=="/>
     <link rel="stylesheet" href="css/no.css">
-    <link rel="stylesheet" href="[[=URL('static', 'font-awesome-4.7.0/css/font-awesome.css')]]">
+    <!-- <link rel="stylesheet" href="[[=URL('static', 'font-awesome-4.7.0/css/font-awesome.css')]]"> -->
+    <script src="https://kit.fontawesome.com/76cb912a05.js" crossorigin="anonymous"></script>
     <style>.py4web-validation-error{margin-top:-16px; font-size:0.8em;color:red}</style>
     [[block page_head]]<!-- individual pages can customize header here -->[[end]]
     <style>
@@ -30,8 +31,9 @@
         <input type="checkbox" id="hamburger">
         <!-- Left menu ul/li -->
         [[block page_left_menu]]
-        [[if user_role=='student':]]
         <ul>
+        [[if user_role=='student':]]
+        
           <li>
             <a class="navbar-link" href="[[=URL('active_problems')]]">Problems</a>
           </li>
@@ -41,9 +43,9 @@
           <li>
             <a class="navbar-link" href="[[=URL('student_help_message_list')]]">Help Requests</a>
           </li>
-        </ul>
+        
         [[else:]]
-        <ul>
+        
           
           <li>
             <a class="navbar-link is-primary">
@@ -85,8 +87,12 @@
             </ul>
           </li>
           [[pass]]
-        </ul>
+        
         [[pass]]
+        <li>
+          <a class="navbar-link" href="[[=URL('statistics')]]">Statistics</a>
+        </li>
+      </ul>
         [[end]]
         <!-- Right menu ul/li -->
         <ul>

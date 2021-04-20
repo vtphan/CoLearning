@@ -1,0 +1,39 @@
+[[extend 'layout_instructor.html']]
+[[block page_head]]
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+[[end]]
+
+Total <span style="font-size: 1.5em; color:dodgerblue;">
+    <i class="fas fa-thumbs-up"></i>
+  </span>: [[=total_likes]]
+
+[[if user_role=='student':]]
+<table>
+    <thead>
+        <tr>
+            <th>Problem Name</th>
+            <th>Status</th>
+            <th>Date of submission</th>
+            <th>Score</th>
+        </tr>
+    </thead>
+    <tbody>
+        [[for p in problems:]]
+            <tr>
+                [[for v in p:]]
+                    <td>[[=v]]</td>
+                [[pass]]
+            </tr>
+        [[pass]]
+    </tbody>
+</table>
+[[else:]]
+<ul>
+    [[for p in problems:]]
+    <li>
+        <a href="[[=URL('view_problem/'+str(p.id))]]">[[=p.problem_name]]</a>
+    </li>
+        
+    [[pass]]
+</ul>
+[[pass]]
