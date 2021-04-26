@@ -35,14 +35,14 @@ if 'server_address' in settings:
 folderPath = os.path.join(os.path.expanduser('~'), 'CL')
 
 colearningCookieFile = os.path.join(folderPath, "cookies")
-feedbackFolder = os.path.join(folderPath, "FEEDBACK")
+# feedbackFolder = os.path.join(folderPath, "FEEDBACK")
 # commentFolder = os.path.join(folderPath, "COMMENTS")
 
 if not os.path.exists(folderPath):
 	os.mkdir(folderPath)
 
-if not os.path.exists(feedbackFolder):
-	os.mkdir(feedbackFolder)
+# if not os.path.exists(feedbackFolder):
+# 	os.mkdir(feedbackFolder)
 
 # if not os.path.exists(commentFolder):
 # 	os.mkdir(commentFolder)
@@ -99,7 +99,7 @@ def get_notification():
 		print(notif)
 		if notif['type'] is not None and notif['type'] == "feedback":
 			sublime.message_dialog("You have a new feedback.")
-			loadColearningFeedback(notif['type_id'])
+			# loadColearningFeedback(notif['type_id'])
 		else:
 			sublime.message_dialog(notif['message'])
 
@@ -138,30 +138,30 @@ def colearningRequest(path, data, method='GET'):
 	print('Error making request')
 	return "Error"
 
-def loadColearningFeedback(feedback_id):
-	global feedbackFolder
-	feedback = json.loads(colearningRequest("get_feedback/"+str(feedback_id), data={}))
-	snapshot_filename = feedback['problem_name']+(".py" if feedback['language']=="Python" else ".java" if feedback['language']=='Java' else ".cpp")
-	snapshot_filename = os.path.join(feedbackFolder, snapshot_filename)
-	with open(snapshot_filename, 'w+') as f:
-		f.write(feedback['code_snapshot'])
+# def loadColearningFeedback(feedback_id):
+# 	global feedbackFolder
+# 	feedback = json.loads(colearningRequest("get_feedback/"+str(feedback_id), data={}))
+# 	snapshot_filename = feedback['problem_name']+(".py" if feedback['language']=="Python" else ".java" if feedback['language']=='Java' else ".cpp")
+# 	snapshot_filename = os.path.join(feedbackFolder, snapshot_filename)
+# 	with open(snapshot_filename, 'w+') as f:
+# 		f.write(feedback['code_snapshot'])
 	
-	feedback_filename = os.path.join(feedbackFolder, "feedback.txt")
-	with open(feedback_filename, 'w+') as f:
-		f.write(feedback['feedback'])
+# 	feedback_filename = os.path.join(feedbackFolder, "feedback.txt")
+# 	with open(feedback_filename, 'w+') as f:
+# 		f.write(feedback['feedback'])
 
-	sublime.run_command("new_window")
-	current_window = sublime.active_window()
-	current_window.set_layout({
-			"cols": [0, 0.5, 1],
-			"rows": [0, 1],
-			"cells": [[0, 0, 1, 1], [1, 0, 2, 1]]
-		})
-	code_view = current_window.open_file(snapshot_filename)
-	code_view.set_read_only(True)
-	current_window.focus_group(1)
-	feedback_view = current_window.open_file(feedback_filename)
-	feedback_view.set_read_only(True)
+# 	sublime.run_command("new_window")
+# 	current_window = sublime.active_window()
+# 	current_window.set_layout({
+# 			"cols": [0, 0.5, 1],
+# 			"rows": [0, 1],
+# 			"cells": [[0, 0, 1, 1], [1, 0, 2, 1]]
+# 		})
+# 	code_view = current_window.open_file(snapshot_filename)
+# 	code_view.set_read_only(True)
+# 	current_window.focus_group(1)
+# 	feedback_view = current_window.open_file(feedback_filename)
+# 	feedback_view.set_read_only(True)
 	
 	
 
@@ -220,6 +220,14 @@ class colearningViewProblem(sublime_plugin.WindowCommand):
 
 	def run(self, problem_id):
 		url = os.path.join(colearningSERVER, "problem/"+str(problem_id))
+		webbrowser.open(url)
+
+class colearningHelpOthers(sublime_plugin.WindowCommand):
+	def is_visible(self):
+		return is_authenticated()
+		
+	def run(self):
+		url = os.path.join(colearningSERVER, "student_help_message_list")
 		webbrowser.open(url)
 
 def get_due_time(deadline):
@@ -316,9 +324,12 @@ class colearningAskForHelp(sublime_plugin.ApplicationCommand):
 		return is_authenticated()
 	
 	def run(self, problem_id):
+		global student_id
 		send_all_codes()
 		self.problem_id = problem_id
-		sublime.active_window().show_input_panel("Explain the problem you are facing:", "", self.send_message, None, self.cancel_sending_message)
+		url = os.path.join(colearningSERVER, "student_workspace_view/"+str(student_id)+"/"+str(problem_id))
+		webbrowser.open(url)
+		# sublime.active_window().show_input_panel("Explain the problem you are facing:", "", self.send_message, None, self.cancel_sending_message)
 	
 	def send_message(self, message):
 		if message=="":
@@ -372,6 +383,7 @@ class colearningLogin(sublime_plugin.ApplicationCommand):
 		global session
 		global session_expiration_time
 		global student_id
+		global folderPath
 		
 		password = password.strip()
 		if len(password)>0:
@@ -392,9 +404,19 @@ class colearningLogin(sublime_plugin.ApplicationCommand):
 					if rsp['code'] != 200:
 						sublime.message_dialog('Login Failed!')
 					else:
-						sublime.message_dialog("Hi {0}, you have successfully logged in.".format(rsp['user']['first_name']))
 						ck = cookies.SimpleCookie()
 						ck.load(response.info()['Set-Cookie'])
+						folderPath = os.path.join(folderPath, rsp['user']['username'])
+						if not os.path.exists(folderPath):
+							os.mkdir(folderPath)
+						url = urllib.parse.urljoin(colearningSERVER, 'get_app_id')
+						req  = urllib.request.Request(url, method='GET')
+						response = urllib.request.urlopen(req, None, 10)
+						app_id = response.read().decode(encoding="utf-8")
+						folderPath = os.path.join(folderPath, app_id)
+						if not os.path.exists(folderPath):
+							os.mkdir(folderPath)
+						
 						# print(ck['colearning_session'].value)
 						# print(rsp)
 						student_id = rsp['user']['id']
@@ -402,6 +424,7 @@ class colearningLogin(sublime_plugin.ApplicationCommand):
 						session_expiration_time = datetime.datetime.now() + datetime.timedelta(hours=2)
 						# with open(colearningCookieFile, 'wb') as f:
 						# 	pickle.dump({'colearning_session': session, 'session_expiration': session_expiration_time}, f)
+						sublime.message_dialog("Hi {0}, you have successfully logged in.".format(rsp['user']['first_name']))
 						notification_scheduler(notification_stop_contidion)
 						return
 			except urllib.error.HTTPError as err:
@@ -491,4 +514,4 @@ def plugin_unloaded():
 		json.dump(default_menu, f)
 		
 	with open(settings_file, 'w') as f:
-		json.dump(settings, f)   
+		json.dump(settings, f)

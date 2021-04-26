@@ -15,6 +15,11 @@
         "caption": "-"
       },
       {
+        "id": "colearningHelpOthers",
+        "command": "colearning_help_others",
+        "caption": "Help Others"
+      },
+      {
         "id": "colearningLogin",
         "command": "colearning_login",
         "caption": "Login"

@@ -74,3 +74,7 @@ def not_authorized():
 @unauthenticated("check_address")
 def check_address():
     return "correct"
+
+@unauthenticated("get_app_id")
+def get_app_id():
+    return settings.APP_NAME
