@@ -25,7 +25,7 @@
       [[elif len(verdict)>0 and verdict[0]['verdict']=="incorrect": ]]
         graded = 0
      [[pass]]
-      [[if role==1:]]
+      [[if user_role=='instructor' or user_role=='ta':]]
       
          var instroctor_buttons = new Vue({
               el: '#instructor-buttons',
@@ -122,7 +122,10 @@
     }
     function save_submission_discussion(){
         var code = myCodeMirror.getValue();
-        var message = document.getElementById("feedback").value;
+        var message = document.getElementById("feedback").value.trim();
+        if (message == ""){
+          return;
+        }
         message = "[Feedback for submission #[[=sub_no]] ] " + message;
         
         axios.get("[[=URL('save_discussion')]]", {

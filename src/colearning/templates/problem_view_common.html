@@ -9,7 +9,7 @@
         <pre>[[=problem_description]]</pre>
     </div>
     <div><label>Code: </label><div><textarea id="code">[[=code]]</textarea></div></div>
-    [[if role==1:]]
+    [[if user_role=='instructor' or user_role=='ta':]]
         <div><label>Answer: </label>[[=answer]]</div>
         <div><label>Topics: </label>[[=topics]]</div>
     [[pass]]

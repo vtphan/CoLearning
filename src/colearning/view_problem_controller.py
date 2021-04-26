@@ -5,18 +5,24 @@ from py4web.utils.form import Form, FormStyleBulma
 import datetime
 from pydal.validators import IS_IN_SET
 
-from .utils import create_notification
+from .utils import create_notification, is_eligible_for_help
 
 @action('view_problem/<problem_id>', method='GET')
 @action.uses(auth.user, 'view_problem.html')
 def view_problem(problem_id):
-    if 'teacher' in groups.get(auth.get_user()['id']):
+    user_id = auth.get_user()['id']
+    grp = groups.get(user_id)
+    student_id = None
+    if 'teacher' in grp:
         user_role = 'instructor'
-    elif 'ta' in groups.get(auth.get_user()['id']):
+    elif 'ta' in grp:
         user_role = 'ta'
+    elif 'student' in grp:
+        user_role = 'student'
+        student_id = user_id
     else:
         redirect(URL('not_authorized'))
-    problem = get_problem_information(problem_id)
+    problem = get_problem_information(problem_id, student_id)
     problem['user_role'] = user_role
     return problem
 
@@ -41,4 +47,5 @@ def get_problem_information(problem_id, student_id=None):
     if student_id is not None:
         problem['student_id'] = student_id
         problem['submissions'] = db((db.submission.student_id==student_id)&(db.submission.problem_id==problem_id)).select(db.submission.id, orderby=~db.submission.submitted_at)
+        problem['help_eligible'] = is_eligible_for_help(student_id, problem_id)
     return problem

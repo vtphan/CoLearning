@@ -148,5 +148,26 @@
         }
       }
     });
+
+    [[if user_role=='student' and workspace.attempt_left>0:]]
+    var submissionButtons = new Vue({
+      el: "#submit-buttons",
+      data: {},
+      methods:{
+        submit_code: function(event){
+          axios.post("[[=URL('submission_handler')]]",{
+            student_id: [[=workspace.student_id]], problem_id: [[=workspace.problem_id]], content: myCodeMirror1.getValue(), 
+            attempt_left: [[=workspace.attempt_left]], category: 1
+          })
+          .then(function(response){
+            alert('Code submitted successfully.')
+          })
+          .catch(function(error){
+            alert("Couldn't submit code. Plesae try again!")
+          });
+        }
+      }
+    });
+    [[pass]]
 </script>
 [[end]]

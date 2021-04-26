@@ -37,36 +37,6 @@
         }
       }
     });
-    // $("#submit-button").on("click", function(e){
-    //   $.ajax({
-    //     method: 'POST',
-    //     url: "[[=URL('submission_handler')]]",
-    //     data: {student_id: [[=workspace.student_id]], problem_id: [[=workspace.problem_id]], content: myCodeMirror.getValue(), 
-    //       attempt_left: [[=workspace.attempt_left-1]], category: 1},
-    //   })
-    //   .done(function(msg){
-    //     alert(msg);
-    //     location.reload();
-    //   })
-    //   .fail(function(){
-    //     alert("Could not submit the answer! Please try again.");
-    //   });
-    // });
-    // $("#help-button").on("click", function(e){
-    //   $.ajax({
-    //     method: 'POST',
-    //     url: "[[=URL('submission_handler')]]",
-    //     data: {student_id: [[=workspace.student_id]], problem_id: [[=workspace.problem_id]], content: myCodeMirror.getValue(), 
-    //       attempt_left: [[=workspace.attempt_left-1]], category: 2},
-    //   })
-    //   .done(function(msg){
-    //     alert(msg);
-    //     // location.reload();
-    //   })
-    //   .fail(function(){
-    //     alert("Could not submit the answer! Please try again.");
-    //   });
-    // });
     [[pass]]
     // Set the date we're counting down to
     var countDownDate = new Date(Date.UTC([[=problem.deadline.year]], [[=problem.deadline.month-1]], [[=problem.deadline.day]], [[=problem.deadline.hour]], [[=problem.deadline.minute]], [[=problem.deadline.second]], 0)).getTime();

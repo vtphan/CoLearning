@@ -32,13 +32,15 @@ def help_message_list():
     else:
         redirect(URL('not_authorized'))
     
-    messages = db.executesql("select s.first_name, s.last_name, h.id as message_id, h.student_id, h.problem_id, p.problem_name, h.message, h.status \
-        from help_queue h, problem p, auth_user s where p.id=h.problem_id and s.id=h.student_id and h.status<>\"closed\" order by h.asked_at desc", as_dict=True)
+    # messages = db.executesql("select s.first_name, s.last_name, h.id as message_id, h.student_id, h.problem_id, p.problem_name, h.message, h.status \
+    #     from help_queue h, problem p, auth_user s where p.id=h.problem_id and s.id=h.student_id and h.status<>\"closed\" order by h.asked_at desc", as_dict=True)
 
-    past_messages = db.executesql("select s.first_name, s.last_name, h.id as message_id, h.student_id, h.problem_id, p.problem_name, h.message, h.status\
-        from help_queue h, problem p, auth_user s where p.id=h.problem_id and s.id=h.student_id and h.status=\"closed\" order by h.asked_at desc", as_dict=True)
+    # past_messages = db.executesql("select s.first_name, s.last_name, h.id as message_id, h.student_id, h.problem_id, p.problem_name, h.message, h.status\
+    #     from help_queue h, problem p, auth_user s where p.id=h.problem_id and s.id=h.student_id and h.status=\"closed\" order by h.asked_at desc", as_dict=True)
 
-    return dict(messages=messages, past_messages=past_messages, user_role=user_role)
+    messages = db(db.discussion.student_id==db.discussion.author_id).select()
+
+    return dict(messages=messages, user_role=user_role)
 
 @action('view_help_message/<message_id>', method=['GET', 'POST'])
 @action.uses(auth.user, 'view_help_message.html')

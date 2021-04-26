@@ -29,20 +29,10 @@
         <hr style="height:30px">
         <textarea id="editor1">[[=workspace.content]]</textarea>
         
-        [[if workspace.attempt_left>0 and role==2:]]
+        [[if user_role=='student' and workspace.attempt_left>0:]]
         <div id="submit-buttons">
           <button class="ui-button ui-widget ui-corner-all" id="submit-button" v-on:click="submit_code">Submit Code</button>
-          <!-- <button class="ui-button ui-widget ui-corner-all" id="help-button">Ask for help</button> -->
-          <label role="button" for="x06">Ask for help</label>
-              <div role="dialog">
-                  <input type="checkbox" id="x06"/>
-                  <div>
-                     <label class="close" for="x06">X</label>
-                     <center class="white padded">
-                       [[=help_form]]
-                     </center>
-                  </div>
-                </div>
+          
         </div>
         [[pass]]
        

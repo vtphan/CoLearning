@@ -11,6 +11,8 @@ def problem_list(problem_id):
         user_role = 'instructor'
     elif 'ta' in groups.get(auth.get_user()['id']):
         user_role = 'ta'
+    elif 'student' in groups.get(auth.get_user()['id']):
+        user_role = 'student'    
     else:
         redirect(URL('not_authorized'))
     student_list = db.executesql('select w.student_id, a.first_name, a.last_name from student_workspace w, auth_user\

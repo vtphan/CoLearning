@@ -11,7 +11,18 @@
 <div class="tabs is-medium">
     <ul>
       <li class="is-active"><a>Problem Information</a></li>
-      <li><a href="[[=URL('student_workspace_list/'+str(id))]]">Student Workspaces</a></li>    
+      [[if user_role=='student':]]
+      <li><a href="[[=URL('student_workspace_view/'+str(student_id)+'/'+str(id))]]">Workspace</a></li>
+      [[pass]]
+      [[if help_eligible==True:]]
+      <li><a href="[[=URL('student_workspace_list/'+str(id))]]">Student Workspaces</a></li>
+      [[pass]]
+      [[i = len(submissions)]]
+      
+        [[for s in submissions:]]
+            <li><a href="[[=URL('submission/'+str(s['id']))]]">Submission [[=i]]</a></li>
+            [[i-=1]]
+        [[pass]]
     </ul>
 </div>
 [[include 'problem_view_common.html']]
@@ -22,7 +33,9 @@
 <a role="button" href="[[=URL('publish_problem_'+('inclass/' if type=='in-class' else 'homework/')+str(id))]]">Republish</a>
 [[pass]]
 [[pass]]
+[[if user_role=='insttructor' or user_role=='ta':]]
 <a role="button" href="[[=URL('edit_problem/'+str(id))]]">Edit</a>
+[[pass]]
 [[block page_scripts]]
 <script>
     var editor = document.getElementById("code");

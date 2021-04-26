@@ -58,7 +58,7 @@ def submission(submission_id):
         db.commit()
         create_notification("New help seeking message recieved.", recipients=[ user['id'] for user in db(db.auth_user).select('id') if 'teacher' in groups.get(user['id'])],\
             expire_at=db.problem[sub['problem_id']].deadline)
-    
+    sub['user_role'] = 'student'
     return sub
 
 @action('view_submission/<submission_id>', method='GET')
