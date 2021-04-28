@@ -55,7 +55,13 @@
                   <div class="column is-four-fifths">[[=d.message]]</div>
                   <div class="column">
                     <a>
-                    <span @click="submit_discussion_like([[=d.id]])" style="font-size: 1.5em; [[if d.comment_like.count()>0:]] color:dodgerblue;[[pass]]">
+                      [[liked = False]]
+                        [[for like in d.comment_like.select():]]
+                          [[if like.liked_by==user_id:]]
+                            [[liked=True]]
+                          [[pass]]
+                        [[pass]]
+                    <span @click="submit_discussion_like([[=d.id]])" style="font-size: 1.5em; [[if liked==True:]] color:dodgerblue;[[pass]]">
                       <i class="fas fa-thumbs-up"></i>
                     </span>
                     </a>
@@ -83,7 +89,13 @@
                             <div class="column is-four-fifths">[[=comment.message]]</div>
                             <div class="column">
                               <a>
-                              <span @click="submit_comment_like([[=comment.id]])" style="font-size: 1.5em; [[if comment.comment_like.count()>0:]] color:dodgerblue;[[pass]]">
+                                [[liked = False]]
+                                [[for like in comment.comment_like.select():]]
+                                  [[if like.liked_by==user_id:]]
+                                    [[liked=True]]
+                                  [[pass]]
+                                [[pass]]
+                              <span @click="submit_comment_like([[=comment.id]])" style="font-size: 1.5em; [[if liked==True:]] color:dodgerblue;[[pass]]">
                                 <i class="fas fa-thumbs-up"></i>
                               </span>
                               </a>

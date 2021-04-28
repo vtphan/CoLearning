@@ -65,12 +65,12 @@
     [[for d in discussions:]]
         document.getElementById("discussion_time_[[=d.id]]").innerHTML=
             new Date(Date.UTC([[=d.posted_at.year]], [[=d.posted_at.month-1]], 
-            [[=d.posted_at.day]], [[=d.posted_at.day]], [[=d.posted_at.hour]], 
+            [[=d.posted_at.day]], [[=d.posted_at.hour]], 
             [[=d.posted_at.minute]], [[=d.posted_at.second]])).toLocaleString();
             [[for comment in d.comment.select():]]
                document.getElementById("comment_time_[[=d.id]]_[[=comment.id]]").innerHTML=
                   new Date(Date.UTC([[=comment.posted_at.year]], [[=comment.posted_at.month-1]], 
-                  [[=comment.posted_at.day]], [[=comment.posted_at.day]], [[=comment.posted_at.hour]], 
+                  [[=comment.posted_at.day]], [[=comment.posted_at.hour]], 
                   [[=comment.posted_at.minute]], [[=comment.posted_at.second]])).toLocaleString();
             [[pass]]
 

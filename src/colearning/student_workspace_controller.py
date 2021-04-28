@@ -23,7 +23,7 @@ def workspace(student_id, problem_id):
                 create_notification("New help request recieved.", recipients=[ user['id'] for user in db(db.auth_user).select('id') if 'teacher' in groups.get(user['id'])],\
                         expire_at=problem.deadline)
         return dict(problem=problem, workspace=workspace, time_interval=30000, submissions=submissions, student_name=student_name, student_id=student_id, help_form=help_form,\
-                status=status, feedbacks=feedbacks)
+                status=status, feedbacks=feedbacks, user_id=user_id)
 
 @action('student_workspace_view/<student_id>/<problem_id>', method='GET')
 @action.uses(auth.user, 'student_workspace_view.html')
@@ -46,7 +46,7 @@ def workspace_view(student_id, problem_id):
         student_name = db.auth_user[student_id].first_name
         
         return dict(problem=problem, workspace=workspace, time_interval=1000, submissions=submissions,\
-                 student_name=student_name, student_id=student_id, feedbacks=feedbacks,\
+                 student_name=student_name, student_id=student_id, feedbacks=feedbacks, user_id=user_id,\
                           help_message_id=help_message_id, status=status, user_role=user_role, discussions=discussions)
 
 def get_workspace_info(student_id, problem_id):
@@ -134,8 +134,8 @@ def save_comment_like():
         user_id = auth.get_user()['id']
         
         comment_id = int(request.query.get('comment_id'))
-        comment = db.comment[comment_id]
-        if comment.comment_like.count()>0:
+        
+        if db((db.comment_like.comment_id==comment_id)&(db.comment_like.liked_by==user_id)).count()>0:
                 db(db.comment_like.comment_id==comment_id).delete()
         else:
                 db.comment_like.insert(comment_id=comment_id, liked_by=user_id, liked_at=datetime.datetime.utcnow())
@@ -147,8 +147,8 @@ def save_discussion_like():
         user_id = auth.get_user()['id']
         
         discussion_id = int(request.query.get('discussion_id'))
-        discussion = db.discussion[discussion_id]
-        if discussion.comment_like.count()>0:
+
+        if db((db.comment_like.discussion_id==discussion_id)&(db.comment_like.liked_by==user_id)).count()>0:
                 db(db.comment_like.discussion_id==discussion_id).delete()
         else:
                 db.comment_like.insert(discussion_id=discussion_id, liked_by=user_id, liked_at=datetime.datetime.utcnow())
