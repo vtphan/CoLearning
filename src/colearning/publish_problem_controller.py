@@ -34,7 +34,7 @@ def publish_problem_inclass(problem_id):
             db(db.problem.id==problem_id).update(deadline=deadline)
             flash.set('Problem has been republished')
         redirect(URL('view_problem/'+str(problem_id)))
-    return dict(form=publish_form, user_role='instructor')
+    return dict(form=publish_form, user_role='instructor', problem_id=problem_id)
 
 @action('publish_problem_homework/<problem_id>', method=['GET', 'POST'])
 @action.uses(auth.user, 'publish_problem.html')
@@ -71,4 +71,4 @@ def publish_problem_homework(problem_id):
             db(db.problem.id==problem_id).update(deadline=deadline)
             flash.set('Problem has been republished')
         redirect(URL('view_problem/'+str(problem_id)))
-    return dict(form=publish_form, user_role='instructor')
+    return dict(form=publish_form, user_role='instructor', problem_id=problem_id)
