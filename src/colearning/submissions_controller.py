@@ -14,6 +14,8 @@ def submissions():
         user_role = 'instructor'
     elif 'ta' in groups.get(auth.get_user()['id']):
         user_role = 'ta'
+    elif 'student' in groups.get(auth.get_user()['id']):
+        user_role = 'student'
     else:
         redirect(URL('not_authorized'))
     active_submissions = db.executesql('SELECT s.id, s.problem_id, p.problem_name, st.first_name, st.last_name, s.submission_category, s.submitted_at\
@@ -29,7 +31,7 @@ def my_submissions():
         redirect(URL('not_authorized'))
     submissions = db.executesql('SELECT s.id, s.problem_id, p.problem_name, s.submitted_at\
          from submission s, problem p where s.problem_id=p.id order by s.submitted_at desc', as_dict=True)
-    return dict(sub=submissions)
+    return dict(sub=submissions, user_role='student')
 
 @action('submission/<submission_id>', method=['GET', 'POST'])
 @action.uses(auth.user, 'submission.html')
@@ -68,6 +70,8 @@ def view_submission(submission_id):
         user_role = 'instructor'
     elif 'ta' in groups.get(auth.get_user()['id']):
         user_role = 'ta'
+    elif 'student' in groups.get(auth.get_user()['id']):
+        user_role = 'student'
     else:
         redirect(URL('not_authorized'))
     user_id = auth.get_user()['id']
@@ -100,7 +104,7 @@ def view_submission(submission_id):
 @action('submission_grader', method='GET')
 @action.uses(auth.user)
 def submission_grader():
-    if 'teacher' not in groups.get(auth.get_user()['id']):
+    if 'teacher' not in groups.get(auth.get_user()['id']) and 'ta' not in groups.get(auth.get_user()['id']):
         redirect(URL('not_authorized'))
     submission_id = int(request.query.get('submission_id'))
     correct = int(request.query.get('correct'))

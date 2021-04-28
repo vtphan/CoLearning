@@ -10,6 +10,6 @@ def active_problems():
     # if 'student' not in groups.get(auth.get_user()['id']):
     #     redirect(URL('not_authorized'))
     problems = db((db.problem.deadline is not None)&(db.problem.deadline>datetime.datetime.utcnow())).select(orderby=~db.problem.problem_uploaded_at)
-    return dict(problems=problems)
+    return dict(problems=problems, user_role='student')
     
 

@@ -41,9 +41,9 @@ def get_problem_information(problem_id, student_id=None):
     problem['number_of_submission'] = db(db.submission.problem_id==problem_id).count()
     problem['graded_correct'] = db((db.submission.problem_id==problem_id)&(db.submission.id==db.submission_verdict.submission_id)&(db.submission_verdict.verdict=='correct')).count()
     problem['graded_incorrect'] = db((db.submission.problem_id==problem_id)&(db.submission.id==db.submission_verdict.submission_id)&(db.submission_verdict.verdict=='incorrect')).count()
-    problem['teacher_feedback'] = db((db.feedback.problem_id==problem_id)&('teacher' in groups.get(db.feedback.given_by))).count()
-    problem['ta_feedback'] = db((db.feedback.problem_id==problem_id)&('ta' in groups.get(db.feedback.given_by))).count()
-    problem['student_feedback'] = db((db.feedback.problem_id==problem_id)&('student' in groups.get(db.feedback.given_by))).count()
+    # problem['teacher_feedback'] = db((db.feedback.problem_id==problem_id)&('teacher' in groups.get(db.feedback.given_by))).count()
+    # problem['ta_feedback'] = db((db.feedback.problem_id==problem_id)&('ta' in groups.get(db.feedback.given_by))).count()
+    # problem['student_feedback'] = db((db.feedback.problem_id==problem_id)&('student' in groups.get(db.feedback.given_by))).count()
     if student_id is not None:
         problem['student_id'] = student_id
         problem['submissions'] = db((db.submission.student_id==student_id)&(db.submission.problem_id==problem_id)).select(db.submission.id, orderby=~db.submission.submitted_at)

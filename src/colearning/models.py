@@ -46,14 +46,6 @@ def create_tables():
      db.define_table('submission_verdict', Field('submission_id', type='reference submission'), Field('verdict'), Field('score', type='double'),\
            Field('evaluated_at', type='datetime'))
 
-     db.define_table('help_queue', Field('student_id', type='reference auth_user'), Field('problem_id', type='reference problem'),\
-           Field('submission_id', type='reference submission'), Field('message', type='text'), Field('status', requires=IS_IN_SET(['not opened', 'opened', 'viewed', 'closed']),\
-                 default='not opened'), Field('asked_at', type='datetime'), redefine=True)
-
-     db.define_table('feedback', Field('problem_id', type='reference problem'), Field('submission_id', type='reference submission'), Field('feedback', type='text'), Field('help_message_id', type='reference help_queue'),\
-           Field('code_snapshot', type='text'), Field('given_for', type='reference auth_user'), Field('given_by', type='reference auth_user'), Field('given_at', type='datetime'), redefine=True)
-     db.define_table('feedback_like', Field('feedback_id', type='reference feedback'), Field('liked_by', type='reference auth_user'), Field('liked_at', type='datetime'))
-
      db.define_table('notification', Field('message', type='text'), Field('recipients', type='list:reference auth_user'), Field('generated_at', type='datetime'),\
           Field('expire_at', type='datetime'), Field('type'), Field('type_id', type='integer'), redefine=True)
      db.define_table('global_value', Field('variable'), Field('value'), redefine=True)
