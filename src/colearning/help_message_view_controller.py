@@ -38,7 +38,7 @@ def help_message_list():
     # past_messages = db.executesql("select s.first_name, s.last_name, h.id as message_id, h.student_id, h.problem_id, p.problem_name, h.message, h.status\
     #     from help_queue h, problem p, auth_user s where p.id=h.problem_id and s.id=h.student_id and h.status=\"closed\" order by h.asked_at desc", as_dict=True)
 
-    messages = db(db.discussion.student_id==db.discussion.author_id).select()
+    messages = db(db.discussion.student_id==db.discussion.author_id).select(orderby=~db.discussion.posted_at)
 
     return dict(messages=messages, user_role=user_role)
 
