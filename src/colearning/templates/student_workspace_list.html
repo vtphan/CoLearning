@@ -12,7 +12,7 @@
     <ul>
     [[for s in students:]]
         <li>
-            <a href="[[=URL('student_workspace_view/'+str(s['student_id'])+'/'+problem_id)]]">[[=s['first_name'] ]] [[=s['last_name'] ]]</a>
+            <a href="[[=URL('student_workspace_view/'+str(s['student_id'])+'/'+problem_id)]]">[[=s['first_name'] ]] [[=s['last_name'] ]]</a> <a href="[[=URL('student_workspace_view/'+str(s['student_id'])+'/'+problem_id, hash='discussion_threads')]]"><i class="fas fa-comments"></i></a>
         </li>
     [[pass]]
      

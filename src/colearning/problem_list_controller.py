@@ -21,9 +21,13 @@ def problem_list(problem_category='published'):
         user_role = 'instructor'
     elif 'ta' in groups.get(auth.get_user()['id']):
         user_role = 'ta'
+    elif 'student' in groups.get(auth.get_user()['id']):
+        user_role = 'student'
     else:
         redirect(URL('not_authorized'))
     if problem_category=='unpublished':
+        if user_role == 'student':
+            redirect(URL('not_authorized'))
         problems = db(db.problem.deadline==None).select(orderby=~db.problem.problem_uploaded_at)
     elif problem_category=='published':
         problems = db((db.problem.deadline is not None)&(db.problem.deadline>datetime.datetime.utcnow())).select(orderby=~db.problem.deadline)

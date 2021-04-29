@@ -47,5 +47,5 @@ def get_problem_information(problem_id, student_id=None):
     if student_id is not None:
         problem['student_id'] = student_id
         problem['submissions'] = db((db.submission.student_id==student_id)&(db.submission.problem_id==problem_id)).select(db.submission.id, orderby=~db.submission.submitted_at)
-        problem['help_eligible'] = is_eligible_for_help(student_id, problem_id)
+        problem['help_eligible'] = auth.get_user()['id']==student_id and is_eligible_for_help(student_id, problem_id)
     return problem

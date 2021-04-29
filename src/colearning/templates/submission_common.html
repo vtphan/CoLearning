@@ -4,6 +4,9 @@
         <ul>
           <li><a href="[[=URL(('view_' if role==1 else '')+'problem/'+str(problem_id))]]">Problem Information</a></li>
           <li><a href="[[=URL('student_workspace_view/' +str(student_id)+'/'+str(problem_id))]]">Workspace</a></li>
+          [[if user_role=='student' and help_eligible==True:]]
+            <li><a href="[[=URL('student_workspace_list/'+str(problem_id))]]">Student Workspaces</a></li>
+          [[pass]]
           [[i = len(submissions)]]
           [[sub_no = -1]]
           [[if role==1:]]

@@ -7,8 +7,10 @@
 
 <div class="tabs is-medium">
     <ul>
-      <li [[if category=='published':]]class="is-active"[[pass]]><a href="[[=URL('problem_list/published')]]">Published</a></li>
+      <li [[if category=='published':]]class="is-active"[[pass]]><a href="[[=URL('problem_list/published')]]">On Going</a></li>
+      [[if user_role!='student':]]
       <li [[if category=='unpublished':]]class="is-active"[[pass]]><a href="[[=URL('problem_list/unpublished')]]">Unpublished</a></li>
+      [[pass]]
       <li [[if category=='expired':]]class="is-active"[[pass]]><a href="[[=URL('problem_list/expired')]]">Expired</a></li>
     </ul>
 </div>
@@ -33,9 +35,9 @@
             <td>[[=p.teacher_id.first_name]] [[=p.teacher_id.last_name]]</td>
             [[if category!='unpublished':]]<td><p id="deadline_[[=idx]]"></p></td>
             <td>[[=alloted_times[idx] if alloted_times is not None and alloted_times[idx] is not None else ""]]</td>
-            <td><a class="button" href="[[=URL('student_workspace_list/'+str(p.id))]]">View Student Workspaces</a></td>
+            <td>[[if user_role=='student':]]<a class="button" href="[[=URL('student_workspace_view/'+str(globals().get('user',{}).get('id'))+'/'+str(p.id))]]">Goto Workspace</a>[[else:]]<a class="button" href="[[=URL('student_workspace_list/'+str(p.id))]]">View Student Workspaces</a>[[pass]]</td>
             [[else:]]<td>[[if user_role=='instructor':]]<a role="button" href="[[=URL('publish_problem_'+('inclass/' if p.type=='in-class' else 'homework/')+str(p.id))]]">Publish</a>[[pass]]</td>[[pass]]
-            <td><a role="button" href="[[=URL('edit_problem/'+str(p.id))]]">Edit</a></td>
+            <td>[[if user_role!='student':]]<a role="button" href="[[=URL('edit_problem/'+str(p.id))]]">Edit</a>[[pass]]</td>
         </tr>
     [[pass]]
      

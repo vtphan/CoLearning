@@ -5,7 +5,7 @@ from . import settings
 from py4web.utils.form import Form, FormStyleBulma
 import datetime
 
-from .utils import create_notification
+from .utils import create_notification, is_eligible_for_help
 
 @action('submissions', method='GET')
 @action.uses(auth.user, 'submissions.html')
@@ -99,6 +99,7 @@ def view_submission(submission_id):
     sub['referer'] = request.get_header('Referer')
     sub['submissions'] = submissions
     sub['user_role'] = user_role
+    sub['help_eligible'] = user_id==sub['student_id'] and is_eligible_for_help(sub['student_id'], sub['problem_id'])
     return sub
 
 @action('submission_grader', method='GET')

@@ -18,6 +18,12 @@ def problem_list(problem_id):
     student_list = db.executesql('select w.student_id, a.first_name, a.last_name from student_workspace w, auth_user\
          a where w.problem_id='+problem_id+' and a.id=w.student_id', as_dict=True)
     
-    return dict(students=student_list, problem_id=problem_id, user_role=user_role)
+    discussion_list = db(db.discussion.student_id==db.discussion.author_id).select()
+
+    discussions = dict()
+    for d in discussion_list:
+        discussions[(d.student_id, d.problem_id)] = True
+    
+    return dict(students=student_list, problem_id=problem_id, user_role=user_role, discussions=discussions)
     
 

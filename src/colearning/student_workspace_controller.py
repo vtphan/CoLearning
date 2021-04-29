@@ -28,24 +28,28 @@ def workspace(student_id, problem_id):
 @action('student_workspace_view/<student_id>/<problem_id>', method='GET')
 @action.uses(auth.user, 'student_workspace_view.html')
 def workspace_view(student_id, problem_id):
+        help_eligible = False
         user_id = auth.get_user()['id']
-        if 'teacher' in groups.get(user_id):
+        grp = groups.get(user_id)
+        if 'teacher' in grp:
                 user_role = 'instructor'
-        elif 'ta' in groups.get(user_id):
+        elif 'ta' in grp:
                 user_role = 'ta'
-        elif 'student' in groups.get(user_id) and (int(student_id) == user_id or is_eligible_for_help(user_id, problem_id)):
+        elif 'student' in grp:
                 user_role = 'student'
+                if int(student_id) == user_id and is_eligible_for_help(user_id, problem_id):
+                        help_eligible = True
         else:
                 redirect(URL('not_authorized'))
+        
         ref = request.get_header('Referer')
         if ref is not None:
                 ref = ref.split('/')
         help_message_id = 0
-        
         problem, workspace, submissions, feedbacks, status, discussions = get_workspace_info(student_id, problem_id)
         student_name = db.auth_user[student_id].first_name
         
-        return dict(problem=problem, workspace=workspace, time_interval=1000, submissions=submissions,\
+        return dict(problem=problem, workspace=workspace, time_interval=1000, submissions=submissions, help_eligible=help_eligible,\
                  student_name=student_name, student_id=student_id, feedbacks=feedbacks, user_id=user_id,\
                           help_message_id=help_message_id, status=status, user_role=user_role, discussions=discussions)
 

@@ -21,7 +21,7 @@
       [[i = len(submissions)]]
       
         [[for s in submissions:]]
-            <li><a href="[[=URL('submission/'+str(s['id']))]]">Submission [[=i]]</a></li>
+            <li><a href="[[=URL('view_submission/'+str(s['id']))]]">Submission [[=i]]</a></li>
             [[i-=1]]
         [[pass]]
       [[pass]]
