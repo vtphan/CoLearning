@@ -219,7 +219,7 @@ class loadColearningProblemInfo(sublime_plugin.ApplicationCommand):
 class colearningViewProblem(sublime_plugin.WindowCommand):
 
 	def run(self, problem_id):
-		url = os.path.join(colearningSERVER, "problem/"+str(problem_id))
+		url = os.path.join(colearningSERVER, "view_problem/"+str(problem_id))
 		webbrowser.open(url)
 
 class colearningHelpOthers(sublime_plugin.WindowCommand):
@@ -227,7 +227,7 @@ class colearningHelpOthers(sublime_plugin.WindowCommand):
 		return is_authenticated()
 		
 	def run(self):
-		url = os.path.join(colearningSERVER, "student_help_message_list")
+		url = os.path.join(colearningSERVER, "help_message_list")
 		webbrowser.open(url)
 
 def get_due_time(deadline):
@@ -399,6 +399,7 @@ class colearningLogin(sublime_plugin.ApplicationCommand):
 			# req.add_header('Conent-Type', 'application/json')
 			try:
 				with urllib.request.urlopen(req, None, 10) as response:
+					print(response)
 					rsp = json.loads(response.read().decode(encoding="utf-8"))
 					# print(rsp)
 					if rsp['code'] != 200:
@@ -428,6 +429,11 @@ class colearningLogin(sublime_plugin.ApplicationCommand):
 						notification_scheduler(notification_stop_contidion)
 						return
 			except urllib.error.HTTPError as err:
+				# if err.code == 400:
+				# 	response = urllib.request.urlopen(req, None, 10)
+				# 	rsp = json.loads(response.read().decode(encoding="utf-8"))
+				# 	sublime.message_dialog(rsp['message'])
+				# else:
 				sublime.message_dialog("{0}".format(err))
 			except urllib.error.URLError as err:
 				sublime.message_dialog("{0}\nCannot connect to server.".format(err))
@@ -514,4 +520,4 @@ def plugin_unloaded():
 		json.dump(default_menu, f)
 		
 	with open(settings_file, 'w') as f:
-		json.dump(settings, f)
+		json.dump(settings, f)   
