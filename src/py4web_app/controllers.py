@@ -25,6 +25,8 @@ session, db, T, auth, and tempates are examples of Fixtures.
 Warning: Fixtures MUST be declared with @action.uses({fixtures}) else your app will result in undefined behavior
 """
 
+from pydal.validators import IS_NOT_EMPTY, IS_INT_IN_RANGE, IS_IN_SET, IS_IN_DB
+from py4web.utils.form import Form, FormStyleBulma
 from py4web import action, request, abort, redirect, URL
 from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
@@ -50,21 +52,23 @@ from .publish_problem_controller import *
 # from .test_controller import *
 from .run_query_controller import *
 from .statistics_controller import *
+from .first_user_controller import *
 
 
 @action("index", method='GET')
-@action.uses(auth.user, "index.html")
+# @action.uses(auth.user, "index.html")
+@action.uses(auth, "index.html")
 def index():
+    if db(db.auth_user).select().first() is None:
+        redirect(URL('create_first_user'))
     user = auth.get_user()
     if user:
         if 'student' in groups.get(auth.get_user()['id']):
             redirect(URL('active_problems'))
         elif 'teacher' in groups.get(auth.get_user()['id']) or 'ta' in groups.get(auth.get_user()['id']):
             redirect(URL('problem_list/published'))
-            
-    flash.set("Hello world")
-    message = T("Hello {first_name}".format(**user) if user else "Hello")
-    return dict(message=message)
+    else:
+        redirect(URL('auth/login'))
 
 
 @unauthenticated("not_authorized", "not_authorized.html")

@@ -5,9 +5,6 @@
 * No new features.
 * Goal is to fix bugs from 0.1
 
-
-
-
 0.1 Features
 * Feedback from students.
 * Teachers/TAs grade problems.
