@@ -3,85 +3,85 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
 [[end]]
 
-[[block page_title]]Active Problems[[end]]
+[[block page_title]]Problems[[end]]
 
-<div class="tabs is-medium">
-    <ul>
-      <li [[if category=='published':]]class="is-active"[[pass]]><a href="[[=URL('problem_list/published')]]">On Going</a></li>
-      [[if user_role!='student':]]
-      <li [[if category=='unpublished':]]class="is-active"[[pass]]><a href="[[=URL('problem_list/unpublished')]]">Unpublished</a></li>
-      [[pass]]
-      <li [[if category=='expired':]]class="is-active"[[pass]]><a href="[[=URL('problem_list/expired')]]">Expired</a></li>
-    </ul>
-</div>
+[[if user_role == 'instructor' or user_role == 'ta':]]
+<p><a class="button is-link is-light is-pulled-right" href="[[=URL('new_problem')]]">New Problem</a></p>
+[[pass]]
 
 <table class="table">
     <tbody>
         <tr>
-            <th>Problem Name</th>
-            <th>Added by</th>
-            [[if category!='unpublished':]]<th>Deadline</th>
-            <th>Alloted Time</th>[[pass]]
-            <th></th>
-            <th></th>
+            <th>Name</th>
+            <th>Author</th>
+            <th>Deadline</th>
+            <th>Posted</th>
+            <th>Last updated</th>
         </tr>
     </tbody>
     <tbody>
     
     [[for idx, p in enumerate(problems):]]
-        
         <tr>
-            <td><a class="button" href="[[=URL('view_problem/'+str(p.id))]]">[[=p.problem_name]]</a></td>
+            <td><a href="[[=URL('view_problem/'+str(p.id))]]">[[=p.problem_name]]</a></td>
+
             <td>[[=p.teacher_id.first_name]] [[=p.teacher_id.last_name]]</td>
-            [[if category!='unpublished':]]<td><p id="deadline_[[=idx]]"></p></td>
-            <td>[[=alloted_times[idx] if alloted_times is not None and alloted_times[idx] is not None else ""]]</td>
-            <td>[[if user_role=='student':]]<a class="button" href="[[=URL('student_workspace_view/'+str(globals().get('user',{}).get('id'))+'/'+str(p.id))]]">Goto Workspace</a>[[else:]]<a class="button" href="[[=URL('student_workspace_list/'+str(p.id))]]">View Student Workspaces</a>[[pass]]</td>
-            [[else:]]<td>[[if user_role=='instructor':]]<a role="button" href="[[=URL('publish_problem_'+('inclass/' if p.type=='in-class' else 'homework/')+str(p.id))]]">Publish</a>[[pass]]</td>[[pass]]
-            <td>[[if user_role!='student':]]<a role="button" href="[[=URL('edit_problem/'+str(p.id))]]">Edit</a>[[pass]]</td>
+            
+            <td><p id="deadline_[[=idx]]"></p></td>
+
+            <td>[[=p.problem_uploaded_at]]</td>
+
+            <td>[[=p.last_updated_at]]</td>
         </tr>
     [[pass]]
      
     </tbody>
 </table>
-[[block page_scripts]]
-[[if category=='published':]]
 <script>
     var deadlines = new Array()
     [[for p in problems:]]
-        deadlines.push(new Date(Date.UTC([[=p.deadline.year]], [[=p.deadline.month-1]], [[=p.deadline.day]], [[=p.deadline.hour]], [[=p.deadline.minute]], [[=p.deadline.second]], 0)).getTime())
+        [[if p.deadline != None:]]
+        deadlines.push(new Date(Date.UTC([[=p.deadline.year]], [[=p.deadline.month-1]], [[=p.deadline.day]], [[=p.deadline.hour]], [[=p.deadline.minute]], [[=p.deadline.second]], 0)).getTime());
+        [[else:]]
+        deadlines.push('not-yet-published');
+        [[pass]]
     [[pass]]
     function calc_deadlines(){
         var now = new Date().getTime();
         for(var i=0; i<deadlines.length; i++){
-            var distance = deadlines[i] - now;
-            if (distance<=0){
-                document.getElementById("deadline_"+i).innerHTML = 'Expired';
-            }
-            else{
-                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                // var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                var msg = "Due in ";
-                if (days==1)
-                    msg += " 1 day";
-                else if (days>1)
-                    msg += " "+days+" days";
-                
-                if (hours==1)
-                    msg += " 1 hour";
-                else if (hours>1)
-                    msg += " "+hours+" hours";
-                if (minutes==1)
-                    msg += " 1 minute";
-                else if (minutes>1)
-                    msg += " "+minutes+" minutes";
-                
-                if (days+hours+minutes==0){
-                    msg += " < 1 minute";
+            if (deadlines[i]=='not-yet-published'){
+                document.getElementById("deadline_"+i).innerHTML = '-';
+            } else {
+                var distance = deadlines[i] - now;
+                if (distance<=0){
+                    document.getElementById("deadline_"+i).innerHTML = 'Expired';
                 }
-                
-                document.getElementById("deadline_"+i).innerHTML = msg;
+                else{
+                    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    // var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    var msg = "";
+                    if (days==1)
+                        msg += " 1 day";
+                    else if (days>1)
+                        msg += " "+days+" days";
+                    
+                    if (hours==1)
+                        msg += " 1 hour";
+                    else if (hours>1)
+                        msg += " "+hours+" hours";
+                    if (minutes==1)
+                        msg += " 1 minute";
+                    else if (minutes>1)
+                        msg += " "+minutes+" minutes";
+                    
+                    if (days+hours+minutes==0){
+                        msg += " < 1 minute";
+                    }
+                    
+                    document.getElementById("deadline_"+i).innerHTML = msg;
+                }
             }
             
         }
@@ -89,15 +89,5 @@
     }
     calc_deadlines();
 </script>
-[[elif category=='expired':]]
-<script>
-    var deadlines = new Array()
-    [[for p in problems:]]
-    deadlines.push(new Date(Date.UTC([[=p.deadline.year]], [[=p.deadline.month-1]], [[=p.deadline.day]], [[=p.deadline.hour]], [[=p.deadline.minute]], [[=p.deadline.second]], 0)).toLocaleString())
-    [[pass]]
-    for(var i = 0; i<deadlines.length; i++){
-        document.getElementById("deadline_"+i).innerHTML = deadlines[i];
-    }
-</script>
-[[pass]]
+
 [[end]]

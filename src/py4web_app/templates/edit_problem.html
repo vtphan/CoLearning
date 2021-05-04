@@ -14,7 +14,7 @@
 [[block page_script]]
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script>
-    var editor = document.getElementById("none_content");
+    var editor = document.getElementById("none_helper_code");
     var myCodeMirror = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "python", theme: "monokai", indentUnit: 4, indentWithTabs: true, cursorHeight: 0.75});
     $(document).ready(function(){
         if ($("#none_language").val()=="Python"){

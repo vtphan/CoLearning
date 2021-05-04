@@ -7,7 +7,7 @@ from pydal.validators import IS_IN_SET, IS_NOT_EMPTY, IS_INT_IN_RANGE
 
 from .utils import create_notification, add_global_value
 
-@action('new_inclass_problem', method=['GET', 'POST'])
+@action('new_problem', method=['GET', 'POST'])
 @action.uses(auth.user, 'new_problem.html', flash)
 def new_inclass_problem():
     grp = groups.get(auth.get_user()['id'])
@@ -21,7 +21,6 @@ def new_inclass_problem():
     problem_form = Form(
         [
             Field('problem_name', requires=IS_NOT_EMPTY(), default='assignment_'+datetime.datetime.utcnow().strftime("%Y%m%d%M%S")),
-            # Field('alloted_time', requires=IS_IN_SET(["15 minutes", "30 minutes", "45 minutes", "60 minutes"]), default="30 minutes"),
             Field('number_of_attempts', requires=IS_INT_IN_RANGE(1,11), default=1),
             Field('maximum_score', requires=IS_INT_IN_RANGE(1,101), default=10),
             Field('problem_description', 'text', requires=IS_NOT_EMPTY()),
@@ -30,7 +29,6 @@ def new_inclass_problem():
             Field('problem_type', requires=IS_IN_SET(['in-class','homework']), default='in-class'),
             Field('answer'),
             Field('topics'),
-            # Field('publish', type='boolean')
         ], 
         formstyle=FormStyleBulma
     )
@@ -51,6 +49,7 @@ def new_inclass_problem():
             attempts=problem_form.vars.number_of_attempts, 
             language=problem_form.vars.language,
             problem_uploaded_at=datetime.datetime.utcnow(),
+            last_updated_at=datetime.datetime.utcnow(),
             exact_answer=exact_answer, 
             type=problem_form.vars.problem_type)
         deadline=None
