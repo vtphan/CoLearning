@@ -35,7 +35,7 @@
         [[if user_role=='student':]]
         
           <li>
-            <a class="navbar-link" href="[[=URL('problem_list/published')]]">Problems</a>
+            <a class="navbar-link" href="[[=URL('problem_list')]]">Problems</a>
           </li>
           <li>
             <a class="navbar-link" href="[[=URL('my_submissions')]]">My Submissions</a>
@@ -59,7 +59,7 @@
           <li>
             <a class="navbar-link" href="[[=URL('help_message_list')]]">Discussions</a>
           </li>
-          [[if user_role=='instructor':]]
+          [[if user_role=='teacher':]]
           <li>
             <a class="navbar-link is-primary">
             Settings

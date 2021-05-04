@@ -14,7 +14,7 @@
       [[if user_role=='student':]]
       <li><a href="[[=URL('student_workspace_view/'+str(student_id)+'/'+str(id))]]">Workspace</a></li>
       [[pass]]
-      [[if user_role=='instructor' or user_role=='ta' or user_role=='student' and help_eligible==True:]]
+      [[if user_role=='teacher' or user_role=='ta' or user_role=='student' and help_eligible==True:]]
       <li><a href="[[=URL('student_workspace_list/'+str(id))]]">Student Workspaces</a></li>
       [[pass]]
       [[if user_role=='student':]]
@@ -28,14 +28,14 @@
     </ul>
 </div>
 [[include 'problem_view_common.html']]
-[[if user_role=='instructor':]]
+[[if user_role=='teacher':]]
 [[if deadline is None:]]
-<a role="button" href="[[=URL('publish_problem_'+('inclass/' if type=='in-class' else 'homework/')+str(id))]]">Publish</a>
+<a role="button" href="[[=URL('publish_problem/'+str(id))]]">Publish</a>
 [[else:]]
-<a role="button" href="[[=URL('publish_problem_'+('inclass/' if type=='in-class' else 'homework/')+str(id))]]">Republish</a>
+<a role="button" href="[[=URL('publish_problem/'+str(id))]]">Republish</a>
 [[pass]]
 [[pass]]
-[[if user_role=='instructor' or user_role=='ta':]]
+[[if user_role=='teacher' or user_role=='ta':]]
 <a role="button" href="[[=URL('edit_problem/'+str(id))]]">Edit</a>
 [[pass]]
 [[block page_scripts]]

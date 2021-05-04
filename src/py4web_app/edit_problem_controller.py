@@ -12,7 +12,7 @@ from .utils import create_notification
 def edit_problem(problem_id):
     teacher_id = auth.get_user()['id']
     if 'teacher' in groups.get(teacher_id):
-        user_role = 'instructor'
+        user_role = 'teacher'
     elif 'ta' in groups.get(teacher_id):
         user_role = 'ta'
     else:

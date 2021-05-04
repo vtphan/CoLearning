@@ -14,7 +14,7 @@ def view_problem(problem_id):
     grp = groups.get(user_id)
     student_id = None
     if 'teacher' in grp:
-        user_role = 'instructor'
+        user_role = 'teacher'
     elif 'ta' in grp:
         user_role = 'ta'
     elif 'student' in grp:

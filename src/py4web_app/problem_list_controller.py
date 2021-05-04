@@ -15,22 +15,33 @@ import math
     
 @action('problem_list')
 @action.uses(auth.user, 'problem_list.html')
-def problem_list(problem_category='published'):
+def problem_list():
     user_role = ''
     if 'teacher' in groups.get(auth.get_user()['id']):
-        user_role = 'instructor'
+        user_role = 'teacher'
     elif 'ta' in groups.get(auth.get_user()['id']):
         user_role = 'ta'
     elif 'student' in groups.get(auth.get_user()['id']):
         user_role = 'student'
     else:
         redirect(URL('not_authorized'))
-    if user_role == 'student':
-        problems = db(db.problem.published_at != None).select(orderby=~db.problem.deadline)
-    else:
-        problems = db().select(db.problem.ALL, orderby=~db.problem.deadline)
+    
+    category = 'published'
+    if 'type' in request.query:
+        category = request.query.get('type')
 
-    return dict(problems=problems, user_role=user_role)
+    q = None
+    if category == 'published':
+        q = (db.problem.published_at != None)&(db.problem.deadline>datetime.datetime.utcnow())
+    elif category == 'expired':
+        q = (db.problem.deadline != None)&(db.problem.deadline<=datetime.datetime.utcnow())
+    elif category == 'unpublished' and user_role != 'student':
+        q = db.problem.published_at == None
+    if q==None:
+        problems = []
+    else:
+        problems = db(q).select(orderby=~db.problem.deadline)
+    return dict(problems=problems, category=category, user_role=user_role)
 
 
 # @action('problem_list/<problem_category>')
