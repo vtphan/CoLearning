@@ -65,7 +65,7 @@ def viewt_feedback(feedback_id):
 @action.uses(auth.user, 'give_feedback.html')
 def give_feedback(sub_or_wp_id, type, message_id):
     if 'teacher' in groups.get(auth.get_user()['id']):
-        user_role = 'instructor'
+        user_role = 'teacher'
     elif 'ta' in groups.get(auth.get_user()['id']):
         user_role = 'ta'
     elif 'student' in groups.get(auth.get_user()['id']):

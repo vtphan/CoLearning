@@ -3,7 +3,7 @@
     <div class="tabs is-medium">
         <ul>
           <li><a href="[[=URL(('view_' if role==1 else '')+'problem/'+str(problem_id))]]">Problem Information</a></li>
-          <li><a href="[[=URL('student_workspace_view/' +str(student_id)+'/'+str(problem_id))]]">Workspace</a></li>
+          <li><a href="[[=URL('student_workspace_view/' +str(student_id)+'/'+str(problem_id))]]">[[=first_name]] [[=last_name]]'s Workspace</a></li>
           [[if user_role=='student' and help_eligible==True:]]
             <li><a href="[[=URL('student_workspace_list/'+str(problem_id))]]">Student Workspaces</a></li>
           [[pass]]
@@ -61,32 +61,6 @@
         </div>
       [[pass]]
     </div>
-      
-
-    <!-- <h5 class="title is-5">Feedback</h5>
-       <table>
-         <thead>
-           <tr>
-             <td>#</td>
-             <td>Given At</td>
-             <td></td>
-           </tr>
-         </thead>
-         <tbody>
-           [[for idx, feedback in enumerate(feedbacks):]]
-              <tr>
-                <td>[[=idx+1]]</td>
-                <td>[[=feedback['given_at'].strftime("%b %-d, %Y %I:%M %p")]]</td>
-                [[if role==1:]]
-                  <td><a role="button" target="_blank" href="[[=URL('viewt_feedback/'+str(feedback['id']))]]">View</a></td>
-                [[elif role==2:]]
-                 <td><a role="button" target="_blank" href="[[=URL('view_feedback/'+str(feedback['id']))]]">View</a></td>
-                [[pass]]
-              </tr>
-            [[pass]]
-         </tbody>
-       </table> -->
-
     
   </div>
   

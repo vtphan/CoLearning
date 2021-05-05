@@ -11,7 +11,7 @@ from .utils import create_notification, is_eligible_for_help
 @action.uses(auth.user, 'submissions.html')
 def submissions():
     if 'teacher' in groups.get(auth.get_user()['id']):
-        user_role = 'instructor'
+        user_role = 'teacher'
     elif 'ta' in groups.get(auth.get_user()['id']):
         user_role = 'ta'
     elif 'student' in groups.get(auth.get_user()['id']):
@@ -23,6 +23,7 @@ def submissions():
              (select submission_id from submission_verdict) order by s.submitted_at desc', as_dict=True)
     return dict(sub=active_submissions, user_role=user_role)
 
+#-----------------------------------------------------------------------------
 @action('my_submissions', method='GET')
 @action.uses(auth.user, 'my_submissions.html')
 def my_submissions():
@@ -32,6 +33,8 @@ def my_submissions():
     submissions = db.executesql('SELECT s.id, s.problem_id, p.problem_name, s.submitted_at\
          from submission s, problem p where s.problem_id=p.id order by s.submitted_at desc', as_dict=True)
     return dict(sub=submissions, user_role='student')
+
+#-----------------------------------------------------------------------------
 
 @action('submission/<submission_id>', method=['GET', 'POST'])
 @action.uses(auth.user, 'submission.html')
@@ -45,11 +48,6 @@ def submission(submission_id):
     sub = submission[0]
     help_form = Form([Field('message', label="Explain the problem you are facing")])
     sub['help_form'] = help_form
-    
-    # message = db((db.help_seeking_message.student_id==sub['student_id'])&(db.help_seeking_message.problem_id==sub['problem_id'])&(db.help_seeking_message.submission_id==sub['id'])).select().first()
-    # sub['message'] = message
-    feedbacks = db.executesql("select id, given_at from feedback where submission_id is not NULL and submission_id="+str(submission_id)+" order by given_at desc", as_dict=True)
-    sub['feedbacks'] = feedbacks
     verdict = db(db.submission_verdict.submission_id==submission_id).select()
     sub['verdict'] = verdict
     submissions = db((db.submission.student_id==sub['student_id'])&(db.submission.problem_id==sub['problem_id'])).select(db.submission.id, orderby=~db.submission.submitted_at)
@@ -63,11 +61,12 @@ def submission(submission_id):
     sub['user_role'] = 'student'
     return sub
 
+#-----------------------------------------------------------------------------
 @action('view_submission/<submission_id>', method='GET')
 @action.uses(auth.user, 'view_submission.html')
 def view_submission(submission_id):
     if 'teacher' in groups.get(auth.get_user()['id']):
-        user_role = 'instructor'
+        user_role = 'teacher'
     elif 'ta' in groups.get(auth.get_user()['id']):
         user_role = 'ta'
     elif 'student' in groups.get(auth.get_user()['id']):
@@ -81,9 +80,7 @@ def view_submission(submission_id):
         redirect(URL('not_authorized'))
     
     sub = submission[0]
-    feedbacks = db.executesql("select id, given_at from feedback where submission_id is not NULL and  submission_id="+str(submission_id)+" order by given_at desc", as_dict=True)
     submissions = db((db.submission.student_id==sub['student_id'])&(db.submission.problem_id==sub['problem_id'])).select(db.submission.id, orderby=~db.submission.submitted_at)
-    sub['feedbacks'] = feedbacks
     verdict = db(db.submission_verdict.submission_id==submission_id).select()
     sub['verdict'] = verdict
     ref = request.get_header('Referer')
@@ -102,6 +99,7 @@ def view_submission(submission_id):
     sub['help_eligible'] = user_id==sub['student_id'] and is_eligible_for_help(sub['student_id'], sub['problem_id'])
     return sub
 
+#-----------------------------------------------------------------------------
 @action('submission_grader', method='GET')
 @action.uses(auth.user)
 def submission_grader():

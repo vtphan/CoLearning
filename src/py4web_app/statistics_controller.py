@@ -11,7 +11,7 @@ def statistics():
     user_id = auth.get_user()['id']
     grp = groups.get(user_id)
     if 'teacher' in grp:
-        user_role = 'instructor'
+        user_role = 'teacher'
     elif 'ta' in grp:
         user_role = 'ta'
     elif 'student' in grp:

@@ -24,7 +24,7 @@ def student_help_message_list():
 def help_message_list():
     user_id = auth.get_user()['id']
     if 'teacher' in groups.get(user_id):
-        user_role = 'instructor'
+        user_role = 'teacher'
     elif 'ta' in groups.get(user_id):
         user_role = 'ta'
     elif 'student' in groups.get(user_id):

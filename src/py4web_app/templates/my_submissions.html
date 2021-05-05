@@ -6,9 +6,8 @@
 <table class="table">
     <tbody>
         <tr>
-            <th>#</th>
-            <th>Problem Name</th>
-            <th>Submitted</th>
+            <th style="text-align:left">Problem</th>
+            <th style="text-align:left">Submitted</th>
             <th></th>
         </tr>
     </tbody>
@@ -16,10 +15,9 @@
     
     [[for i, s in enumerate(sub, 1):]]
         <tr>
-            <td>[[=i]]</td>
-            <td><a class="button" href="[[=URL('view_problem/'+str(s['problem_id']))]]">[[=s['problem_name'] ]]</a></td>
+            <td><a href="[[=URL('view_problem/'+str(s['problem_id']))]]">[[=s['problem_name'] ]]</a></td>
             <td><p id="submitted_[[=i-1]]"></p></td>
-            <td><a class="button is-primary" href="[[=URL('submission/'+str(s['id']))]]" >View</a></td>
+            <td><a href="[[=URL('view_submission/'+str(s['id']))]]" >View</a></td>
             
         </tr>
     [[pass]]
