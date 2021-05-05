@@ -18,10 +18,13 @@ def add_global_value(variable, value):
     db.commit()
     
 def is_eligible_for_help(user_id, problem_id):
-    if ('teacher' or 'ta') in groups.get(user_id):
+    if ('teacher' in groups.get(user_id)) or ('ta' in groups.get(user_id)):
         return True
     if 'student' in groups.get(user_id):
-        if len(db((db.submission.problem_id==problem_id)&(db.submission.student_id==user_id)& \
-            (db.submission_verdict.submission_id==db.submission.id)&(db.submission_verdict.verdict=='correct')).select())>0:
+        q = (db.submission.problem_id==problem_id)
+        q &= (db.submission.student_id==user_id)
+        q &= (db.submission.id==db.submission_verdict.submission_id)
+        q &= (db.submission_verdict.verdict=='correct')
+        if len(db(q).select())>0:
             return True
     return False

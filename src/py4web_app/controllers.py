@@ -62,11 +62,7 @@ def index():
         redirect(URL('create_first_user'))
     user = auth.get_user()
     if user:
-        user_groups = groups.get(auth.get_user()['id'])
-        if 'teacher' in user_groups or 'ta' in user_groups:
-            redirect(URL('problem_list', vars=dict(type='published')))
-        else:
-            redirect(URL('active_problems'))
+        redirect(URL('submissions'))
     else:
         redirect(URL('auth/login'))
 

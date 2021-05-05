@@ -32,27 +32,9 @@
         <!-- Left menu ul/li -->
         [[block page_left_menu]]
         <ul>
-        [[if user_role=='student':]]
-        
-          <li>
-            <a class="navbar-link" href="[[=URL('problem_list')]]">Problems</a>
-          </li>
-          <li>
-            <a class="navbar-link" href="[[=URL('my_submissions')]]">My Submissions</a>
-          </li>
-          <li>
-            <a class="navbar-link" href="[[=URL('help_message_list')]]">Discussions</a>
-          </li>
-        
-        [[else:]]
-        
-          
           <li>
               <a class="navbar-link" href="[[=URL('problem_list')]]">Problems</a>
           </li>
-          
-          
-          
           <li>
             <a class="navbar-link" href="[[=URL('submissions')]]">Submissions</a>
           </li>

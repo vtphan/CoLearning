@@ -14,10 +14,11 @@
 <table class="table">
     <tbody>
         <tr>
-            <th>#</th>
-            <th>Problem</th>
-            <th>Student</th>
-            <th>Submitted</th>
+            <th style="text-align:left">#</th>
+            <th style="text-align:left">Problem</th>
+            <th style="text-align:left">Submitter</th>
+            <th style="text-align:left">When</th>
+            <th></th>
             
         </tr>
     </tbody>
@@ -28,9 +29,11 @@
             <td>[[=i]]</td>
             <td><a href="[[=URL('view_problem/'+str(s.problem.id))]]">[[=s.problem.problem_name]]</a></td>
             
-            <td><a href="[[=URL('view_submission/'+str(s.submission.id))]]">[[=s.auth_user.first_name+' '+s.auth_user.last_name ]]</a></td>
+            <td>[[=s.auth_user.first_name+' '+s.auth_user.last_name ]]</td>
             
             <td><p id="submitted_[[=i-1]]"></p></td>
+
+            <td><a href="[[=URL('view_submission/'+str(s.submission.id))]]">link</a></td>
             
         </tr>
     [[pass]]
