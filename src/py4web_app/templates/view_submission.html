@@ -25,9 +25,9 @@
       [[elif len(verdict)>0 and verdict[0]['verdict']=="incorrect": ]]
         graded = 0
      [[pass]]
-      [[if user_role=='instructor' or user_role=='ta':]]
+      [[if user_role=='teacher' or user_role=='ta':]]
       
-         var instroctor_buttons = new Vue({
+         var instructor_buttons = new Vue({
               el: '#instructor-buttons',
               data: {show: true},
               methods: {

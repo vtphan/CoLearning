@@ -44,7 +44,7 @@ def edit_problem(problem_id):
         
         # deadline=datetime.datetime.strptime(problem_form.vars['deadline'].strip(), "%Y-%m-%dT%H:%M")
         db(db.problem.id==problem_id).update(
-            code=problem_form.vars.content, 
+            code=problem_form.vars.helper_code, 
             problem_description=problem_form.vars.problem_description, 
             answer=problem_form.vars.answer.strip(),
             problem_name=problem_form.vars.problem_name.strip(), 

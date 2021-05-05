@@ -33,14 +33,17 @@ def problem_list():
     q = None
     if category == 'published':
         q = (db.problem.published_at != None)&(db.problem.deadline>datetime.datetime.utcnow())
+        orderby = db.problem.deadline
     elif category == 'expired':
         q = (db.problem.deadline != None)&(db.problem.deadline<=datetime.datetime.utcnow())
+        orderby = ~db.problem.last_updated_at
     elif category == 'unpublished' and user_role != 'student':
         q = db.problem.published_at == None
+        orderby = ~db.problem.last_updated_at
     if q==None:
         problems = []
     else:
-        problems = db(q).select(orderby=~db.problem.deadline)
+        problems = db(q).select(orderby=orderby)
     return dict(problems=problems, category=category, user_role=user_role)
 
 

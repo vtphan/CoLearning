@@ -56,17 +56,17 @@ from .first_user_controller import *
 
 
 @action("index", method='GET')
-# @action.uses(auth.user, "index.html")
 @action.uses(auth, "index.html")
 def index():
     if db(db.auth_user).select().first() is None:
         redirect(URL('create_first_user'))
     user = auth.get_user()
     if user:
-        if 'student' in groups.get(auth.get_user()['id']):
+        user_groups = groups.get(auth.get_user()['id'])
+        if 'teacher' in user_groups or 'ta' in user_groups:
+            redirect(URL('problem_list', vars=dict(type='published')))
+        else:
             redirect(URL('active_problems'))
-        elif 'teacher' in groups.get(auth.get_user()['id']) or 'ta' in groups.get(auth.get_user()['id']):
-            redirect(URL('problem_list/published'))
     else:
         redirect(URL('auth/login'))
 

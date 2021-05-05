@@ -18,10 +18,38 @@ def submissions():
         user_role = 'student'
     else:
         redirect(URL('not_authorized'))
-    active_submissions = db.executesql('SELECT s.id, s.problem_id, p.problem_name, st.first_name, st.last_name, s.submission_category, s.submitted_at\
-         from submission s, problem p, auth_user st where s.problem_id=p.id and s.student_id=st.id and s.id not in \
-             (select submission_id from submission_verdict) order by s.submitted_at desc', as_dict=True)
-    return dict(sub=active_submissions, user_role=user_role)
+
+    category = 'ungraded'
+    if 'type' in request.query:
+        category = request.query.get('type')
+
+    # active_submissions = db.executesql('SELECT s.id, s.problem_id, p.problem_name, st.first_name, st.last_name, s.submission_category, s.submitted_at\
+    #      from submission s, problem p, auth_user st where s.problem_id=p.id and s.student_id=st.id and s.id not in \
+    #          (select submission_id from submission_verdict) order by s.submitted_at desc', as_dict=True)
+
+
+    if category=='ungraded':
+        q = (db.submission_verdict.submission_id==None)
+        q &= (db.submission.problem_id == db.problem.id)
+        q &= (db.submission.student_id == db.auth_user.id)
+        subs = db(q).select(
+            db.submission.id, db.submission.submitted_at, 
+            db.problem.id, db.problem.problem_name, 
+            db.auth_user.first_name, db.auth_user.last_name,
+            orderby = ~db.submission.submitted_at,
+            left = db.submission_verdict.on(db.submission.id == db.submission_verdict.submission_id))
+    else:
+        q = (db.submission.id == db.submission_verdict.submission_id)
+        q &= (db.submission.problem_id == db.problem.id)
+        q &= (db.submission.student_id == db.auth_user.id)
+        subs = db(q).select(
+            db.submission.id, db.submission.submitted_at, 
+            db.problem.id, db.problem.problem_name, 
+            db.auth_user.first_name, db.auth_user.last_name,
+            orderby = ~db.submission.submitted_at,
+            )
+        print(list(subs))
+    return dict(subs=subs, user_role=user_role, category=category)
 
 #-----------------------------------------------------------------------------
 @action('my_submissions', method='GET')
@@ -62,6 +90,9 @@ def submission(submission_id):
     return sub
 
 #-----------------------------------------------------------------------------
+# queries can be simplified here.
+#-----------------------------------------------------------------------------
+
 @action('view_submission/<submission_id>', method='GET')
 @action.uses(auth.user, 'view_submission.html')
 def view_submission(submission_id):
@@ -80,7 +111,8 @@ def view_submission(submission_id):
         redirect(URL('not_authorized'))
     
     sub = submission[0]
-    submissions = db((db.submission.student_id==sub['student_id'])&(db.submission.problem_id==sub['problem_id'])).select(db.submission.id, orderby=~db.submission.submitted_at)
+    q = (db.submission.student_id==sub['student_id']) & (db.submission.problem_id==sub['problem_id'])
+    submissions = db(q).select(db.submission.id, orderby=~db.submission.submitted_at)
     verdict = db(db.submission_verdict.submission_id==submission_id).select()
     sub['verdict'] = verdict
     ref = request.get_header('Referer')

@@ -34,7 +34,7 @@
       [[pass]]
       <hr style="height:30px">
       <textarea id="editor1">[[=content]]</textarea>
-      [[if user_role=='instructor' or user_role=='ta':]]
+      [[if user_role=='teacher' or user_role=='ta':]]
         <textarea id="feedback" placeholder="Optional feedback"></textarea>
         <div id="instructor-buttons" v-show="show">
             

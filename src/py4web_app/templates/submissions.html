@@ -4,6 +4,13 @@
 [[end]]
 [[block page_title]]Submissions[[end]]
 
+<div class="tabs is-medium">
+    <ul>
+      <li [[if category=='ungraded':]]class="is-active"[[pass]]><a href="[[=URL('submissions', vars=dict(type='ungraded'))]]">Not graded</a></li>
+      <li [[if category=='graded':]]class="is-active"[[pass]]><a href="[[=URL('submissions', vars=dict(type='graded'))]]">Graded</a></li>
+    </ul>
+</div>
+
 <table class="table">
     <tbody>
         <tr>
@@ -16,11 +23,13 @@
     </tbody>
     <tbody>
     
-    [[for i, s in enumerate(sub, 1):]]
+    [[for i, s in enumerate(subs, 1):]]
         <tr>
             <td>[[=i]]</td>
-            <td><a class="button" href="[[=URL('view_problem/'+str(s['problem_id']))]]">[[=s['problem_name'] ]]</a></td>
-            <td><a class="button" href="[[=URL('view_submission/'+str(s['id']))]]">[[=s['first_name']+' '+s['last_name'] ]]</a></td>
+            <td><a href="[[=URL('view_problem/'+str(s.problem.id))]]">[[=s.problem.problem_name]]</a></td>
+            
+            <td><a href="[[=URL('view_submission/'+str(s.submission.id))]]">[[=s.auth_user.first_name+' '+s.auth_user.last_name ]]</a></td>
+            
             <td><p id="submitted_[[=i-1]]"></p></td>
             
         </tr>
@@ -32,8 +41,8 @@
 [[block page_scripts]]
 <script>
     var submitted = new Array()
-    [[for p in sub:]]
-        submitted.push(new Date(Date.UTC([[=p['submitted_at'].year]], [[=p['submitted_at'].month-1]], [[=p['submitted_at'].day]], [[=p['submitted_at'].hour]], [[=p['submitted_at'].minute]], [[=p['submitted_at'].second]], 0)).getTime())
+    [[for p in subs:]]
+        submitted.push(new Date(Date.UTC([[=p.submission.submitted_at.year]], [[=p.submission.submitted_at.month-1]], [[=p.submission.submitted_at.day]], [[=p.submission.submitted_at.hour]], [[=p.submission.submitted_at.minute]], [[=p.submission.submitted_at.second]], 0)).getTime())
     [[pass]]
     function calc_submitted_at(){
         var now = new Date().getTime();

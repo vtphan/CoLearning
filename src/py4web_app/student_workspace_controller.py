@@ -44,7 +44,7 @@ def workspace_view(student_id, problem_id):
     
     ref = request.get_header('Referer')
     if ref is not None:
-            ref = ref.split('/')
+        ref = ref.split('/')
     help_message_id = 0
     problem, workspace, submissions, status, discussions = get_workspace_info(student_id, problem_id)
     student_name = '{} {}'.format(

@@ -9,10 +9,10 @@
     <ul>
       <li [[if category=='published':]]class="is-active"[[pass]]><a href="[[=URL('problem_list', vars=dict(type='published'))]]">On Going</a></li>
       <li [[if category=='expired':]]class="is-active"[[pass]]><a href="[[=URL('problem_list', vars=dict(type='expired'))]]">Expired</a></li>
-        [[if user_role!='student':]]
+    [[if user_role!='student':]]
       <li [[if category=='unpublished':]]class="is-active"[[pass]]><a href="[[=URL('problem_list', vars=dict(type='unpublished'))]]">Unpublished</a></li>
       <li><a href="[[=URL('new_problem')]]">New Problem</a></li>
-      [[pass]]
+    [[pass]]
     </ul>
 </div>
 
@@ -53,7 +53,7 @@
         var now = new Date().getTime();
         for(var i=0; i<deadlines.length; i++){
             if (deadlines[i]=='not-yet-published'){
-                document.getElementById("deadline_"+i).innerHTML = '-';
+                document.getElementById("deadline_"+i).innerHTML = 'tba';
             } else {
                 var distance = deadlines[i] - now;
                 if (distance<=0){
