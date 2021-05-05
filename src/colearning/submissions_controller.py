@@ -48,8 +48,7 @@ def submission(submission_id):
     
     # message = db((db.help_seeking_message.student_id==sub['student_id'])&(db.help_seeking_message.problem_id==sub['problem_id'])&(db.help_seeking_message.submission_id==sub['id'])).select().first()
     # sub['message'] = message
-    feedbacks = db.executesql("select id, given_at from feedback where submission_id is not NULL and submission_id="+str(submission_id)+" order by given_at desc", as_dict=True)
-    sub['feedbacks'] = feedbacks
+   
     verdict = db(db.submission_verdict.submission_id==submission_id).select()
     sub['verdict'] = verdict
     submissions = db((db.submission.student_id==sub['student_id'])&(db.submission.problem_id==sub['problem_id'])).select(db.submission.id, orderby=~db.submission.submitted_at)
@@ -81,9 +80,8 @@ def view_submission(submission_id):
         redirect(URL('not_authorized'))
     
     sub = submission[0]
-    feedbacks = db.executesql("select id, given_at from feedback where submission_id is not NULL and  submission_id="+str(submission_id)+" order by given_at desc", as_dict=True)
     submissions = db((db.submission.student_id==sub['student_id'])&(db.submission.problem_id==sub['problem_id'])).select(db.submission.id, orderby=~db.submission.submitted_at)
-    sub['feedbacks'] = feedbacks
+    
     verdict = db(db.submission_verdict.submission_id==submission_id).select()
     sub['verdict'] = verdict
     ref = request.get_header('Referer')
