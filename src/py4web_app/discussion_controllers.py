@@ -28,9 +28,11 @@ def discussion_view(student_id, problem_id, discussion_id):
     return dict(user_role=user_role)
 
 
-#-------------------------------------------------------------------
+#------------------------------------------------------------------------------
+# a student views discussions about problems he/she could help with.
+#------------------------------------------------------------------------------
 @action('student_views_discussions', method='GET')
-@action.uses(auth.user, 'students_view_discussions.html')
+@action.uses(auth.user, 'student_views_discussions.html')
 def student_views_discussions():
     user_id = auth.get_user()['id']
     if 'student' not in groups.get(user_id):
@@ -40,7 +42,9 @@ def student_views_discussions():
     return dict(rows=rows)
 
 
-#-------------------------------------------------------------------
+#------------------------------------------------------------------------------
+# a student views discussions he made or teachers/TAs made about his code.
+#------------------------------------------------------------------------------
 @action('my_discussions', method='GET')
 @action.uses(auth.user, 'my_discussions.html')
 def my_discussions():
@@ -51,15 +55,17 @@ def my_discussions():
     rows = db(query).select(orderby=~db.discussion.posted_at)
     return dict(rows=rows)
 
-#-------------------------------------------------------------------
+#------------------------------------------------------------------------------
+# todo: (1) create a new instructor layout, (2) remove "user_role" in that layout.
+#------------------------------------------------------------------------------
 @action('teacher_views_discussions', method='GET')
 @action.uses(auth.user, 'teacher_views_discussions.html')
-def teachers_view_discussions():
+def teacher_views_discussions():
     user_id = auth.get_user()['id']
     if 'teacher' not in groups.get(user_id) and 'ta' not in groups.get(user_id):
         redirect(URL('not_authorized'))
     rows = db(db.discussion.id>0).select(orderby=~db.discussion.posted_at)
     return dict(rows=rows, user_role='teacher')
 
-#-------------------------------------------------------------------
+#------------------------------------------------------------------------------
 
