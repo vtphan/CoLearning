@@ -53,7 +53,7 @@ from .publish_problem_controller import *
 from .run_query_controller import *
 from .statistics_controller import *
 from .first_user_controller import *
-from .discussion_controller import *
+from .discussion_controllers import *
 
 
 #-------------------------------------------------
