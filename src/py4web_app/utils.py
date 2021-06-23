@@ -16,7 +16,10 @@ def create_notification(message, recipients, expire_at, send_editor=False, type=
 def add_global_value(variable, value):
     db.global_value.update_or_insert(db.global_value.variable==variable, variable=variable, value=value)
     db.commit()
-    
+
+#
+# todo: if student has no attempt left, he/she is also eligible for help
+#
 def is_eligible_for_help(user_id, problem_id):
     if ('teacher' in groups.get(user_id)) or ('ta' in groups.get(user_id)):
         return True

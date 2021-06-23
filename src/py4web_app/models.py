@@ -33,6 +33,11 @@ def create_tables():
         Field('last_updated_at', type='datetime'), 
         redefine=True)
 
+    db.define_table('is_tutor', 
+        Field('problem_id', type='reference problem'),
+        Field('student_id', type='reference auth_user'),
+        redefine=True)
+
     db.define_table('problem_topic', 
         Field('problem_id', type='reference problem'), 
         Field('topic_id', type='reference topic'))

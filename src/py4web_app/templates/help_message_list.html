@@ -3,7 +3,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
 <meta http-equiv="refresh" content="60">
 [[end]]
-<h3>Current Messages</h3>
 <table class="table">
     <tbody>
         <tr>
@@ -23,7 +22,7 @@
             <td>[[=m.problem_id.problem_name]]</td>
             <td>[[if len(m.message)>15:]][[=m.message[:13]+".."]][[else:]][[=m.message]][[pass]]</td>
             <td>[[last_person = m.comment.select().last()]][[if last_person==None:]]--[[else:]][[=last_person.author_id.first_name]] [[=last_person.author_id.last_name]][[pass]]</td>
-            <td><a class="button" href="[[=URL('student_workspace_view/'+str(m.student_id)+'/'+str(m.problem_id))]]">Go to Discussion</a></td>
+            <td><a href="[[=URL('student_workspace_view/'+str(m.student_id)+'/'+str(m.problem_id))]]">link</a></td>
         </tr>
     [[pass]]
      

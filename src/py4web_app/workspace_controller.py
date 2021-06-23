@@ -134,5 +134,7 @@ def editor_submission_handler():
               create_notification("Help seeking submission recieved.", recipients=recipents, expire_at=problem.deadline)
               msg= "Your help request for "+problem.problem_name+" will be answered soon."
 
+       if attempt_left == 0:
+              db.is_tutor.insert(problem_id=problem_id, student_id=student_id)
        db.commit()
        return msg

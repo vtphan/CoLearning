@@ -154,6 +154,7 @@ def submission_grader():
         db((db.student_workspace.problem_id==problem.id)&(db.student_workspace.student_id==submission.student_id)).update(attempt_left=0)
         create_notification("Your "+ get_number_word(submission.attempt)+" submission for problem: "+problem.problem_name+" is correct.", recipients=[submission.student_id], \
             expire_at=datetime.datetime.utcnow()+datetime.timedelta(days=90), send_editor=True)
+        db.is_tutor.insert(problem_id=submission.problem_id, student_id=submission.student_id)
     elif correct == 0:
         credit = float(request.query.get('credit'))
         db.submission_verdict.update_or_insert(db.submission_verdict.submission_id==submission_id, submission_id=submission_id, verdict="incorrect", score=credit, evaluated_at=now)
