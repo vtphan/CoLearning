@@ -56,8 +56,10 @@ def my_discussions():
     return dict(rows=rows)
 
 #------------------------------------------------------------------------------
+# Teacher/TA views a list of discussions.
 # todo: (1) create a new instructor layout, (2) remove "user_role" in that layout.
 #------------------------------------------------------------------------------
+
 @action('teacher_views_discussions', method='GET')
 @action.uses(auth.user, 'teacher_views_discussions.html')
 def teacher_views_discussions():
@@ -68,4 +70,24 @@ def teacher_views_discussions():
     return dict(rows=rows, user_role='teacher')
 
 #------------------------------------------------------------------------------
+# Teacher/TA views a specific discussion.
+#------------------------------------------------------------------------------
+@action('teacher_views_discussion/<discussion_id>', method='GET')
+@action.uses(auth.user, 'teacher_views_discussion.html')
+def teacher_views_discussion(discussion_id):
+    user_id = auth.get_user()['id']
+    if 'teacher' not in groups.get(user_id) and 'ta' not in groups.get(user_id):
+        redirect(URL('not_authorized'))
+    q = (db.discussion.id == discussion_id) & (db.comment.discussion_id == discussion_id)
+    rows = db(q).select(orderby=~db.comment.posted_at)
+    discussion = db(db.discussion.id == discussion_id).select().first()
+    return dict(discussion=discussion, rows=rows, user_role='teacher')
+
+#------------------------------------------------------------------------------
+
+
+
+
+
+
 
