@@ -1,0 +1,51 @@
+
+
+[[block page_title]]Workspace[[end]]
+<div>
+    
+    <!-- <p id="countdown" style="text-align: right;font-size: 25px; margin-top: 0px;"></p> -->
+    <div class="tabs is-medium">
+        <ul>
+          <li><a href="[[=URL(('view_' if role==1 else '')+'problem/'+str(problem.id))]]">Problem Information</a></li>
+          <li class="is-active"><a>[[=student_name]]'s Workspace</a></li>
+          [[if user_role=='student' and help_eligible==True:]]
+            <li><a href="[[=URL('student_workspace_list/'+str(problem.id))]]">Student Workspaces</a></li>
+          [[pass]]
+          [[i = len(submissions)]]
+          [[if role==1:]]
+            [[for s in submissions:]]
+              <li><a href="[[=URL('view_submission/'+str(s['id']))]]">Submission [[=i]]</a></li>
+              [[i-=1]]
+            [[pass]]
+          [[else:]]
+            [[for s in submissions:]]
+              <li><a href="[[=URL('submission/'+str(s['id']))]]">Submission [[=i]]</a></li>
+              [[i-=1]]
+            [[pass]]
+          [[pass]]
+        </ul>
+    </div>
+    <div>
+        <b>Due in:</b> <span id="countdown"></span><br>
+        <b>Remaining Attempts:</b> [[=workspace.attempt_left]]<br>
+        <b>Status:</b> [[=status]]<br>
+        <hr style="height:30px">
+        <textarea id="editor1">[[=workspace.content]]</textarea>
+        
+        [[if user_role=='student' and workspace.attempt_left>0:]]
+        <div id="submit-buttons">
+          <button class="ui-button ui-widget ui-corner-all" id="submit-button" v-on:click="submit_code">Submit Code</button>
+          
+        </div>
+        [[pass]]
+       
+       
+      
+    </div>
+    <div class="box">
+      <label>Discuss or ask a question</label>
+      <textarea id="discussion" ></textarea>
+      <button id="post_button" v-on:click="submit_discussion">Submit</button>
+    </div>
+
+</div>

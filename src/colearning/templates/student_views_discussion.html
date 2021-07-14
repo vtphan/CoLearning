@@ -1,0 +1,152 @@
+[[extend 'student_layout.html']]
+[[block page_head]]
+<link rel="stylesheet" href="codemirror-5.58.1/lib/codemirror.css">
+<link rel="stylesheet" href="codemirror-5.58.1/theme/monokai.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+[[end]]
+<div id="discussion_threads" class="box">
+    <article class="message is-dark">
+        <div class="message-header">
+          <p>[[=d.author_id.first_name]] <span style="font-size: 0.7em !important;" id="discussion_time"></span></p>
+          
+        </div>
+          <div class="message-body">
+            <div class="columns">
+              <div class="column is-four-fifths">[[=d.message]]</div>
+              <div class="column">
+                <a>
+                  [[liked = False]]
+                    [[for like in d.comment_like.select():]]
+                      [[if like.liked_by==user_id:]]
+                        [[liked=True]]
+                      [[pass]]
+                    [[pass]]
+                <span @click="submit_discussion_like([[=d.id]])" style="font-size: 1.5em; [[if liked==True:]] color:dodgerblue;[[pass]]">
+                  <i class="fas fa-thumbs-up"></i>
+                </span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="accordion">
+            <input type="checkbox" id="x[[=d.id]]">
+            <label for="x[[=d.id]]">Code Snapshot</label>
+            <div>
+              <textarea id="code_snapshot">[[=d.code_snapshot]]</textarea>
+            </div>
+          </div>
+          <div style="margin-left: 50px;">
+            [[for comment in d.comment.select():]]
+              <div class="card">
+                <div class="card-content">
+                  <div class="media-content">
+                    <p class="title is-4">[[=comment.author_id.first_name]] <span style="font-size: 0.7em !important;" id="comment_time_[[=comment.id]]"></span></p>
+                    
+                   </div>
+
+                    <div class="content">
+                      <div class="columns">
+                        <div class="column is-four-fifths">[[=comment.message]]</div>
+                        <div class="column">
+                          <a>
+                            [[liked = False]]
+                            [[for like in comment.comment_like.select():]]
+                              [[if like.liked_by==user_id:]]
+                                [[liked=True]]
+                              [[pass]]
+                            [[pass]]
+                          <span @click="submit_comment_like([[=comment.id]])" style="font-size: 1.5em; [[if liked==True:]] color:dodgerblue;[[pass]]">
+                            <i class="fas fa-thumbs-up"></i>
+                          </span>
+                          </a>
+                        </div>
+                      </div>
+                      
+                    </div>
+                    
+                </div>
+                
+              </div>
+            [[pass]]
+            <textarea id="new_comment_[[=d.id]]" rows="2" placeholder="Write your feedback"></textarea>
+            <button @click="submit_comment([[=d.id]])">Submit</button>
+          </div>
+    </article>
+  </div>
+
+  [[block page_scripts]]
+
+<script src="codemirror-5.58.1/lib/codemirror.js"></script>
+
+<script src="codemirror-5.58.1/mode/python/python.js"></script>
+<script src="codemirror-5.58.1/mode/clike/clike.js"></script>
+
+<script>
+    var idx = 0;
+    var editor = null;
+    
+    document.getElementById("discussion_time").innerHTML=
+        new Date(Date.UTC([[=d.posted_at.year]], [[=d.posted_at.month-1]], 
+        [[=d.posted_at.day]], [[=d.posted_at.hour]], 
+        [[=d.posted_at.minute]], [[=d.posted_at.second]])).toLocaleString();
+        [[for comment in d.comment.select():]]
+            document.getElementById("comment_time_[[=comment.id]]").innerHTML=
+                new Date(Date.UTC([[=comment.posted_at.year]], [[=comment.posted_at.month-1]], 
+                [[=comment.posted_at.day]], [[=comment.posted_at.hour]], 
+                [[=comment.posted_at.minute]], [[=comment.posted_at.second]])).toLocaleString();
+        [[pass]]
+
+    editor = document.getElementById("code_snapshot");
+    var code_snapshot = CodeMirror.fromTextArea(editor, {lineNumbers: true, mode: "[[="python" if d.problem_id.language=="Python" else "text/x-java" if problem['language']=="Java" else "text/x-c++src"]]", theme: "monokai", matchBrackets: true, indentUnit: 4, indentWithTabs: true, readOnly: "nocursor"});
+    code_snapshot.setSize("100%", 300);
+
+    new Vue({
+      el: "#discussion_threads",
+      methods: {
+        submit_comment: function(discussion_id){
+          comment = document.getElementById("new_comment_"+discussion_id).value;
+          axios.get("[[=URL('save_comment')]]", {
+            params: {
+              discussion_id: discussion_id, message: comment
+            }
+          })
+          .then(function(msg){
+            window.location.reload();
+          })
+          .catch(function(){
+            alert('Could not post comment. Please try again later!');
+          });
+        },
+        submit_comment_like: function(comment_id){
+          
+          axios.get("[[=URL('save_comment_like')]]", {
+            params: {
+              comment_id: comment_id
+            }
+          })
+          .then(function(msg){
+            window.location.reload();
+          })
+          .catch(function(){
+            alert('Could not save the like. Please try again later!');
+          });
+        },
+        submit_discussion_like: function(discussion_id){
+          
+          axios.get("[[=URL('save_discussion_like')]]", {
+            params: {
+              discussion_id: discussion_id
+            }
+          })
+          .then(function(msg){
+            window.location.reload();
+          })
+          .catch(function(){
+            alert('Could not save the like. Please try again later!');
+          });
+        }
+      }
+    });
+
+</script>
+[[end]]

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base href="[[=URL('static')]]/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="data:image/x-icon;base64,AAABAAEAAQEAAAEAIAAwAAAAFgAAACgAAAABAAAAAgAAAAEAIAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAAAA=="/>
+    <link rel="stylesheet" href="css/no.css">
+    <!-- <link rel="stylesheet" href="[[=URL('static', 'font-awesome-4.7.0/css/font-awesome.css')]]"> -->
+    <script src="https://kit.fontawesome.com/76cb912a05.js" crossorigin="anonymous"></script>
+    <style>.py4web-validation-error{margin-top:-16px; font-size:0.8em;color:red}</style>
+    [[block page_head]]<!-- individual pages can customize header here -->[[end]]
+    <style>
+      body > div {
+        max-width: 1200px !important;
+        
+      }
+
+    </style>
+  </head>
+  <body>
+    <header>
+      <!-- Navigation bar -->
+      <nav class="black">
+        <!-- Logo -->
+        <!-- <a href="[[=URL('index')]]">
+          <b><script>document.write(window.location.href.split('/')[3]);</script>:</b>
+        </a> -->
+        <!-- <b>[[block page_title]] [[end]]</b> -->
+        <!-- Do not touch this -->
+        <label for="hamburger">☰</label>
+        <input type="checkbox" id="hamburger">
+        <!-- Left menu ul/li -->
+        [[block page_left_menu]]
+        <ul>
+          <li>
+              <a class="navbar-link" href="[[=URL('problem_list')]]">Problems</a>
+          </li>
+          <li>
+            <a class="navbar-link" href="[[=URL('submissions')]]">Submissions</a>
+          </li>
+          <li>
+            <a class="navbar-link" href="[[=URL('teacher_views_discussions')]]">Discussions</a>
+          </li>
+          <li>
+            <a class="navbar-link is-primary">
+            Settings
+            </a>
+            <ul>
+              <li>
+                <a class="navbar-link" href="[[=URL('global_values')]]">Global Parameters</a>
+              </li>
+              <li>
+                <a class="navbar-link" href="[[=URL('activate_user')]]">Activate User</a>
+              </li>
+            </ul>
+          </li>
+        <li>
+          <a class="navbar-link" href="[[=URL('statistics')]]">Statistics</a>
+        </li>
+      </ul>
+        [[end]]
+        <!-- Right menu ul/li -->
+        <ul>
+          [[if globals().get('user'):]]
+          <li>
+            <a class="navbar-link is-primary">
+              [[=globals().get('user',{}).get('first_name')]]
+            </a>
+            <ul>
+              <li><a href="[[=URL('auth/logout')]]">Logout</a></li>
+            </ul>
+          </li>
+          [[else:]]
+          <li>
+            Login
+            <ul>
+              <li><a href="[[=URL('auth/register')]]">Sign up</a></li>
+              <li><a href="[[=URL('auth/login')]]">Log in</a></li>
+            </ul>
+          </li>
+          [[pass]]
+        </ul>
+      </nav>
+      <!-- <h1>[[block page_title]][[end]]</h1> -->
+      <!-- Flash alert messages, first optional one in data-alert -->
+      <flash-alerts class="padded" data-alert="[[=globals().get('flash','')]]"></flash-alerts>
+    </header>
+    <!-- beginning of HTML inserted by extending template -->
+    <div>
+      <main class="padded">
+        <!-- contect injected by extending page -->
+        [[include]]
+      </main>
+    </div>
+    <!-- end of HTML inserted by extending template -->
+    <footer class="black padded">
+    </footer>
+  </body>
+  <!-- You've gotta have utils.js -->
+  <script src="js/utils.js"></script>
+  <!-- Your other favorite JS libs -->
+  <script src="js/vue.min.js"></script>
+  <script src="js/axios.min.js"></script>
+  <script src="js/sugar.min.js"></script>
+  [[if globals().get('user'):]]
+  <script>
+    function show_notifications(){
+      axios.get("[[=URL('get_notification')]]")
+      .then(function(response){
+          // console.log(response)
+          for (notif of response.data)
+              Q.flash({'message': notif.notification.message, 'class': 'info'});
+      })
+      .catch(function (error) {
+          // handle error
+          console.log(error);
+      });
+    }
+    setInterval(show_notifications, 30000)
+  </script>
+  [[pass]]
+  [[block page_scripts]]<!-- individual pages can add scripts here -->[[end]]
+</html>

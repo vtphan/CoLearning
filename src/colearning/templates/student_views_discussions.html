@@ -1,0 +1,30 @@
+[[extend 'student_layout.html']]
+
+<h3>Discussions</h3>
+[[block page_head]]
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+<meta http-equiv="refresh" content="60">
+[[end]]
+<table class="table">
+    <tbody>
+        <tr>
+            <th>Problem Name</th>
+            <th>Message</th>
+            <!-- <th>Last Responded Person</th> -->
+            <th></th>
+        </tr>
+    </tbody>
+    <tbody>
+    
+    [[for m in rows:]]
+        
+        <tr>
+            <td>[[=m.problem_id.problem_name]]</td>
+            <td>[[if len(m.message)>15:]][[=m.message[:13]+".."]][[else:]][[=m.message]][[pass]]</td>
+            <td><a href="[[=URL('student_views_discussion/'+str(m.id))]]">link</a></td>
+        </tr>
+    [[pass]]
+     
+    </tbody>
+</table>
+

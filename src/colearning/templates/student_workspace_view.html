@@ -1,0 +1,106 @@
+[[extend 'layout_instructor.html']]
+[[role=1]]
+[[block page_head]]
+<link rel="stylesheet" href="codemirror-5.58.1/lib/codemirror.css">
+<link rel="stylesheet" href="codemirror-5.58.1/theme/monokai.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+[[end]]
+[[include 'student_workspace_common.html']]
+
+[[block page_scripts]]
+
+<script src="codemirror-5.58.1/lib/codemirror.js"></script>
+
+<script src="codemirror-5.58.1/mode/python/python.js"></script>
+<script src="codemirror-5.58.1/mode/clike/clike.js"></script>
+
+<script>
+    var editor1 = document.getElementById("editor1");
+    var myCodeMirror1 = CodeMirror.fromTextArea(editor1, {lineNumbers: true, mode: "[[="python" if problem['language']=="Python" else "text/x-java" if problem['language']=="Java" else "text/x-c++src"]]", theme: "monokai", matchBrackets: true, indentUnit: 4, indentWithTabs: true, readOnly: "nocursor"});
+    myCodeMirror1.setSize("100%", 500)
+    // var editor2 = document.getElementById("editor2");
+    // var myCodeMirror2 = CodeMirror.fromTextArea(editor2, {lineNumbers: true, mode: "null", theme: 'monokai', indentWithTabs: true, cursorHeight: 0.75, readOnly: "nocursor"});
+    var countDownDate = new Date(Date.UTC([[=problem.deadline.year]], [[=problem.deadline.month-1]], [[=problem.deadline.day]], [[=problem.deadline.hour]], [[=problem.deadline.minute]], [[=problem.deadline.second]], 0)).getTime();
+
+    // Update the count down every 1 second
+    var x = setInterval(function() {
+
+      // Get today's date and time
+      var now = new Date().getTime();
+
+      // Find the distance between now and the count down date
+      var distance = countDownDate - now;
+
+      // Time calculations for days, hours, minutes and seconds
+      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      // Display the result in the element with id="demo"
+      document.getElementById("countdown").innerHTML = days + "d " + hours + "h "
+      + minutes + "m " + seconds + "s ";
+
+      // If the count down is finished, write some text
+      if (distance < 0) {
+        clearInterval(x);
+        document.getElementById("countdown").innerHTML = "Expired";
+      }
+    }, 1000);
+ 
+    function get_student_code(){
+      axios.get("[[=URL('get_student_code/'+str(workspace['id']))]]")
+      .then(function(response){
+        myCodeMirror1.setValue(response.data.content);
+        // myCodeMirror2.setValue(response.data.comment);
+      })
+      .catch(function(err){
+        console.log(err);
+      });
+    }
+    setInterval(get_student_code, 30000);
+    
+    new Vue({
+      el: '#post_button',
+      methods: {
+        submit_discussion: function(event){
+          var code = myCodeMirror1.getValue();
+          var message = document.getElementById("discussion").value;
+          axios.get("[[=URL('save_discussion')]]", {
+            params: {
+              problem_id: [[=problem.id]], student_id: [[=student_id]], code_snapshot: code,
+              message: message
+            }
+          })
+          .then(function(msg){
+            window.location.reload();
+          })
+          .catch(function(){
+            alert("Could not start the discussion! Please try again later!");
+          });
+        }
+      }
+    });
+
+    [[if user_role=='student' and workspace.attempt_left>0:]]
+    var submissionButtons = new Vue({
+      el: "#submit-buttons",
+      data: {},
+      methods:{
+        submit_code: function(event){
+          axios.post("[[=URL('submission_handler')]]",{
+            student_id: [[=workspace.student_id]], problem_id: [[=workspace.problem_id]], content: myCodeMirror1.getValue(), 
+            attempt_left: [[=workspace.attempt_left]], category: 1
+          })
+          .then(function(response){
+            alert('Code submitted successfully.')
+          })
+          .catch(function(error){
+            alert("Couldn't submit code. Plesae try again!")
+          });
+        }
+      }
+    });
+    [[pass]]
+</script>
+[[end]]
